@@ -1,112 +1,94 @@
-# Team 075
-# Team members: Patrick, Chi, Greg, Yang
-
-# This program creates a Reversi game using Turtle Graphics
+"""
+Team 075: Yang Li, Chi Nguyen, Patrick Withams, Greg Young
+This program creates a Reversi game using Turtle Graphics
+"""
 
 import turtle as tt
 
-def draw_board():
-    SIDES = 9
-    ANGLE = 90
-    SQUARES = 40
-    WIDTH = 320
-    drawBoard.pendown()
+def drawLines(num, long, short, turn, color):
+    for i in range(num):
+        board.color(color)
+        board.pd()
+        board.fd(long)
+        board.pu()
+        board.fd(-long)
+        board.rt(turn)
+        board.fd(short)
+        board.rt(-turn)
 
-    for i in range(SIDES):
-        drawBoard.forward(WIDTH)
-        drawBoard.penup()
-        drawBoard.forward(-WIDTH)
-        drawBoard.right(ANGLE)
-        drawBoard.forward(SQUARES)
-        drawBoard.right(-ANGLE)
-        drawBoard.pendown()
+def drawSquare(length, turn, color):
+    board.color(color)
+    board.begin_fill()
+    for i in range(4):
+        board.fd(length)
+        board.rt(turn)
+    board.end_fill()
 
-    drawBoard.penup()
-    drawBoard.home()
-    drawBoard.pendown()
+def drawGrid(LINES, ANGLE, BOXSZ, WIDTH):
+    BGCOL = '#64A23E'
+    LNCOL = 'white'
 
-    for i in range(SIDES):
-        drawBoard.right(ANGLE)
-        drawBoard.forward(WIDTH)
-        drawBoard.penup()
-        drawBoard.forward(-WIDTH)
-        drawBoard.right(-ANGLE)
-        drawBoard.forward(SQUARES)
-        drawBoard.pendown()
+    drawSquare(WIDTH,ANGLE,BGCOL)
+    drawLines(LINES, WIDTH, BOXSZ, ANGLE,LNCOL)
+    board.setpos(WIDTH,0)
+    board.rt(ANGLE)
+    drawLines(LINES, WIDTH, BOXSZ, ANGLE, LNCOL)
 
-    drawBoard.penup()
-    drawBoard.forward(-255)
-    drawBoard.left(ANGLE)
-    drawBoard.forward(20)
-    drawBoard.color("#333")
-    drawBoard.write("R E V E R S I", move=False, align="left", font=("Helvetica", 24, "bold"))
+    board.pu()
+    board.goto(WIDTH//2,20)
+    board.color('black')
+    board.pd()
+    board.write('  R  E  V  E  R  S  I  ', align='center', font=('',36,'bold'))
 
-    drawBoard.home()
-    drawBoard.forward(20)
-    drawBoard.right(-ANGLE)
-    drawBoard.forward(5)
-    drawBoard.right(ANGLE)
-    for i in range(8):
-        drawBoard.write(i,font=("Helvetica",16))
-        drawBoard.forward(SQUARES)
+    board.pu()
+    board.goto(WIDTH//2,-(WIDTH+65))
+    board.write('How to play: Place your marker on the grid so that you make least one straight (horizontal,\nvertical, or diagonal) line between your new marker and another of your existing marker, with\none or more markers belonging to the opponent between them. All opponents markers in the\nline are captured. A player misses their turn if there are no valid moves.',align='center',font=('',14,''))
 
-    drawBoard.home()
-    drawBoard.forward(-10)
-    drawBoard.right(ANGLE)
-    drawBoard.forward(20)
-    for i in range(8):
-        drawBoard.write(i, align="center", font=("Helvetica",16))
-        drawBoard.forward(SQUARES)
+def drawPiece(coordx, coordy, color, BOXSZ, ANGLE):
+    board.pu()
+    board.home()
+    coordx = coordx * BOXSZ
+    coordy = coordy * BOXSZ
+    board.goto(coordx+2, -(coordy+2))
+    drawSquare(BOXSZ-4, ANGLE, color)
 
-    #Draws the welcome message and rules under the board
-    drawBoard.home()
-    drawBoard.right(ANGLE)
-    drawBoard.forward(350)
-    drawBoard.right(-ANGLE)
-    drawBoard.forward(50)
-    drawBoard.write("Welcome to this amazing game of Reversi!", move=False, align="left", font=("Helvetica", 14, "normal"))
-
-    drawBoard.home()
-    drawBoard.right(ANGLE)
-    drawBoard.fd(WIDTH + 75)
-    drawBoard.right(-ANGLE)
-    drawBoard.forward(SQUARES * 4 + 15)
-    drawBoard.write("How to play: Place your marker on the grid so that you make least one straight (horizontal,\nvertical, or diagonal) line between your new marker and another of your existing marker, with\none or more markers belonging to the opponent between them. All opponents markers in the\nline are captured. A player misses their turn if there are no valid moves.",align="center", font=("Helvetica",10,"normal"))
-    
-def plot(coord1, coord2, colour):
-    coord1 = coord1 * 40
-    coord2 = coord2 * 40 + 20
-    drawBoard.home()
-    drawBoard.forward(coord1)
-    drawBoard.right(ANGLE)
-    drawBoard.forward(coord2)
-    drawBoard.color(colour)
-    drawBoard.begin_fill()
-    drawBoard.circle(20)
-    drawBoard.end_fill()
+def setup(LINES, ANGLE, BOXSZ, WIDTH, COLOR1, COLOR2):
+    drawGrid(LINES,ANGLE,BOXSZ,WIDTH)
+    drawPiece(3,4,COLOR1,BOXSZ,ANGLE)
+    drawPiece(4,4,COLOR2,BOXSZ,ANGLE)
+    drawPiece(4,3,COLOR1,BOXSZ,ANGLE)
+    drawPiece(3,3,COLOR2,BOXSZ,ANGLE)
 
 def main():
-    draw_board()
-    plot(3,4, "#333")
-    plot(4,4, "#fff")
-    plot(4,3, "#333")
-    plot(3,3, "#fff")
-    print("Please enter your first move.")
-    coordx = int(input("Row: "))
-    coordy = int(input("Column: "))
-    plot(coordx,coordy, "#333")
+    LINES = 9
+    ANGLE = 90
+    BOXSZ = 40
+    WIDTH = (LINES - 1) * BOXSZ
+    COLOR1 = ('#333')
+    COLOR2 = ('#fff')
+    turn = 1
+
+    setup(LINES, ANGLE, BOXSZ, WIDTH, COLOR1, COLOR2)
+
+    while turn < 4:
+        coordx = int(input("Row: "))
+        coordy = int(input("Column: "))
+        if turn//2 == 0:
+            drawPiece(coordx,coordy, COLOR1, BOXSZ, ANGLE)
+        else:
+            drawPiece(coordx,coordy, COLOR2, BOXSZ, ANGLE)
+        turn += 1
     wn.exitonclick()
 
 # global variables
-
 wn = tt.Screen()
 wn.setup(startx=0,starty=0)
 wn.setworldcoordinates(-60,-400,400,60)
-wn.bgcolor("#26A65B")
-drawBoard = tt.Turtle()
-drawBoard.penup()
-drawBoard.speed('fastest')
-drawBoard.color("white")
-drawBoard.ht()
+wn.bgcolor("#228B22")
+board = tt.Turtle()
+piece = tt.Turtle()
+board.speed('fastest')
+board.ht()
+piece.ht()
 
 main()
