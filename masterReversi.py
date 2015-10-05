@@ -16,12 +16,14 @@ def drawLines(num, long, short, turn, color):
         board.fd(short)
         board.rt(-turn)
 
-def drawSquare(length, turn, color, turt):
+def drawRectangle(length, width, turn, color, turt):
     turt.pd()
     turt.color(color)
     turt.begin_fill()
-    for i in range(4):
+    for i in range(2):
         turt.fd(length)
+        turt.rt(turn)
+        turt.fd(width)
         turt.rt(turn)
     turt.end_fill()
 
@@ -29,11 +31,11 @@ def drawGrid(LINES, ANGLE, BOXSZ, WIDTH):
     BGCOL = '#64A23E'
     LNCOL = 'white'
 
-    drawSquare(WIDTH,ANGLE,BGCOL, board)
-    drawLines(LINES, WIDTH, BOXSZ, ANGLE,LNCOL)
+    drawRectangle(WIDTH,WIDTH,ANGLE,BGCOL, board)
+    drawLines(LINES,WIDTH,BOXSZ,ANGLE,LNCOL)
     board.setpos(WIDTH,0)
     board.rt(ANGLE)
-    drawLines(LINES, WIDTH, BOXSZ, ANGLE, LNCOL)
+    drawLines(LINES,WIDTH,BOXSZ,ANGLE,LNCOL)
 
     board.pu()
     board.goto(WIDTH//2,20)
@@ -51,7 +53,7 @@ def drawPiece(coordx, coordy, color, BOXSZ, ANGLE):
     coordx = coordx * BOXSZ
     coordy = coordy * BOXSZ
     piece.goto(coordx+2, -(coordy+2))
-    drawSquare(BOXSZ-4, ANGLE, color, piece)
+    drawRectangle(BOXSZ-4,BOXSZ-4,ANGLE,color,piece)
 
 def setup(LINES, ANGLE, BOXSZ, WIDTH, COLOR1, COLOR2):
     drawGrid(LINES,ANGLE,BOXSZ,WIDTH)
@@ -69,7 +71,7 @@ def main():
     COLOR2 = ('#fff')
     turn = 1
 
-    setup(LINES, ANGLE, BOXSZ, WIDTH, COLOR1, COLOR2)
+    setup(LINES,ANGLE,BOXSZ,WIDTH,COLOR1,COLOR2)
 
     while turn < 4:
         coordx = int(input('Row: '))
