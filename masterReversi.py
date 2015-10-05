@@ -16,19 +16,20 @@ def drawLines(num, long, short, turn, color):
         board.fd(short)
         board.rt(-turn)
 
-def drawSquare(length, turn, color):
-    board.color(color)
-    board.begin_fill()
+def drawSquare(length, turn, color, turt):
+    turt.pd()
+    turt.color(color)
+    turt.begin_fill()
     for i in range(4):
-        board.fd(length)
-        board.rt(turn)
-    board.end_fill()
+        turt.fd(length)
+        turt.rt(turn)
+    turt.end_fill()
 
 def drawGrid(LINES, ANGLE, BOXSZ, WIDTH):
     BGCOL = '#64A23E'
     LNCOL = 'white'
 
-    drawSquare(WIDTH,ANGLE,BGCOL)
+    drawSquare(WIDTH,ANGLE,BGCOL, board)
     drawLines(LINES, WIDTH, BOXSZ, ANGLE,LNCOL)
     board.setpos(WIDTH,0)
     board.rt(ANGLE)
@@ -45,12 +46,12 @@ def drawGrid(LINES, ANGLE, BOXSZ, WIDTH):
     board.write('How to play: Place your marker on the grid so that you make least one straight (horizontal,\nvertical, or diagonal) line between your new marker and another of your existing marker, with\none or more markers belonging to the opponent between them. All opponents markers in the\nline are captured. A player misses their turn if there are no valid moves.',align='center',font=('',14,''))
 
 def drawPiece(coordx, coordy, color, BOXSZ, ANGLE):
-    board.pu()
-    board.home()
+    piece.pu()
+    piece.home()
     coordx = coordx * BOXSZ
     coordy = coordy * BOXSZ
-    board.goto(coordx+2, -(coordy+2))
-    drawSquare(BOXSZ-4, ANGLE, color)
+    piece.goto(coordx+2, -(coordy+2))
+    drawSquare(BOXSZ-4, ANGLE, color, piece)
 
 def setup(LINES, ANGLE, BOXSZ, WIDTH, COLOR1, COLOR2):
     drawGrid(LINES,ANGLE,BOXSZ,WIDTH)
@@ -71,8 +72,8 @@ def main():
     setup(LINES, ANGLE, BOXSZ, WIDTH, COLOR1, COLOR2)
 
     while turn < 4:
-        coordx = int(input("Row: "))
-        coordy = int(input("Column: "))
+        coordx = int(input('Row: '))
+        coordy = int(input('Column: '))
         if turn//2 == 0:
             drawPiece(coordx,coordy, COLOR1, BOXSZ, ANGLE)
         else:
@@ -84,11 +85,16 @@ def main():
 wn = tt.Screen()
 wn.setup(startx=0,starty=0)
 wn.setworldcoordinates(-60,-400,400,60)
-wn.bgcolor("#228B22")
-board = tt.Turtle()
-piece = tt.Turtle()
+wn.bgcolor('#228B22')
+board = tt.Turtle() #turtle for drawing game board
+piece = tt.Turtle() #turtle for drawing game pieces
+black = tt.Turtle() #turtle for black score
+white = tt.Turtle() #turtle for white score
 board.speed('fastest')
+piece.speed('fastest')
 board.ht()
 piece.ht()
+black.ht()
+white.ht()
 
 main()
