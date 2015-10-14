@@ -197,7 +197,7 @@ def calcWinner(player):
                 totalPieces = totalPieces + 1
     return totalPieces
 
-# function to chose random move, delete if auto option not needed
+# function to chose automated random computer move, delete if auto option not needed
 def randomCoordinates(posMoves):
     num1 = random.randrange(0,len(posMoves))
     return (posMoves[num1][0], posMoves[num1][1])
@@ -218,9 +218,10 @@ def userMove(colour):
     print("Possible moves:", possibleMoves)
     print("Please enter your chosen coordinates.")
     # this is the manual input option, uncomment and delete line 222 for manual
-    # coordx = int(input("Row: "))
-    # coordy = int(input("Column: "))
-    (coordx, coordy) = randomCoordinates(possibleMoves) # this automatically choses move
+    coordx = int(input("Row: "))
+    coordy = int(input("Column: "))
+	# this is the automated computer line, uncomment for auto option
+    #(coordx, coordy) = randomCoordinates(possibleMoves) # this automatically choses move
     validMove = False
     # check if chosen move is valid
     for i in range(len(possibleMoves)):
@@ -249,7 +250,7 @@ def userMove(colour):
             else: # if they do have moves, then other player just misses a turn
                 print("No moves for the next player! Skipping a go!")
     else:
-        print("Not a valid move!")
+        print("Not a valid move, try again!")
     
 # calls the setup functiont to draw the board. creates a while loop that triggers the userMove
 # function with the colour of the current player.
