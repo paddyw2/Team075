@@ -78,42 +78,46 @@ def setup(LINES, ANGLE, BOXSZ, WIDTH, COLOR1, COLOR2):
     drawPiece(4,4,COLOR2,BOXSZ,ANGLE)
     drawPiece(4,3,COLOR1,BOXSZ,ANGLE)
     drawPiece(3,3,COLOR2,BOXSZ,ANGLE)
+    # update gamestate string to have starting positions marked
+    updateGameState("w", 3, 3)
+    updateGameState("b", 3, 4)
+    updateGameState("b", 4, 3)
+    updateGameState("w", 4, 4)
 
-# creates a 2d list with 8 lists inside. then for each of these lists, the item "blank" is appended
-# eight times. this then represents the game state. each list represents a row, and then each position
-# in that list represents a column. so gameState[2][3] would hold the value for row 2, column 3. once
-# the blank list is created the starting coordinates are updated to hold the values either "black" or
-# "white".
-def createGameState():
-    gameState = [[],[],[],[],[],[],[],[]]
-    for i in range(8):
-        for x in [0,1,2,3,4,5,6,7]:
-            gameState[x].append("blank")
-    gameState[3][3] = COLORNAME2
-    gameState[3][4] = COLORNAME1
-    gameState[4][3] = COLORNAME1
-    gameState[4][4] = COLORNAME2
-    return gameState
+
+
+# creates gamestate variable as one long string, with moves marked as either "o" for blank,
+# "w" for white, and "b" for black
+def updateGameState(player, coordx, coordy):
+    global gameState
+    finalPosition = (coordx * 8) + coordy
+    gameState = gameState[:finalPosition] + player + gameState[(finalPosition + 1):]
+    
+# returns the position of piece in the gameState string based on its coordinates    
+def returnStringPosition(x,y):
+    stringPosition = (x * 8) + y
+    return stringPosition
 
 # once a move has been chosen and verified to be valid, the middle moves, or moves in between, need to
 # be determined and coloured. to do this, the chosen move coordinate is taken and for each possible
-# direction, a search is performed backwards until either the direction is determined to be either a
+# direction, a search is performed backwards until the direction is determined to be either a
 # valid colouring direction or an invalid one. if it is valid, the coordinates in between the chosen move
 # and the end point are coloured the current players colours.
 def fillMoves(x, y, direction1, direction2, endSearch, middleMoves, colour):
     while endSearch != 0:
         newx = x + direction1
         newy = y + direction2
+        stringPos = returnStringPosition(newx,newy)
         if newx < 0 or newy < 0 or newx > 7 or newy > 7:
             endSearch = 0
-        elif gameState[newx][newy] != "blank" and gameState[newx][newy] != playerTurn:
+        elif gameState[stringPos] != "o" and gameState[stringPos] != playerTurn:
             endSearch = 2
             middleMoves.append([newx, newy])
             fillMoves(newx, newy, direction1, direction2, endSearch, middleMoves, colour)
             endSearch = 0
-        elif gameState[newx][newy] == playerTurn and endSearch == 2:
+        elif gameState[stringPos] == playerTurn and endSearch == 2:
             for i in range(len(middleMoves)):
-                gameState[(middleMoves[i][0])][(middleMoves[i][1])] = playerTurn
+                updateGameState(playerTurn, middleMoves[i][0], middleMoves[i][1])
                 drawPiece(middleMoves[i][0], middleMoves[i][1],colour,BOXSZ,ANGLE)               
             endSearch = 0
         else:
@@ -127,18 +131,19 @@ def calcPossibleMoves(x, y, direction1, direction2, endSearch):
     while endSearch != 0:
         newX = x + direction1
         newY = y + direction2
+        stringPos = returnStringPosition(newX,newY)
         if newX < 0 or newY < 0 or newX > 7 or newY > 7:
             return (-1, -1)
             endSearch = 0
-        elif gameState[newX][newY] != "blank" and gameState[newX][newY] != playerTurn:
+        elif gameState[stringPos] != "o" and gameState[stringPos] != playerTurn:
             endSearch = 2
             (newCoord1, newCoord2) = calcPossibleMoves(newX, newY, direction1, direction2, endSearch)
             endSearch = 0
             return (newCoord1, newCoord2)
-        elif gameState[newX][newY] == "blank" and endSearch == 2:
+        elif gameState[stringPos] == "o" and endSearch == 2:
             return (newX, newY)
             endSearch = 0
-        elif gameState[newX][newY] == "blank":
+        elif gameState[stringPos] == "o":
             return (-1, -1)
             endSearch = 0
         else:
@@ -153,7 +158,8 @@ def searchPossibleMoves():
     potMoves = []
     for i in range(8):
         for x in [0,1,2,3,4,5,6,7]:
-            if gameState[i][x] == playerTurn:
+            stringPos = returnStringPosition(i,x)
+            if gameState[stringPos] == playerTurn:
                 for direction1, direction2 in [[0, 1], [1, 1], [1, 0], [1, -1], [0, -1], [-1, -1], [-1, 0], [-1, 1]]: # numbers in list represent all possible directions
                     (coordX, coordY) = calcPossibleMoves(i, x, direction1, direction2, 1)
                     # check that it returns a number
@@ -193,7 +199,8 @@ def calcWinner(player):
     totalPieces = 0
     for i in range(8):
         for x in [0,1,2,3,4,5,6,7]:
-            if gameState[i][x] == player:
+            stringPos = returnStringPosition(i,x)
+            if gameState[stringPos] == player:
                 totalPieces = totalPieces + 1
     return totalPieces
 
@@ -212,8 +219,13 @@ def userMove(colour):
     # to allow player turn to be swapped and endGameIndicator to be updated
     global playerTurn
     global endGameIndicator
-    print(playerTurn[:1].upper() + playerTurn[1:], "player's turn!") # playerTurn is converted to caps
     middleMoves = []
+    # converts one letter indicator into full words
+    if playerTurn == "b":
+        currentPlayer = "Black"
+    else:
+        currentPlayer = "White"
+    print(currentPlayer, "player's turn!") # playerTurn is converted to caps
     possibleMoves = searchPossibleMoves()
     print("Possible moves:", possibleMoves)
     print("Please enter your chosen coordinates.")
@@ -229,7 +241,7 @@ def userMove(colour):
             validMove = True
     if validMove is True:
         # update gameState with move and colour coordinate
-        gameState[coordx][coordy] = playerTurn
+        updateGameState(playerTurn, coordx, coordy)
         drawPiece(coordx,coordy, colour, BOXSZ, ANGLE)
         # fill in and update gameStatefor all other pieces to be coloured
         for direction1, direction2 in [[0, 1], [1, 1], [1, 0], [1, -1], [0, -1], [-1, -1], [-1, 0], [-1, 1]]: # numbers in list represent all possible directions
@@ -264,7 +276,6 @@ def main():
     print("Thanks for playing!")
 
 # global constants
-
 wn = tt.Screen()
 wn.setup(startx=0,starty=0)
 wn.setworldcoordinates(-60,-400,400,60)
@@ -281,19 +292,18 @@ board.ht()
 piece.ht()
 black.ht()
 white.ht()
-
 LINES = 9
 ANGLE = 90
 BOXSZ = 40
 WIDTH = (LINES - 1) * BOXSZ
 COLOR1 = ('#333')
 COLOR2 = ('#fff')
-COLORNAME1 = "black"
-COLORNAME2 = "white"
+COLORNAME1 = "b"
+COLORNAME2 = "w"
 
 # global variables (not possible to make local - they need to affect everything)
-
-gameState = createGameState()
+# an "o" represents a blank position - all blank to start
+gameState = "oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo"
 playerTurn = COLORNAME1
 endGameIndicator = 1
 
