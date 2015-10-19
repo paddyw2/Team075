@@ -6,7 +6,7 @@ This program creates a Reversi game using Turtle Graphics
 import turtle as tt
 import random
 
-# draws the horizontal and diagonal lines for the game board
+# draws the horizontal and vertical lines for the game board
 def drawLines(num, long, short, turn, color):
     for i in range(num):
         board.color(color)
@@ -18,7 +18,7 @@ def drawLines(num, long, short, turn, color):
         board.fd(short)
         board.rt(-turn)
 
-# draws any filled in rectangle or square needed, with whatever turtle is used as a parameter
+# draws any color-filled in rectangle or square needed, with whatever turtle is used as a parameter
 def drawRectangle(length, width, turn, color, turt):
     turt.pu()
     turt.color(color)
@@ -67,11 +67,11 @@ def drawPiece(coordx, coordy, color, BOXSZ, ANGLE):
 # on startup.
 def setup(LINES, ANGLE, BOXSZ, WIDTH, COLOR1, COLOR2):
     print('''
-    
+
      welcome to...
-     
+
     R E V E R S I!
-    
+
     ''')
     drawGrid(LINES,ANGLE,BOXSZ,WIDTH)
     drawPiece(3,4,COLOR1,BOXSZ,ANGLE)
@@ -84,16 +84,14 @@ def setup(LINES, ANGLE, BOXSZ, WIDTH, COLOR1, COLOR2):
     updateGameState("b", 4, 3)
     updateGameState("w", 4, 4)
 
-
-
 # creates gamestate variable as one long string, with moves marked as either "o" for blank,
 # "w" for white, and "b" for black
 def updateGameState(player, coordx, coordy):
     global gameState
     finalPosition = (coordx * 8) + coordy
     gameState = gameState[:finalPosition] + player + gameState[(finalPosition + 1):]
-    
-# returns the position of piece in the gameState string based on its coordinates    
+
+# returns the position of piece in the gameState string based on its coordinates
 def returnStringPosition(x,y):
     stringPosition = (x * 8) + y
     return stringPosition
@@ -118,15 +116,15 @@ def fillMoves(x, y, direction1, direction2, endSearch, middleMoves, colour):
         elif gameState[stringPos] == playerTurn and endSearch == 2:
             for i in range(len(middleMoves)):
                 updateGameState(playerTurn, middleMoves[i][0], middleMoves[i][1])
-                drawPiece(middleMoves[i][0], middleMoves[i][1],colour,BOXSZ,ANGLE)               
+                drawPiece(middleMoves[i][0], middleMoves[i][1],colour,BOXSZ,ANGLE)
             endSearch = 0
         else:
             endSearch = 0
 
 # after the searchPossibleMoves function calculates the player's current pieces, their possible moves
 # are then calculated below. for each of the current player's pieces on the board, all directions are
-# searched until either a valid move is reached, or an indicator that the direction will never hold a 
-# valid move is reached. if a valid move is found, the coordinates are returned in a tuple. 
+# searched until either a valid move is reached, or an indicator that the direction will never hold a
+# valid move is reached. if a valid move is found, the coordinates are returned in a tuple.
 def calcPossibleMoves(x, y, direction1, direction2, endSearch):
     while endSearch != 0:
         newX = x + direction1
@@ -173,7 +171,7 @@ def playerSwap(colour):
         return COLORNAME2
     else:
         return COLORNAME1
-    
+
 def colourSwap(colour):
     if colour == COLOR1:
         return COLOR2
@@ -263,7 +261,7 @@ def userMove(colour):
                 print("No moves for the next player! Skipping a go!")
     else:
         print("Not a valid move, try again!")
-    
+
 # calls the setup functiont to draw the board. creates a while loop that triggers the userMove
 # function with the colour of the current player.
 def main():
