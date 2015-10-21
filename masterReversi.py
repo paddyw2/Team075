@@ -225,7 +225,7 @@ def userMove(colour):
         currentPlayer = "White"
     print(currentPlayer, "player's turn!") # playerTurn is converted to caps
     possibleMoves = searchPossibleMoves()
-    print("Possible moves:", possibleMoves)
+    print("Game State:", gameState)
     print("Please enter your chosen coordinates.")
     # this is the manual input option, uncomment and delete line 222 for manual
     coordx = int(input("Row: "))
