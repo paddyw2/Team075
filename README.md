@@ -10,3 +10,10 @@ We won't need any of these changes in future versions so we can just revert back
 ### To Do for Task 5
 
 Add clicking functionality and computer moves. The game must also select a first player at random.
+
+#### Misc Tasks
+
+Scoreboard
+Research into displaying some form of pop up messages or end of game messages.
+Design exit button
+Anything you think of!
