@@ -21,5 +21,8 @@ The functions we'd need would be:
  * computerMove
  * coordBlack
  * coordWhite
+ * userClickProcess (see the userClickProcess.py file for that function)
 
 I've added an empty Task5.py file into the root directory so this folder can stay as a working reference, as we'll need the gamestate saving ability later in the semester.
+
+The file userClickProcess.py is just there for reference of how the quit button was working with the userClickProcess function, as it's probably a good way of dealing with each user click.
