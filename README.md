@@ -17,7 +17,7 @@ I've added a folder with various old files for using and a README with some extr
 
 #### Misc Tasks
 
-Scoreboard
-Research into displaying some form of pop up messages or end of game messages.
-Design exit button
-Anything you think of!
+ * Scoreboard
+ * Research into displaying some form of pop up messages or end of game messages.
+ * Design exit button
+ * Anything you think of!
