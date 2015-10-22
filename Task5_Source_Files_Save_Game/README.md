@@ -14,12 +14,12 @@ For Task 5 we only need the first three functionalities so just combine our curr
 
 The functions we'd need would be:
 
-randomPlayer
-calcTotal
-bestMoveCalc
-fillMoves (this function features in our current Task4 but there is a slight change on line 186 to allow the function to be used to search for the computer's moves too)
-computerMove
-coordBlack
-coordWhite
+ * randomPlayer
+ * calcTotal
+ * bestMoveCalc
+ * fillMoves (this function features in our current Task4 but there is a slight change on line 186 to allow the function to be used to search for the computer's moves too)
+ * computerMove
+ * coordBlack
+ * coordWhite
 
 I've added an empty Task5.py file into the root directory so this folder can stay as a working reference, as we'll need the gamestate saving ability later in the semester.
