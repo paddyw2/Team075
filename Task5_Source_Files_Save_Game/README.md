@@ -3,12 +3,12 @@
 
 The program gamestate.py does the following:
 
-Assigns computer and player random colours - black always goes first
-Takes user move by click
-Auto generates computer move by chosing move that takes the most pieces
-Allows the game to be saved when 'q' is pressed
-Allows the game to be saved when 's' is pressed
-Allows a new game to be started when 'n' is pressed
+ * Assigns computer and player random colours - black always goes first
+ * Takes user move by click
+ * Auto generates computer move by chosing move that takes the most pieces
+ * Allows the game to be saved when 'q' is pressed
+ * Allows the game to be saved when 's' is pressed
+ * Allows a new game to be started when 'n' is pressed
 
 For Task 5 we only need the first three functionalities so just combine our current code from Task4 into the empty file in the root directory of this repo, along with the necessary functions from gamestate.py here.
 
