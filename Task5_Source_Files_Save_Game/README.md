@@ -1,5 +1,5 @@
 # Source Files for Task5
-### Task5 source files to get functions from
+### just copy paste code from here, no need to edit or change these files
 
 The program gamestate.py does the following:
 
