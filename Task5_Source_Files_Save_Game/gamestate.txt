@@ -1,0 +1,8 @@
+blank, blank, blank, blank, blank, blank, blank, blank
+blank, blank, blank, blank, blank, blank, blank, blank
+blank, blank, blank, blank, white, blank, blank, blank
+blank, blank, blank, white, white, blank, blank, blank
+blank, blank, white, white, white, blank, blank, blank
+blank, blank, blank, blank, blank, blank, blank, blank
+blank, blank, blank, blank, blank, blank, blank, blank
+blank, blank, blank, blank, blank, blank, blank, blank

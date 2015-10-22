@@ -11,6 +11,10 @@ We won't need any of these changes in future versions so we can just revert back
 
 Add clicking functionality and computer moves. The game must also select a first player at random.
 
+#### NOTE:
+
+I've added a folder with various old files for using and a README with some extra info on what they contain. In this directory I've added an empty Task5.py file to be used for working on the next task.
+
 #### Misc Tasks
 
 Scoreboard
