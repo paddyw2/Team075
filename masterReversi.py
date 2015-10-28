@@ -5,6 +5,7 @@ This program creates a Reversi game using Turtle Graphics
 
 import turtle as tt
 import random
+import sys
 
 # draws the horizontal and vertical lines for the game board
 def drawLines(num, long, short, turn, color):
@@ -73,6 +74,7 @@ def setup(LINES, ANGLE, BOXSZ, WIDTH, COLOR1, COLOR2):
     R E V E R S I!
 
     ''')
+    print("Click the top left corner at any time to quit")
     drawGrid(LINES,ANGLE,BOXSZ,WIDTH)
     drawPiece(3,4,COLOR1,BOXSZ,ANGLE)
     drawPiece(4,4,COLOR2,BOXSZ,ANGLE)
@@ -96,12 +98,47 @@ def returnStringPosition(x,y):
     stringPosition = (x * 8) + y
     return stringPosition
 
+
+def bestMoveCalc(pos_moves, player_turn, colour):
+    total_moves = 0
+    middle_moves = []
+    total_array = []
+    for x,y in pos_moves:
+        total_array[:] = []
+        middle_moves[:] = []
+        for direction1, direction2 in [[0, 1], [1, 1], [1, 0], [1, -1], [0, -1], [-1, -1], [-1, 0], [-1, 1]]:
+            middle_moves[:] = []
+            fillMoves(x,y, direction1, direction2, 1, middle_moves, colour, True)
+            if len(middle_moves) > 0:
+                for i in range(len(middle_moves)):
+                    first = middle_moves[i][0]
+                    second = middle_moves[i][1]
+                    total_array.append([first, second])
+                    
+        new_array = []
+        new_array[:] = []
+        for i in range(len(total_array)):
+            num1 = total_array[i][0]
+            num2 = total_array[i][1]
+            new_array.append(str(num1)+str(num2))
+        
+        temp_array = set(new_array)
+        temp_array = list(temp_array)
+        # end of small duplicate remover
+        if len(temp_array) > total_moves:
+            total_moves = len(temp_array)
+            coordx = x
+            coordy = y
+    return (coordx,coordy)
+
+
+
 # once a move has been chosen and verified to be valid, the middle moves, or moves in between, need to
 # be determined and coloured. to do this, the chosen move coordinate is taken and for each possible
 # direction, a search is performed backwards until the direction is determined to be either a
 # valid colouring direction or an invalid one. if it is valid, the coordinates in between the chosen move
 # and the end point are coloured the current players colours.
-def fillMoves(x, y, direction1, direction2, endSearch, middleMoves, colour):
+def fillMoves(x, y, direction1, direction2, endSearch, middleMoves, colour, bestMove):
     while endSearch != 0:
         newx = x + direction1
         newy = y + direction2
@@ -111,12 +148,13 @@ def fillMoves(x, y, direction1, direction2, endSearch, middleMoves, colour):
         elif gameState[stringPos] != "o" and gameState[stringPos] != playerTurn:
             endSearch = 2
             middleMoves.append([newx, newy])
-            fillMoves(newx, newy, direction1, direction2, endSearch, middleMoves, colour)
+            fillMoves(newx, newy, direction1, direction2, endSearch, middleMoves, colour, bestMove)
             endSearch = 0
         elif gameState[stringPos] == playerTurn and endSearch == 2:
-            for i in range(len(middleMoves)):
-                updateGameState(playerTurn, middleMoves[i][0], middleMoves[i][1])
-                drawPiece(middleMoves[i][0], middleMoves[i][1],colour,BOXSZ,ANGLE)
+            if not bestMove:
+                for i in range(len(middleMoves)):
+                    updateGameState(playerTurn, middleMoves[i][0], middleMoves[i][1])
+                    drawPiece(middleMoves[i][0], middleMoves[i][1],colour,BOXSZ,ANGLE)
             endSearch = 0
         else:
             endSearch = 0
@@ -180,6 +218,7 @@ def colourSwap(colour):
 
 # print player totals and calculate the winner
 def gameOver():
+    print("The final game state is:", gameState)
     totalWhite = calcWinner("white")
     totalBlack = calcWinner("black")
     print("Black: ", totalBlack)
@@ -194,44 +233,39 @@ def gameOver():
 # search gameState for parameter, and everytime player is found, update total. when finished searching
 # the list, return the total.
 def calcWinner(player):
-    totalPieces = 0
-    for i in range(8):
-        for x in [0,1,2,3,4,5,6,7]:
-            stringPos = returnStringPosition(i,x)
-            if gameState[stringPos] == player:
-                totalPieces = totalPieces + 1
+    if player == "white":
+        piece = "w"
+    else:
+        piece = "b"
+    totalPieces = gameState.count(piece)
     return totalPieces
 
-# function to chose automated random computer move, delete if auto option not needed
-def randomCoordinates(posMoves):
-    num1 = random.randrange(0,len(posMoves))
-    return (posMoves[num1][0], posMoves[num1][1])
-
-# this controls what happens when it is a player's turn. first, it calculates the possible moves
-# the player has. then it takes their input for their next move. if their move matches once of the
-# possible moves, then it is valid. if not, end the function without changing the player turn
-# and re-enter main function loop that will call the function again, giving the user another chance.
-# if it is valid, add that move to the gameState list, and then colour it the player's colour. next,
-# calculate what moves now need to be filled in. finally, check whether next player can go.
-def userMove(colour):
-    # to allow player turn to be swapped and endGameIndicator to be updated
-    global playerTurn
-    global endGameIndicator
-    middleMoves = []
-    # converts one letter indicator into full words
-    if playerTurn == "b":
-        currentPlayer = "Black"
+def userClickProcess(x,y):
+    if playerTurn == COLORNAME1:
+        colour = COLOR1
     else:
-        currentPlayer = "White"
-    print(currentPlayer, "player's turn!") # playerTurn is converted to caps
+        colour = COLOR2
+    coordx = int(x // 40)
+    coordy = int(y // 40)
+    coordy = (coordy - coordy) - (coordy + 1)
+    if coordx == -2 and coordy == -2:
+        sys.exit()
+    else:
+        userMove(colour, coordx, coordy)
+
+
+
+def computerMove():
+    # to allow player turn to be swapped
+    global playerTurn
+    if playerTurn == COLORNAME1:
+        colour = COLOR1
+    else:
+        colour = COLOR2
+
+    middleMoves = []
     possibleMoves = searchPossibleMoves()
-    print("Game State:", gameState)
-    print("Please enter your chosen coordinates.")
-    # this is the manual input option, uncomment and delete line 222 for manual
-    coordx = int(input("Row: "))
-    coordy = int(input("Column: "))
-	# this is the automated computer line, uncomment for auto option
-    #(coordx, coordy) = randomCoordinates(possibleMoves) # this automatically choses move
+    (coordx,coordy) = bestMoveCalc(possibleMoves, playerTurn, colour)
     validMove = False
     # check if chosen move is valid
     for i in range(len(possibleMoves)):
@@ -244,7 +278,7 @@ def userMove(colour):
         # fill in and update gameStatefor all other pieces to be coloured
         for direction1, direction2 in [[0, 1], [1, 1], [1, 0], [1, -1], [0, -1], [-1, -1], [-1, 0], [-1, 1]]: # numbers in list represent all possible directions
             middleMoves[:] = []
-            fillMoves(coordx, coordy, direction1, direction2, 1, middleMoves, colour)
+            fillMoves(coordx, coordy, direction1, direction2, 1, middleMoves, colour, False)
 
         # check whether next player can go
         playerTurn = playerSwap(colour)
@@ -256,22 +290,91 @@ def userMove(colour):
             if len(nextPossibleMoves) == 0: # if they also have no moves, then the game is over
                 print("Game over!")
                 gameOver()
-                endGameIndicator = 0
             else: # if they do have moves, then other player just misses a turn
                 print("No moves for the next player! Skipping a go!")
+                computerMove()
+        else:
+            if playerTurn == "b":
+                currentPlayer = "Black"
+            else:
+                currentPlayer = "White"
+            print(currentPlayer, "player's turn!") # playerTurn is converted to caps
     else:
         print("Not a valid move, try again!")
+
+
+    
+
+# this controls what happens when it is a player's turn. first, it calculates the possible moves
+# the player has. then it takes their input for their next move. if their move matches once of the
+# possible moves, then it is valid. if not, end the function without changing the player turn
+# and re-enter main function loop that will call the function again, giving the user another chance.
+# if it is valid, add that move to the gameState list, and then colour it the player's colour. next,
+# calculate what moves now need to be filled in. finally, check whether next player can go.
+def userMove(colour, coordx, coordy):
+    # to allow player turn to be swapped
+    global playerTurn
+    middleMoves = []
+    possibleMoves = searchPossibleMoves()
+    validMove = False
+    # check if chosen move is valid
+    for i in range(len(possibleMoves)):
+        if possibleMoves[i][0] == coordx and possibleMoves[i][1] == coordy:
+            validMove = True
+    if validMove is True:
+        # update gameState with move and colour coordinate
+        updateGameState(playerTurn, coordx, coordy)
+        drawPiece(coordx,coordy, colour, BOXSZ, ANGLE)
+        # fill in and update gameStatefor all other pieces to be coloured
+        for direction1, direction2 in [[0, 1], [1, 1], [1, 0], [1, -1], [0, -1], [-1, -1], [-1, 0], [-1, 1]]: # numbers in list represent all possible directions
+            middleMoves[:] = []
+            fillMoves(coordx, coordy, direction1, direction2, 1, middleMoves, colour, False)
+
+        # check whether next player can go
+        playerTurn = playerSwap(colour)
+        nextPossibleMoves = searchPossibleMoves()
+        if len(nextPossibleMoves) == 0: # if they can't go
+            newColour = colourSwap(colour) # swap colour so playerSwap below works
+            playerTurn = playerSwap(newColour) # change colour back to player who just went
+            nextPossibleMoves = searchPossibleMoves() # calculate that player's possible moves
+            if len(nextPossibleMoves) == 0: # if they also have no moves, then the game is over
+                print("Game over!")
+                gameOver()
+            else: # if they do have moves, then other player just misses a turn
+                print("No moves for the next player! Skipping a go!")
+        else:
+            # print player turn
+            if playerTurn == "b":
+                currentPlayer = "Black"
+            else:
+                currentPlayer = "White"
+            print(currentPlayer, "player's turn!") # playerTurn is converted to caps
+            computerMove()
+    else:
+        print("Not a valid move, try again!")
+
+
+def chooseRandomColour():
+    # assign user a colour at random
+    headstails = random.randrange(1, 3)
+    if headstails == 1:
+        user = "black"
+    else:
+        user = "white"
+    return user
 
 # calls the setup functiont to draw the board. creates a while loop that triggers the userMove
 # function with the colour of the current player.
 def main():
+    user = chooseRandomColour()
     setup(LINES, ANGLE, BOXSZ, WIDTH, COLOR1, COLOR2)
-    while endGameIndicator != 0:
-        if playerTurn == COLORNAME1:
-            userMove(COLOR1)
-        elif playerTurn == COLORNAME2:
-            userMove(COLOR2)
-    print("Thanks for playing!")
+    # black player always goes first
+    print("Black player's turn!")
+    # if computer is black, let it go first    
+    if user == "white":
+        computerMove()
+    # once the computer has gone it will now wait for a click
+    wn.onclick(userClickProcess)
 
 # global constants
 wn = tt.Screen()
@@ -303,9 +406,8 @@ COLORNAME2 = "w"
 # an "o" represents a blank position - all blank to start
 gameState = "oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo"
 playerTurn = COLORNAME1
-endGameIndicator = 1
 
 # call main function to start the game
 main()
 # exit on click, not mainloop, because the program isn't clicky yet
-wn.exitonclick()
+wn.mainloop()
