@@ -64,6 +64,17 @@ def drawPiece(coordx, coordy, color, BOXSZ, ANGLE):
     piece.goto(coordx+2, -(coordy+2))
     drawRectangle(BOXSZ-4,BOXSZ-4,ANGLE,color,piece)
 
+def scoreboard():
+    black.pu()
+    black.pencolor(COLOR1)
+    black.goto(-33, -20)
+    black.write('##', align='center', font=('',24))
+    white.pu()
+    white.pencolor(COLOR2)
+    white.goto(353, -20)
+    white.write('##', align='center', font=('',24))
+
+
 # calls the drawGrid function to set board up and then draws the four starting pieces. called once
 # on startup.
 def setup(LINES, ANGLE, BOXSZ, WIDTH, COLOR1, COLOR2):
@@ -80,6 +91,7 @@ def setup(LINES, ANGLE, BOXSZ, WIDTH, COLOR1, COLOR2):
     drawPiece(4,4,COLOR2,BOXSZ,ANGLE)
     drawPiece(4,3,COLOR1,BOXSZ,ANGLE)
     drawPiece(3,3,COLOR2,BOXSZ,ANGLE)
+    scoreboard()
     # update gamestate string to have starting positions marked
     updateGameState("w", 3, 3)
     updateGameState("b", 3, 4)
@@ -247,7 +259,7 @@ def userClickProcess(x,y):
         colour = COLOR2
     coordx = int(x // 40)
     coordy = -(int(y // 40)) - 1
-    print(coordx,coordy)
+    print(x,y)
     if coordx == -2 and coordy == -2:
         sys.exit()
     elif (0 <= coordx <= 7) and (0 <= coordy <= 7):
