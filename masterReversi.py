@@ -257,11 +257,11 @@ def userClickProcess(x,y):
         colour = COLOR1
     else:
         colour = COLOR2
-    coordx = int(x // 40)
-    coordy = -(int(y // 40)) - 1
-    if (0 <= coordx <= 7) and (0 <= coordy <= 7):
-        userMove(colour, coordx, coordy)
-    elif coordx == -2 and coordy == -2:
+    gridX = int(x // 40)
+    gridY = -(int(y // 40)) - 1
+    if (0 <= gridX <= 7) and (0 <= gridY <= 7):
+        userMove(colour, gridX, gridY)
+    elif gridX == -2 and gridY == -2:
         sys.exit()
 
 def computerMove():
