@@ -56,12 +56,12 @@ def drawGrid(LINES, ANGLE, BOXSZ, WIDTH):
 
 # takes a coordinate, like 3,2, and converts it into a drawable coordinate that the drawRectangle
 # function can use. used to draw pieces chosen by players on the board.
-def drawPiece(coordx, coordy, color, BOXSZ, ANGLE):
+def drawPiece(gridX, gridY, color, BOXSZ, ANGLE):
     piece.pu()
     piece.home()
-    coordx = coordx * BOXSZ
-    coordy = coordy * BOXSZ
-    piece.goto(coordx+2, -(coordy+2))
+    gridX = gridX * BOXSZ
+    gridY = gridY * BOXSZ
+    piece.goto(gridX+2, -(gridY+2))
     drawRectangle(BOXSZ-4,BOXSZ-4,ANGLE,color,piece)
 
 def scoreboard():
@@ -100,9 +100,9 @@ def setup(LINES, ANGLE, BOXSZ, WIDTH, COLOR1, COLOR2):
 
 # creates gamestate variable as one long string, with moves marked as either "o" for blank,
 # "w" for white, and "b" for black
-def updateGameState(player, coordx, coordy):
+def updateGameState(player, gridX, gridY):
     global gameState
-    finalPosition = (coordx * 8) + coordy
+    finalPosition = (gridX * 8) + gridY
     gameState = gameState[:finalPosition] + player + gameState[(finalPosition + 1):]
 
 # returns the position of piece in the gameState string based on its coordinates
@@ -139,9 +139,9 @@ def bestMoveCalc(pos_moves, player_turn, colour):
         # end of small duplicate remover
         if len(temp_array) > total_moves:
             total_moves = len(temp_array)
-            coordx = x
-            coordy = y
-    return (coordx,coordy)
+            gridX = x
+            gridY = y
+    return (gridX,gridY)
 
 
 
@@ -209,10 +209,10 @@ def searchPossibleMoves():
             stringPos = returnStringPosition(i,x)
             if gameState[stringPos] == playerTurn:
                 for direction1, direction2 in [[0, 1], [1, 1], [1, 0], [1, -1], [0, -1], [-1, -1], [-1, 0], [-1, 1]]: # numbers in list represent all possible directions
-                    (coordX, coordY) = calcPossibleMoves(i, x, direction1, direction2, 1)
+                    (gridX, gridY) = calcPossibleMoves(i, x, direction1, direction2, 1)
                     # check that it returns a number
-                    if coordX >= 0:
-                        potMoves.append([coordX, coordY])
+                    if gridX >= 0:
+                        potMoves.append([gridX, gridY])
     return potMoves
 
 # used to swap the current player value when one turn is over
@@ -274,20 +274,20 @@ def computerMove():
 
     middleMoves = []
     possibleMoves = searchPossibleMoves()
-    (coordx,coordy) = bestMoveCalc(possibleMoves, playerTurn, colour)
+    (gridX,gridY) = bestMoveCalc(possibleMoves, playerTurn, colour)
     validMove = False
     # check if chosen move is valid
     for i in range(len(possibleMoves)):
-        if possibleMoves[i][0] == coordx and possibleMoves[i][1] == coordy:
+        if possibleMoves[i][0] == gridX and possibleMoves[i][1] == gridY:
             validMove = True
     if validMove is True:
         # update gameState with move and colour coordinate
-        updateGameState(playerTurn, coordx, coordy)
-        drawPiece(coordx,coordy, colour, BOXSZ, ANGLE)
+        updateGameState(playerTurn, gridX, gridY)
+        drawPiece(gridX,gridY, colour, BOXSZ, ANGLE)
         # fill in and update gameStatefor all other pieces to be coloured
         for direction1, direction2 in [[0, 1], [1, 1], [1, 0], [1, -1], [0, -1], [-1, -1], [-1, 0], [-1, 1]]: # numbers in list represent all possible directions
             middleMoves[:] = []
-            fillMoves(coordx, coordy, direction1, direction2, 1, middleMoves, colour, False)
+            fillMoves(gridX, gridY, direction1, direction2, 1, middleMoves, colour, False)
 
         # check whether next player can go
         playerTurn = playerSwap(colour)
@@ -320,7 +320,7 @@ def computerMove():
 # and re-enter main function loop that will call the function again, giving the user another chance.
 # if it is valid, add that move to the gameState list, and then colour it the player's colour. next,
 # calculate what moves now need to be filled in. finally, check whether next player can go.
-def userMove(colour, coordx, coordy):
+def userMove(colour, gridX, gridY):
     # to allow player turn to be swapped
     global playerTurn
     middleMoves = []
@@ -328,16 +328,16 @@ def userMove(colour, coordx, coordy):
     validMove = False
     # check if chosen move is valid
     for i in range(len(possibleMoves)):
-        if possibleMoves[i][0] == coordx and possibleMoves[i][1] == coordy:
+        if possibleMoves[i][0] == gridX and possibleMoves[i][1] == gridY:
             validMove = True
     if validMove is True:
         # update gameState with move and colour coordinate
-        updateGameState(playerTurn, coordx, coordy)
-        drawPiece(coordx,coordy, colour, BOXSZ, ANGLE)
+        updateGameState(playerTurn, gridX, gridY)
+        drawPiece(gridX,gridY, colour, BOXSZ, ANGLE)
         # fill in and update gameStatefor all other pieces to be coloured
         for direction1, direction2 in [[0, 1], [1, 1], [1, 0], [1, -1], [0, -1], [-1, -1], [-1, 0], [-1, 1]]: # numbers in list represent all possible directions
             middleMoves[:] = []
-            fillMoves(coordx, coordy, direction1, direction2, 1, middleMoves, colour, False)
+            fillMoves(gridX, gridY, direction1, direction2, 1, middleMoves, colour, False)
 
         # check whether next player can go
         playerTurn = playerSwap(colour)
