@@ -67,12 +67,12 @@ def drawPiece(coordx, coordy, color, BOXSZ, ANGLE):
 def scoreboard():
     black.pu()
     black.pencolor(COLOR1)
-    black.goto(-33, -20)
-    black.write('##', align='center', font=('',24))
+    black.goto(-33, -30)
+    black.write('##', align='center', font=('',22))
     white.pu()
     white.pencolor(COLOR2)
-    white.goto(353, -20)
-    white.write('##', align='center', font=('',24))
+    white.goto(355, -30)
+    white.write('##', align='center', font=('',22))
 
 
 # calls the drawGrid function to set board up and then draws the four starting pieces. called once
@@ -259,11 +259,10 @@ def userClickProcess(x,y):
         colour = COLOR2
     coordx = int(x // 40)
     coordy = -(int(y // 40)) - 1
-    print(x,y)
-    if coordx == -2 and coordy == -2:
-        sys.exit()
-    elif (0 <= coordx <= 7) and (0 <= coordy <= 7):
+    if (0 <= coordx <= 7) and (0 <= coordy <= 7):
         userMove(colour, coordx, coordy)
+    elif coordx == -2 and coordy == -2:
+        sys.exit()
 
 def computerMove():
     # to allow player turn to be swapped
