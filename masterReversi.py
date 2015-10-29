@@ -114,14 +114,14 @@ def bestMoveCalc(pos_moves, player_turn, colour):
                     first = middle_moves[i][0]
                     second = middle_moves[i][1]
                     total_array.append([first, second])
-                    
+
         new_array = []
         new_array[:] = []
         for i in range(len(total_array)):
             num1 = total_array[i][0]
             num2 = total_array[i][1]
             new_array.append(str(num1)+str(num2))
-        
+
         temp_array = set(new_array)
         temp_array = list(temp_array)
         # end of small duplicate remover
@@ -246,14 +246,12 @@ def userClickProcess(x,y):
     else:
         colour = COLOR2
     coordx = int(x // 40)
-    coordy = int(y // 40)
-    coordy = (coordy - coordy) - (coordy + 1)
+    coordy = -(int(y // 40)) - 1
+    print(coordx,coordy)
     if coordx == -2 and coordy == -2:
         sys.exit()
-    else:
+    elif (0 <= coordx <= 7) and (0 <= coordy <= 7):
         userMove(colour, coordx, coordy)
-
-
 
 def computerMove():
     # to allow player turn to be swapped
@@ -303,7 +301,7 @@ def computerMove():
         print("Not a valid move, try again!")
 
 
-    
+
 
 # this controls what happens when it is a player's turn. first, it calculates the possible moves
 # the player has. then it takes their input for their next move. if their move matches once of the
@@ -370,7 +368,7 @@ def main():
     setup(LINES, ANGLE, BOXSZ, WIDTH, COLOR1, COLOR2)
     # black player always goes first
     print("Black player's turn!")
-    # if computer is black, let it go first    
+    # if computer is black, let it go first
     if user == "white":
         computerMove()
     # once the computer has gone it will now wait for a click
