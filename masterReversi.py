@@ -6,6 +6,7 @@ This program creates a Reversi game using Turtle Graphics
 import turtle as tt
 import random
 import sys
+import time
 
 # draws the horizontal and vertical lines for the game board
 def drawLines(num, long, short, turn, color):
@@ -283,6 +284,7 @@ def userClickProcess(x,y):
 # triggers computer move. very similar to userMove function with the exception of
 # calling the bestMoveCalc function to generate the chosen coordinates
 def computerMove():
+    time.sleep(0.5)
     # to allow player turn to be swapped
     global playerTurn
     if playerTurn == COLORNAME1:
