@@ -64,15 +64,22 @@ def drawPiece(gridX, gridY, color, BOXSZ, ANGLE):
     piece.goto(gridX+2, -(gridY+2))
     drawRectangle(BOXSZ-4,BOXSZ-4,ANGLE,color,piece)
 
+# draws score board with current scores
 def scoreboard():
+    black.clear()
+    black.home()
     black.pu()
     black.pencolor(COLOR1)
     black.goto(-33, -30)
-    black.write('##', align='center', font=('',22))
+    blackPieces = calcWinner("black")
+    black.write(blackPieces, align='center', font=('',22))
+    white.clear()
+    white.home()
     white.pu()
     white.pencolor(COLOR2)
     white.goto(355, -30)
-    white.write('##', align='center', font=('',22))
+    whitePieces = calcWinner("white")
+    white.write(whitePieces, align='center', font=('',22))
 
 
 # calls the drawGrid function to set board up and then draws the four starting pieces. called once
@@ -110,40 +117,47 @@ def returnStringPosition(x,y):
     stringPosition = (x * 8) + y
     return stringPosition
 
-
-def bestMoveCalc(pos_moves, player_turn, colour):
-    total_moves = 0
-    middle_moves = []
-    total_array = []
-    for x,y in pos_moves:
-        total_array[:] = []
-        middle_moves[:] = []
+# for every possible move, the total number of pieces filled in is calculated and the move
+# that takes or 'fills in' the most pieces is chosen. playerColour parameter may be unused.
+def bestMoveCalc(possibleMoves, playerColour, colour):
+    totalMoves = 0
+    middleMoves = []
+    totalList = []
+	# for every coordinate in possible moves list
+    for x,y in possibleMoves:
+        totalList[:] = []
+        middleMoves[:] = []
+		# nested loop: for each coordinate, check each direction to see what moves would be filled in
         for direction1, direction2 in [[0, 1], [1, 1], [1, 0], [1, -1], [0, -1], [-1, -1], [-1, 0], [-1, 1]]:
-            middle_moves[:] = []
-            fillMoves(x,y, direction1, direction2, 1, middle_moves, colour, True)
-            if len(middle_moves) > 0:
-                for i in range(len(middle_moves)):
-                    first = middle_moves[i][0]
-                    second = middle_moves[i][1]
-                    total_array.append([first, second])
-
-        new_array = []
-        new_array[:] = []
-        for i in range(len(total_array)):
-            num1 = total_array[i][0]
-            num2 = total_array[i][1]
-            new_array.append(str(num1)+str(num2))
-
-        temp_array = set(new_array)
-        temp_array = list(temp_array)
-        # end of small duplicate remover
-        if len(temp_array) > total_moves:
-            total_moves = len(temp_array)
+            middleMoves[:] = []
+            fillMoves(x,y, direction1, direction2, 1, middleMoves, colour, True)
+			# take the result of that particular direction and add it to the list of moves
+            if len(middleMoves) > 0:
+                for i in range(len(middleMoves)):
+                    first = middleMoves[i][0]
+                    second = middleMoves[i][1]
+                    totalList.append([first, second])
+        # we now have a 2d list of the total coords
+		# convert that list into regular list so that each coordinate is a unique string that
+		# can be checked for duplication. (2,1 has to be 21, because an addition etc. could be
+		# replicated with 1,2 which is a different coordinate.)
+        newList = []
+        newList[:] = []
+        for i in range(len(totalList)):
+            num1 = totalList[i][0]
+            num2 = totalList[i][1]
+            newList.append(str(num1)+str(num2))
+        # call set method on list to remove duplicates and convert back to list type
+        tempList = set(newList)
+        tempList = list(tempList)
+        # if the total number of filled in pieces is greater than the running total,
+		# update the coordinates to be chosen as the best move with the coordinates
+		# being checked
+        if len(tempList) > totalMoves:
+            totalMoves = len(tempList)
             gridX = x
             gridY = y
     return (gridX,gridY)
-
-
 
 # once a move has been chosen and verified to be valid, the middle moves, or moves in between, need to
 # be determined and coloured. to do this, the chosen move coordinate is taken and for each possible
@@ -222,6 +236,7 @@ def playerSwap(colour):
     else:
         return COLORNAME1
 
+# used to get opposite colour code
 def colourSwap(colour):
     if colour == COLOR1:
         return COLOR2
@@ -252,6 +267,7 @@ def calcWinner(player):
     totalPieces = gameState.count(piece)
     return totalPieces
 
+# checks to see whether the user clicks on board or exit button
 def userClickProcess(x,y):
     if playerTurn == COLORNAME1:
         colour = COLOR1
@@ -264,6 +280,8 @@ def userClickProcess(x,y):
     elif gridX == -2 and gridY == -2:
         sys.exit()
 
+# triggers computer move. very similar to userMove function with the exception of
+# calling the bestMoveCalc function to generate the chosen coordinates
 def computerMove():
     # to allow player turn to be swapped
     global playerTurn
@@ -288,7 +306,8 @@ def computerMove():
         for direction1, direction2 in [[0, 1], [1, 1], [1, 0], [1, -1], [0, -1], [-1, -1], [-1, 0], [-1, 1]]: # numbers in list represent all possible directions
             middleMoves[:] = []
             fillMoves(gridX, gridY, direction1, direction2, 1, middleMoves, colour, False)
-
+		# update scoreboard
+        scoreboard()
         # check whether next player can go
         playerTurn = playerSwap(colour)
         nextPossibleMoves = searchPossibleMoves()
@@ -310,9 +329,6 @@ def computerMove():
             print(currentPlayer, "player's turn!") # playerTurn is converted to caps
     else:
         print("Not a valid move, try again!")
-
-
-
 
 # this controls what happens when it is a player's turn. first, it calculates the possible moves
 # the player has. then it takes their input for their next move. if their move matches once of the
@@ -338,7 +354,8 @@ def userMove(colour, gridX, gridY):
         for direction1, direction2 in [[0, 1], [1, 1], [1, 0], [1, -1], [0, -1], [-1, -1], [-1, 0], [-1, 1]]: # numbers in list represent all possible directions
             middleMoves[:] = []
             fillMoves(gridX, gridY, direction1, direction2, 1, middleMoves, colour, False)
-
+		# update scoreboard
+        scoreboard()
         # check whether next player can go
         playerTurn = playerSwap(colour)
         nextPossibleMoves = searchPossibleMoves()
@@ -362,7 +379,7 @@ def userMove(colour, gridX, gridY):
     else:
         print("Not a valid move, try again!")
 
-
+# generate either black or white at random
 def chooseRandomColour():
     # assign user a colour at random
     headstails = random.randrange(1, 3)
@@ -375,6 +392,7 @@ def chooseRandomColour():
 # calls the setup functiont to draw the board. creates a while loop that triggers the userMove
 # function with the colour of the current player.
 def main():
+	# assign human player colour
     user = chooseRandomColour()
     setup(LINES, ANGLE, BOXSZ, WIDTH, COLOR1, COLOR2)
     # black player always goes first
@@ -412,11 +430,12 @@ COLORNAME1 = "b"
 COLORNAME2 = "w"
 
 # global variables (not possible to make local - they need to affect everything)
+# this is necessary as the click event cannot pass parameters except x,y
 # an "o" represents a blank position - all blank to start
 gameState = "oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo"
 playerTurn = COLORNAME1
 
 # call main function to start the game
 main()
-# exit on click, not mainloop, because the program isn't clicky yet
+# loop main function click event
 wn.mainloop()
