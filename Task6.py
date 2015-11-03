@@ -125,37 +125,45 @@ def returnGameStatePosition(x,y):
     return gameStatePosition
 
 
-def bestMoveCalc(pos_moves, player_turn, colour):
-    total_moves = 0
-    middle_moves = []
-    total_array = []
-    for x,y in pos_moves:
-        total_array[:] = []
-        middle_moves[:] = []
+def bestMoveCalc(possibleMoves, playerColour, colour):
+    totalMoves = 0
+    middleMoves = []
+    totalList = []
+    # for every coordinate in possible moves list
+    for x,y in possibleMoves:
+        totalList[:] = []
+        middleMoves[:] = []
+        # nested loop: for each coordinate, check each direction to see what moves would be filled in
         for direction1, direction2 in [[0, 1], [1, 1], [1, 0], [1, -1], [0, -1], [-1, -1], [-1, 0], [-1, 1]]:
-            middle_moves[:] = []
-            fillMoves(x,y, direction1, direction2, 1, middle_moves, colour, True)
-            if len(middle_moves) > 0:
-                for i in range(len(middle_moves)):
-                    first = middle_moves[i][0]
-                    second = middle_moves[i][1]
-                    total_array.append([first, second])
-
-                    new_array = []
-                    new_array[:] = []
-                    for i in range(len(total_array)):
-                        num1 = total_array[i][0]
-                        num2 = total_array[i][1]
-                        new_array.append([num1][num2])
-
-                    temp_array = set(new_array)
-                    temp_array = list(temp_array)
-                    # end of small duplicate remover
-                    if len(temp_array) > total_moves:
-                        total_moves = len(temp_array)
-                        gridX = x
-                        gridY = y
-                return (gridX,gridY)
+            middleMoves[:] = []
+            fillMoves(x,y, direction1, direction2, 1, middleMoves, colour, True)
+            # take the result of that particular direction and add it to the list of moves
+            if len(middleMoves) > 0:
+                for i in range(len(middleMoves)):
+                    first = middleMoves[i][0]
+                    second = middleMoves[i][1]
+                    totalList.append([first, second])
+        # we now have a 2d list of the total coords
+        # convert that list into regular list so that each coordinate is a unique string that
+        # can be checked for duplication. (2,1 has to be 21, because an addition etc. could be
+        # replicated with 1,2 which is a different coordinate.)
+        newList = []
+        newList[:] = []
+        for i in range(len(totalList)):
+            num1 = totalList[i][0]
+            num2 = totalList[i][1]
+            newList.append(str(num1)+str(num2))
+        # call set method on list to remove duplicates and convert back to list type
+        tempList = set(newList)
+        tempList = list(tempList)
+        # if the total number of filled in pieces is greater than the running total,
+        # update the coordinates to be chosen as the best move with the coordinates
+        # being checked
+        if len(tempList) > totalMoves:
+            totalMoves = len(tempList)
+            gridX = x
+            gridY = y
+    return (gridX,gridY)
 
 
 
