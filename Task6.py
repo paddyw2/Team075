@@ -98,12 +98,27 @@ def setup(LINES, ANGLE, BOXSZ, WIDTH, COLOR1, COLOR2):
     updateGameState("b", 4, 3)
     updateGameState("w", 4, 4)
 
+#Creates a 2D array where the game state will be stored
+""" This is newly addded"""
+def createGameState():
+    gameState = [[],[],[],[],[],[],[],[]]
+    for x in range(8):
+        for y in range(8):
+            gameState[y].append("blank")
+    gameState[3][3] = COLORNAME2
+    gameState[3][4] = COLORNAME1
+    gameState[4][3] = COLORNAME1
+    gameState[4][4] = COLORNAME2
+    print (gameState)
+    return gameState    
+
+
 # creates gamestate variable as one long string, with moves marked as either "o" for blank,
 # "w" for white, and "b" for black
+""" Changed how gameState is updated """
 def updateGameState(player, gridX, gridY):
     global gameState
-    finalPosition = (gridX * 8) + gridY
-    gameState = gameState[:finalPosition] + player + gameState[(finalPosition + 1):]
+    gameState[gridX][gridY] = player
 
 # returns the position of piece in the gameState string based on its coordinates
 def returnStringPosition(x,y):
@@ -413,7 +428,7 @@ COLORNAME2 = "w"
 
 # global variables (not possible to make local - they need to affect everything)
 # an "o" represents a blank position - all blank to start
-gameState = "oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo"
+gameState = createGameState()
 playerTurn = COLORNAME1
 
 # call main function to start the game
