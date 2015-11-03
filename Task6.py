@@ -109,9 +109,7 @@ def createGameState():
     gameState[3][4] = COLORNAME1
     gameState[4][3] = COLORNAME1
     gameState[4][4] = COLORNAME2
-    print (gameState)
-    return gameState    
-
+    return gameState   
 
 # creates gamestate variable as one long string, with moves marked as either "o" for blank,
 # "w" for white, and "b" for black
@@ -121,9 +119,10 @@ def updateGameState(player, gridX, gridY):
     gameState[gridX][gridY] = player
 
 # returns the position of piece in the gameState string based on its coordinates
-def returnStringPosition(x,y):
-    stringPosition = (x * 8) + y
-    return stringPosition
+""" returns the posisiton of piece in the gameState array based on its coordinates """
+def returnGameStatePosition(x,y):
+    gameStatePosition = gameState[x][y]
+    return gameStatePosition
 
 
 def bestMoveCalc(pos_moves, player_turn, colour):
@@ -142,21 +141,21 @@ def bestMoveCalc(pos_moves, player_turn, colour):
                     second = middle_moves[i][1]
                     total_array.append([first, second])
 
-        new_array = []
-        new_array[:] = []
-        for i in range(len(total_array)):
-            num1 = total_array[i][0]
-            num2 = total_array[i][1]
-            new_array.append(str(num1)+str(num2))
+                    new_array = []
+                    new_array[:] = []
+                    for i in range(len(total_array)):
+                        num1 = total_array[i][0]
+                        num2 = total_array[i][1]
+                        new_array.append([num1][num2])
 
-        temp_array = set(new_array)
-        temp_array = list(temp_array)
-        # end of small duplicate remover
-        if len(temp_array) > total_moves:
-            total_moves = len(temp_array)
-            gridX = x
-            gridY = y
-    return (gridX,gridY)
+                    temp_array = set(new_array)
+                    temp_array = list(temp_array)
+                    # end of small duplicate remover
+                    if len(temp_array) > total_moves:
+                        total_moves = len(temp_array)
+                        gridX = x
+                        gridY = y
+                return (gridX,gridY)
 
 
 
@@ -169,15 +168,15 @@ def fillMoves(x, y, direction1, direction2, endSearch, middleMoves, colour, best
     while endSearch != 0:
         newx = x + direction1
         newy = y + direction2
-        stringPos = returnStringPosition(newx,newy)
+        gameStatePos = returnGameStatePosition(newx,newy)
         if newx < 0 or newy < 0 or newx > 7 or newy > 7:
             endSearch = 0
-        elif gameState[stringPos] != "o" and gameState[stringPos] != playerTurn:
+        elif gameStatePos != "blank" and gameStatePos != playerTurn:
             endSearch = 2
             middleMoves.append([newx, newy])
             fillMoves(newx, newy, direction1, direction2, endSearch, middleMoves, colour, bestMove)
             endSearch = 0
-        elif gameState[stringPos] == playerTurn and endSearch == 2:
+        elif gameStatePos == playerTurn and endSearch == 2:
             if not bestMove:
                 for i in range(len(middleMoves)):
                     updateGameState(playerTurn, middleMoves[i][0], middleMoves[i][1])
@@ -194,19 +193,19 @@ def calcPossibleMoves(x, y, direction1, direction2, endSearch):
     while endSearch != 0:
         newX = x + direction1
         newY = y + direction2
-        stringPos = returnStringPosition(newX,newY)
+        gameStatePos = returnGameStatePosition(newX,newY)
         if newX < 0 or newY < 0 or newX > 7 or newY > 7:
             return (-1, -1)
             endSearch = 0
-        elif gameState[stringPos] != "o" and gameState[stringPos] != playerTurn:
+        elif gameStatePos != "blank" and gameStatePos != playerTurn:
             endSearch = 2
             (newCoord1, newCoord2) = calcPossibleMoves(newX, newY, direction1, direction2, endSearch)
             endSearch = 0
             return (newCoord1, newCoord2)
-        elif gameState[stringPos] == "o" and endSearch == 2:
+        elif gameStatePos == "blank" and endSearch == 2:
             return (newX, newY)
             endSearch = 0
-        elif gameState[stringPos] == "o":
+        elif gameStatePos == "blank":
             return (-1, -1)
             endSearch = 0
         else:
@@ -219,15 +218,17 @@ def calcPossibleMoves(x, y, direction1, direction2, endSearch):
 # potMoves list, which is returned by the function.
 def searchPossibleMoves():
     potMoves = []
-    for i in range(8):
-        for x in [0,1,2,3,4,5,6,7]:
-            stringPos = returnStringPosition(i,x)
-            if gameState[stringPos] == playerTurn:
+    for x in range(8):
+        for y in range(8):
+            gameStatePos = returnGameStatePosition(x,y)
+            #print (gameStatePos)
+            if gameState[x][y] == playerTurn:
                 for direction1, direction2 in [[0, 1], [1, 1], [1, 0], [1, -1], [0, -1], [-1, -1], [-1, 0], [-1, 1]]: # numbers in list represent all possible directions
-                    (gridX, gridY) = calcPossibleMoves(i, x, direction1, direction2, 1)
+                    (gridX, gridY) = calcPossibleMoves(x, y, direction1, direction2, 1)
                     # check that it returns a number
                     if gridX >= 0:
                         potMoves.append([gridX, gridY])
+    print (potMoves)
     return potMoves
 
 # used to swap the current player value when one turn is over
