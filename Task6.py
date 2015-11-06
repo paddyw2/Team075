@@ -65,14 +65,20 @@ def drawPiece(gridX, gridY, color, BOXSZ, ANGLE):
     drawRectangle(BOXSZ-4,BOXSZ-4,ANGLE,color,piece)
 
 def scoreboard():
+    black.clear()
+    black.home()
     black.pu()
     black.pencolor(COLOR1)
     black.goto(-33, -30)
-    black.write('##', align='center', font=('',22))
+    blackPieces = calcWinner("black")
+    black.write(blackPieces, align='center', font=('',22))
+    white.clear()
+    white.home()
     white.pu()
     white.pencolor(COLOR2)
     white.goto(355, -30)
-    white.write('##', align='center', font=('',22))
+    whitePieces = calcWinner("white")
+    white.write(whitePieces, align='center', font=('',22))
 
 
 # calls the drawGrid function to set board up and then draws the four starting pieces. called once
@@ -121,7 +127,10 @@ def updateGameState(player, gridX, gridY):
 # returns the position of piece in the gameState string based on its coordinates
 """ returns the posisiton of piece in the gameState array based on its coordinates """
 def returnGameStatePosition(x,y):
-    gameStatePosition = gameState[x][y]
+    if x < 0 or y < 0 or x > 7 or y > 7:
+    	gameStatePosition = -1
+    else:	
+    	gameStatePosition = gameState[x][y]
     return gameStatePosition
 
 
@@ -229,14 +238,12 @@ def searchPossibleMoves():
     for x in range(8):
         for y in range(8):
             gameStatePos = returnGameStatePosition(x,y)
-            #print (gameStatePos)
             if gameState[x][y] == playerTurn:
                 for direction1, direction2 in [[0, 1], [1, 1], [1, 0], [1, -1], [0, -1], [-1, -1], [-1, 0], [-1, 1]]: # numbers in list represent all possible directions
                     (gridX, gridY) = calcPossibleMoves(x, y, direction1, direction2, 1)
                     # check that it returns a number
                     if gridX >= 0:
                         potMoves.append([gridX, gridY])
-    print (potMoves)
     return potMoves
 
 # used to swap the current player value when one turn is over
@@ -280,11 +287,12 @@ def userClickProcess(x,y):
     if playerTurn == COLORNAME1:
         colour = COLOR1
     else:
-        colour = COLOR2
+        colour = COLOR2   
     gridX = int(x // 40)
     gridY = -(int(y // 40)) - 1
     if (0 <= gridX <= 7) and (0 <= gridY <= 7):
         userMove(colour, gridX, gridY)
+    # This is the quit "button"    
     elif gridX == -2 and gridY == -2:
         sys.exit()
 
