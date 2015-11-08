@@ -106,17 +106,31 @@ def setup(LINES, ANGLE, BOXSZ, WIDTH, COLOR1, COLOR2):
     updateGameState("b", 4, 3)
     updateGameState("w", 4, 4)
 
-# creates gamestate variable as one long string, with moves marked as either "o" for blank,
-# "w" for white, and "b" for black
+# Creates a 2D array where the game state will be stored
+def createGameState():
+    gameState = [[],[],[],[],[],[],[],[]]
+    for x in range(8):
+        for y in range(8):
+            gameState[y].append("blank")
+    gameState[3][3] = COLORNAME2
+    gameState[3][4] = COLORNAME1
+    gameState[4][3] = COLORNAME1
+    gameState[4][4] = COLORNAME2
+    return gameState
+
+# Updates the gamestate in position [gridX][gridY] with the current player
+# colour
 def updateGameState(player, gridX, gridY):
     global gameState
-    finalPosition = (gridX * 8) + gridY
-    gameState = gameState[:finalPosition] + player + gameState[(finalPosition + 1):]
+    gameState[gridX][gridY] = player
 
-# returns the position of piece in the gameState string based on its coordinates
-def returnStringPosition(x,y):
-    stringPosition = (x * 8) + y
-    return stringPosition
+# Checks if the coordinates passed are within the board range and returns the position of piece in the gameState based on its coordinates. Returns -1 if the coordinate is off the board.
+def returnGameStatePosition(x,y):
+    if x < 0 or y < 0 or x > 7 or y > 7:
+    	gameStatePosition = -1
+    else:	
+    	gameStatePosition = gameState[x][y]
+    return gameStatePosition
 
 # for every possible move, the total number of pieces filled in is calculated and the move
 # that takes or 'fills in' the most pieces is chosen. playerColour parameter may be unused.
@@ -169,15 +183,15 @@ def fillMoves(x, y, direction1, direction2, endSearch, middleMoves, colour, best
     while endSearch != 0:
         newx = x + direction1
         newy = y + direction2
-        stringPos = returnStringPosition(newx,newy)
+        gameStatePos = returnGameStatePosition(newx,newy)
         if newx < 0 or newy < 0 or newx > 7 or newy > 7:
             endSearch = 0
-        elif gameState[stringPos] != "o" and gameState[stringPos] != playerTurn:
+        elif gameStatePos != "blank" and gameStatePos != playerTurn:
             endSearch = 2
             middleMoves.append([newx, newy])
             fillMoves(newx, newy, direction1, direction2, endSearch, middleMoves, colour, bestMove)
             endSearch = 0
-        elif gameState[stringPos] == playerTurn and endSearch == 2:
+        elif gameStatePos == playerTurn and endSearch == 2:
             if not bestMove:
                 for i in range(len(middleMoves)):
                     updateGameState(playerTurn, middleMoves[i][0], middleMoves[i][1])
@@ -194,19 +208,19 @@ def calcPossibleMoves(x, y, direction1, direction2, endSearch):
     while endSearch != 0:
         newX = x + direction1
         newY = y + direction2
-        stringPos = returnStringPosition(newX,newY)
+        gameStatePos = returnGameStatePosition(newX,newY)
         if newX < 0 or newY < 0 or newX > 7 or newY > 7:
             return (-1, -1)
             endSearch = 0
-        elif gameState[stringPos] != "o" and gameState[stringPos] != playerTurn:
+        elif gameStatePos != "blank" and gameStatePos != playerTurn:
             endSearch = 2
             (newCoord1, newCoord2) = calcPossibleMoves(newX, newY, direction1, direction2, endSearch)
             endSearch = 0
             return (newCoord1, newCoord2)
-        elif gameState[stringPos] == "o" and endSearch == 2:
+        elif gameStatePos == "blank" and endSearch == 2:
             return (newX, newY)
             endSearch = 0
-        elif gameState[stringPos] == "o":
+        elif gameStatePos == "blank":
             return (-1, -1)
             endSearch = 0
         else:
@@ -219,12 +233,12 @@ def calcPossibleMoves(x, y, direction1, direction2, endSearch):
 # potMoves list, which is returned by the function.
 def searchPossibleMoves():
     potMoves = []
-    for i in range(8):
-        for x in [0,1,2,3,4,5,6,7]:
-            stringPos = returnStringPosition(i,x)
-            if gameState[stringPos] == playerTurn:
+    for x in range(8):
+        for y in range(8):
+            gameStatePos = returnGameStatePosition(x,y)
+            if gameState[x][y] == playerTurn:
                 for direction1, direction2 in [[0, 1], [1, 1], [1, 0], [1, -1], [0, -1], [-1, -1], [-1, 0], [-1, 1]]: # numbers in list represent all possible directions
-                    (gridX, gridY) = calcPossibleMoves(i, x, direction1, direction2, 1)
+                    (gridX, gridY) = calcPossibleMoves(x, y, direction1, direction2, 1)
                     # check that it returns a number
                     if gridX >= 0:
                         potMoves.append([gridX, gridY])
@@ -434,7 +448,7 @@ COLORNAME2 = "w"
 # global variables (not possible to make local - they need to affect everything)
 # this is necessary as the click event cannot pass parameters except x,y
 # an "o" represents a blank position - all blank to start
-gameState = "oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo"
+gameState = createGameState()
 playerTurn = COLORNAME1
 
 # call main function to start the game
