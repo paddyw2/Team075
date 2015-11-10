@@ -1,18 +1,13 @@
 # Team075
-### Current program state:
 
-The click functionality, random user assignment, and intelligent computer move have now been added. You can also quit the game by clicking the top left corner but I've not added a visual button for that. The program should be fully working.
+###Proof Of Concept reversi
+I wrote the POC version so I could better understand the code and rewriting made it easier to implement new things. The code is mostly copy and pasted from masterReversi.py but I changed some variable names and logic to something that made sense to me. 
 
-### To Do for Task 5
+This version lets the user save and load games files and as such a place is needed to save and load from. That's what
+the savedGames folder is for and it must be in the same directory as the .py file. The img folder is the same and it
+contains some images that are used for the bgpic method, which is just a cosmetic change to the board.
 
-Play around with the functions and see whether you can generate any bugs or strange outcomes (especially when it comes to skipping goes etc.) Someone could also create/design a quit button for the top left corner - you can use the game-state.py file as reference.
-
-#### NOTE:
-
-I've added a folder with various old files for using and a README with some extra info on what they contain. In this directory I've added an empty Task6.py file to be used for working on the next task.
+This version will work for both Task 6 and Task 7 right now. However, I think a final redo of all the code would be a good idea before the final submission as I think some parts could be more elegant.
 
 #### Misc Tasks
-
- * Research into displaying some form of pop up messages or end of game messages.
- * Design exit button
  * Anything else you think of!
