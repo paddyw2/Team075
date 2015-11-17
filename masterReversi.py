@@ -3,10 +3,109 @@ Team 075: Yang Li, Chi Nguyen, Patrick Withams, Greg Young
 This program creates a Reversi game using Turtle Graphics
 """
 
+#=========================================================#
+#                                                         #
+# Source: http://www.samsoft.org.uk/reversi/strategy.htm  #
+#                                                         #
+#=========================================================#
+
 import turtle as tt
 import random
 import sys
 import time
+
+
+# writes a popup that displays which player won the game
+def endgamePopup(winner):
+    global endgameWindowActive
+    global activePopup
+    activePopup = True
+    endgameWindowActive = True
+    popup.home()
+    popup.goto(60,-80)
+    popup.color('#232323')
+    popup.begin_fill()
+    for i in range(2):
+        popup.fd(200)
+        popup.rt(90)
+        popup.fd(160)
+        popup.rt(90)
+    popup.end_fill()
+    popup.color("white")
+    popup.goto(160, -120)
+    popup.write('''
+Game Over!
+    ''',align='center',font=('',18,''))
+    if winner != 'draw':
+        popup.goto(160, -160)
+        popup.write('''
+''' + winner + ''' Wins!
+    ''',align='center',font=('',14,''))
+    else:
+        popup.goto(160, -160)
+        popup.write('''
+		It's a draw!
+        ''',align='center',font=('',14,''))
+
+# popup that displays the instructione
+def instructionPopup():    
+    global instructionWindowActive
+    global activePopup
+    instructionWindowActive = True
+    activePopup = True
+    popup.home()
+    popup.goto(60,-60)
+    popup.color('#232323')
+    popup.begin_fill()
+    for i in range(4):
+        popup.fd(200)
+        popup.rt(90)
+    popup.end_fill()
+    popup.color("white")
+    popup.goto(80, -250)
+    popup.write('''
+How to play: Place your marker
+on the grid so that you make
+least one straight (horizontal,
+vertical, or diagonal) line
+between your new marker and
+another of your existing marker,
+with one or more markers
+belonging to the opponent
+between them. All opponents
+markers in the line are captured.
+A player misses their turn if
+there are no valid moves.
+    ''',align='left',font=('',14,''))
+
+# writes rectangle with ? on it in the location that triggers the instructions popup
+def instructionButton():
+    instructions.home()
+    instructions.goto(360, 80)
+    instructions.color('red')
+    instructions.begin_fill()
+    for i in range(4):
+        instructions.fd(40)
+        instructions.rt(90)
+    instructions.end_fill()
+    instructions.color("white")
+    instructions.goto(380, 45)
+    instructions.write("?", align='left',font=('',18,''))
+
+# writes rectangle with Quit on it in the location that triggers the instructions popup
+def quitButton():
+    quit.home()
+    quit.goto(-70, 80)
+    quit.color('red')
+    quit.begin_fill()
+    for i in range(4):
+        quit.fd(40)
+        quit.rt(90)
+    quit.end_fill()
+    quit.color("white")
+    quit.goto(-60, 45)
+    quit.write("Quit", align='left',font=('',18,''))
+
 
 # draws the horizontal and vertical lines for the game board
 def drawLines(num, long, short, turn, color):
@@ -51,10 +150,6 @@ def drawGrid(LINES, ANGLE, BOXSZ, WIDTH):
     board.pd()
     board.write('  R  E  V  E  R  S  I  ', align='center', font=('',36,'bold'))
 
-    board.pu()
-    board.goto(WIDTH//2,-(WIDTH+65))
-    board.write('How to play: Place your marker on the grid so that you make least one straight (horizontal,\nvertical, or diagonal) line between your new marker and another of your existing marker, with\none or more markers belonging to the opponent between them. All opponents markers in the\nline are captured. A player misses their turn if there are no valid moves.',align='center',font=('',14,''))
-
 # takes a coordinate, like 3,2, and converts it into a drawable coordinate that the drawRectangle
 # function can use. used to draw pieces chosen by players on the board.
 def drawPiece(gridX, gridY, color, BOXSZ, ANGLE):
@@ -94,6 +189,7 @@ def setup(LINES, ANGLE, BOXSZ, WIDTH, COLOR1, COLOR2):
 
     ''')
     print("Click the top left corner at any time to quit")
+    print("Click on the question mark to view the instructions")
     drawGrid(LINES,ANGLE,BOXSZ,WIDTH)
     drawPiece(3,4,COLOR1,BOXSZ,ANGLE)
     drawPiece(4,4,COLOR2,BOXSZ,ANGLE)
@@ -105,6 +201,9 @@ def setup(LINES, ANGLE, BOXSZ, WIDTH, COLOR1, COLOR2):
     updateGameState("b", 3, 4)
     updateGameState("b", 4, 3)
     updateGameState("w", 4, 4)
+    # draw instructions button
+    instructionButton()
+    quitButton()
 
 # Creates a 2D array where the game state will be stored
 def createGameState():
@@ -128,13 +227,70 @@ def updateGameState(player, gridX, gridY):
 def returnGameStatePosition(x,y):
     if x < 0 or y < 0 or x > 7 or y > 7:
     	gameStatePosition = -1
-    else:	
+    else:
     	gameStatePosition = gameState[x][y]
     return gameStatePosition
 
+# choosing moves by their position worth
+def hardCalc(possibleMoves, colour):
+    # coordinates ranked by favourability
+    best99 = [[0,0], [0,7],[7,0], [7,7]]
+    second8 = [[0,2],[2,0],[0,5],[5,0],[7,2],[2,7],[7,5],[5,7]]
+    third7 = [[2,2], [5,2],[2,5],[5,5]]
+    fourth6 = [[0,3],[3,0],[4,0],[0,4], [7,3],[3,7],[7,4],[4,7]]
+    fifth4 = [[3,2],[2,3],[4,2],[2,4],[5,3],[3,5],[5,4],[4,5]]
+    sixth0 = [[3,3],[3,4],[4,3],[4,4]]
+    seventh_3 = [[3,1],[1,3],[4,1],[1,4],[6,3],[3,6],[4,6],[6,4]]
+    eigth_4 = [[2,1],[1,2],[5,1],[1,5],[6,2],[2,6],[5,6],[6,5]]
+    ninth_8 = [[0,1],[1,0],[0,6],[6,0],[7,1],[1,7],[7,6],[6,7]]
+    tenth_24 = [[1,1],[6,6],[6,1],[1,6]]
+
+    for coord in possibleMoves:
+        if coord in best99:
+             return (coord[0], coord[1])
+
+    for coord in possibleMoves:
+        if coord in second8:
+	        return (coord[0], coord[1])
+
+    for coord in possibleMoves:
+        if coord in third7:
+	        return (coord[0], coord[1])
+
+    for coord in possibleMoves:
+        if coord in fourth6:
+	        return (coord[0], coord[1])
+
+    for coord in possibleMoves:
+        if coord in fifth4:
+	        return (coord[0], coord[1])
+
+    for coord in possibleMoves:
+        if coord in sixth0:
+	        return (coord[0], coord[1])
+
+    for coord in possibleMoves:
+        if coord in seventh_3:
+	        return (coord[0], coord[1])
+
+    for coord in possibleMoves:
+        if coord in eigth_4:
+	        return (coord[0], coord[1])
+
+    for coord in possibleMoves:
+        if coord in ninth_8:
+	        return (coord[0], coord[1])
+
+    for coord in possibleMoves:
+        if coord in tenth_24:
+	        return (coord[0], coord[1])
+        else:
+	        print("We have a problem")
+
+# choosing moves by the number of pieces they take
 # for every possible move, the total number of pieces filled in is calculated and the move
 # that takes or 'fills in' the most pieces is chosen. playerColour parameter may be unused.
-def bestMoveCalc(possibleMoves, playerColour, colour):
+def bestMoveCalc(possibleMoves, colour):
     totalMoves = 0
     middleMoves = []
     totalList = []
@@ -144,9 +300,10 @@ def bestMoveCalc(possibleMoves, playerColour, colour):
         middleMoves[:] = []
 		# nested loop: for each coordinate, check each direction to see what moves would be filled in
         for direction1, direction2 in [[0, 1], [1, 1], [1, 0], [1, -1], [0, -1], [-1, -1], [-1, 0], [-1, 1]]:
-            middleMoves[:] = []
-            fillMoves(x,y, direction1, direction2, 1, middleMoves, colour, True)
-			# take the result of that particular direction and add it to the list of moves
+
+            middleMoves = fillMoves(x,y, direction1, direction2, 1, colour)
+
+            # take the result of that particular direction and add it to the list of moves
             if len(middleMoves) > 0:
                 for i in range(len(middleMoves)):
                     first = middleMoves[i][0]
@@ -172,6 +329,13 @@ def bestMoveCalc(possibleMoves, playerColour, colour):
             totalMoves = len(tempList)
             gridX = x
             gridY = y
+	# *** added difficulty ***
+	# this checks if there are any corner moves, and if there are, chooses them
+    for x in possibleMoves:
+        if x == [0,0] or x == [7,7] or x == [0,7] or x == [7,0]:
+            gridX = x[0]
+            gridY = x[1]
+    # print(gridX, gridY)
     return (gridX,gridY)
 
 # once a move has been chosen and verified to be valid, the middle moves, or moves in between, need to
@@ -179,26 +343,26 @@ def bestMoveCalc(possibleMoves, playerColour, colour):
 # direction, a search is performed backwards until the direction is determined to be either a
 # valid colouring direction or an invalid one. if it is valid, the coordinates in between the chosen move
 # and the end point are coloured the current players colours.
-def fillMoves(x, y, direction1, direction2, endSearch, middleMoves, colour, bestMove):
+def fillMoves(x, y, direction1, direction2, endSearch, colour):
+    middleMoves = []
     while endSearch != 0:
         newx = x + direction1
         newy = y + direction2
         gameStatePos = returnGameStatePosition(newx,newy)
         if newx < 0 or newy < 0 or newx > 7 or newy > 7:
-            endSearch = 0
+            return -1
         elif gameStatePos != "blank" and gameStatePos != playerTurn:
             endSearch = 2
+            returnedMoves = fillMoves(newx, newy, direction1, direction2, endSearch, colour)
             middleMoves.append([newx, newy])
-            fillMoves(newx, newy, direction1, direction2, endSearch, middleMoves, colour, bestMove)
-            endSearch = 0
+            if returnedMoves != -1:
+                return (middleMoves + returnedMoves)
+            else:
+                return -1
         elif gameStatePos == playerTurn and endSearch == 2:
-            if not bestMove:
-                for i in range(len(middleMoves)):
-                    updateGameState(playerTurn, middleMoves[i][0], middleMoves[i][1])
-                    drawPiece(middleMoves[i][0], middleMoves[i][1],colour,BOXSZ,ANGLE)
-            endSearch = 0
+            return [middleMoves]
         else:
-            endSearch = 0
+            return -1
 
 # after the searchPossibleMoves function calculates the player's current pieces, their possible moves
 # are then calculated below. for each of the current player's pieces on the board, all directions are
@@ -211,21 +375,16 @@ def calcPossibleMoves(x, y, direction1, direction2, endSearch):
         gameStatePos = returnGameStatePosition(newX,newY)
         if newX < 0 or newY < 0 or newX > 7 or newY > 7:
             return (-1, -1)
-            endSearch = 0
         elif gameStatePos != "blank" and gameStatePos != playerTurn:
             endSearch = 2
             (newCoord1, newCoord2) = calcPossibleMoves(newX, newY, direction1, direction2, endSearch)
-            endSearch = 0
             return (newCoord1, newCoord2)
         elif gameStatePos == "blank" and endSearch == 2:
             return (newX, newY)
-            endSearch = 0
         elif gameStatePos == "blank":
             return (-1, -1)
-            endSearch = 0
         else:
             return (-1, -1)
-            endSearch = 0
 
 # searches the gameState list for values matching the current player's colour. for each piece that is
 # found, the calcPossibleMoves function is called for all directions and if the return value is not
@@ -267,10 +426,13 @@ def gameOver():
     print("White: ", totalWhite)
     if totalWhite == totalBlack:
         print("It was a draw!")
+        endgamePopup('draw')
     elif totalBlack > totalWhite:
         print("The black player wins!")
+        endgamePopup('Black')
     else:
         print("The white player wins!")
+        endgamePopup('White')
 
 # search gameState for parameter, and everytime player is found, update total. when finished searching
 # the list, return the total.
@@ -279,21 +441,36 @@ def calcWinner(player):
         piece = "w"
     else:
         piece = "b"
-    totalPieces = gameState.count(piece)
+    totalPieces = 0
+    for i in range(8):
+        for x in range(8):
+            if gameState[i][x] == piece:
+                totalPieces += 1
     return totalPieces
 
 # checks to see whether the user clicks on board or exit button
 def userClickProcess(x,y):
+    global activePopup
     if playerTurn == COLORNAME1:
         colour = COLOR1
     else:
         colour = COLOR2
     gridX = int(x // 40)
     gridY = -(int(y // 40)) - 1
-    if (0 <= gridX <= 7) and (0 <= gridY <= 7):
+    if (0 <= gridX <= 7) and (0 <= gridY <= 7) and activePopup != True:
         userMove(colour, gridX, gridY)
     elif gridX == -2 and gridY == -2:
         sys.exit()
+    elif gridX == 9 and gridY == -2:
+        instructionPopup()
+    elif activePopup == True:
+        if instructionWindowActive:
+            popup.clear()
+            activePopup = False
+        elif endgameWindowActive:
+            # take exit/new game input click coordinates
+            popup.clear()
+            activePopup = False
 
 # triggers computer move. very similar to userMove function with the exception of
 # calling the bestMoveCalc function to generate the chosen coordinates
@@ -308,7 +485,10 @@ def computerMove():
 
     middleMoves = []
     possibleMoves = searchPossibleMoves()
-    (gridX,gridY) = bestMoveCalc(possibleMoves, playerTurn, colour)
+    if difficultySetting == 0:
+        (gridX,gridY) = bestMoveCalc(possibleMoves, colour)
+    elif difficultySetting == 1:
+        (gridX,gridY) = hardCalc(possibleMoves, colour)
     validMove = False
     # check if chosen move is valid
     for i in range(len(possibleMoves)):
@@ -319,9 +499,17 @@ def computerMove():
         updateGameState(playerTurn, gridX, gridY)
         drawPiece(gridX,gridY, colour, BOXSZ, ANGLE)
         # fill in and update gameStatefor all other pieces to be coloured
+        movesToFill = []
         for direction1, direction2 in [[0, 1], [1, 1], [1, 0], [1, -1], [0, -1], [-1, -1], [-1, 0], [-1, 1]]: # numbers in list represent all possible directions
-            middleMoves[:] = []
-            fillMoves(gridX, gridY, direction1, direction2, 1, middleMoves, colour, False)
+            middleMoves = fillMoves(gridX, gridY, direction1, direction2, 1, colour)
+            if middleMoves != -1:
+                movesToFill = movesToFill + middleMoves
+
+        for i in range(len(movesToFill)):
+            if movesToFill[i] != []:
+                updateGameState(playerTurn, movesToFill[i][0], movesToFill[i][1])
+                drawPiece(movesToFill[i][0], movesToFill[i][1],colour,BOXSZ,ANGLE)
+
 		# update scoreboard
         scoreboard()
         # check whether next player can go
@@ -367,9 +555,16 @@ def userMove(colour, gridX, gridY):
         updateGameState(playerTurn, gridX, gridY)
         drawPiece(gridX,gridY, colour, BOXSZ, ANGLE)
         # fill in and update gameStatefor all other pieces to be coloured
+        movesToFill = []
         for direction1, direction2 in [[0, 1], [1, 1], [1, 0], [1, -1], [0, -1], [-1, -1], [-1, 0], [-1, 1]]: # numbers in list represent all possible directions
-            middleMoves[:] = []
-            fillMoves(gridX, gridY, direction1, direction2, 1, middleMoves, colour, False)
+            middleMoves = fillMoves(gridX, gridY, direction1, direction2, 1, colour)
+            if middleMoves != -1:
+                movesToFill = movesToFill + middleMoves
+
+        for i in range(len(movesToFill)):
+            if movesToFill[i] != []:
+                updateGameState(playerTurn, movesToFill[i][0], movesToFill[i][1])
+                drawPiece(movesToFill[i][0], movesToFill[i][1],colour,BOXSZ,ANGLE)
 		# update scoreboard
         scoreboard()
         # check whether next player can go
@@ -424,6 +619,18 @@ wn = tt.Screen()
 wn.setup(startx=0,starty=0)
 wn.setworldcoordinates(-60,-400,400,60)
 wn.bgcolor("#228B22")
+instructions = tt.Turtle()
+instructions.pu()
+instructions.ht()
+instructions.speed('fastest')
+quit = tt.Turtle()
+quit.pu()
+quit.ht()
+quit.speed('fastest')
+popup = tt.Turtle()
+popup.pu()
+popup.ht()
+popup.speed('fastest')
 board = tt.Turtle()
 piece = tt.Turtle()
 black = tt.Turtle() #turtle for black score
@@ -448,9 +655,12 @@ COLORNAME2 = "w"
 # global variables (not possible to make local - they need to affect everything)
 # this is necessary as the click event cannot pass parameters except x,y
 # an "o" represents a blank position - all blank to start
+activePopup = False
 gameState = createGameState()
 playerTurn = COLORNAME1
-
+instructionWindowActive = False
+endgameWindowActive = False
+difficultySetting = 1
 # call main function to start the game
 main()
 # loop main function click event
