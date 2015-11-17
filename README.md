@@ -1,5 +1,8 @@
 # Team075
 
+### Nov 16 Updates
+I updated the masterReversi.py file with my most recent version. This has improved functions, an additional difficulty setting, and popup windows. We'll want to update the style and game saving to Greg's version soon but the functions in this version are pretty solid so it would be a good base to work from.
+
 ###Proof Of Concept reversi
 I wrote the POC version so I could better understand the code and rewriting made it easier to implement new things. The code is mostly copy and pasted from masterReversi.py but I changed some variable names and logic to something that made sense to me. 
 

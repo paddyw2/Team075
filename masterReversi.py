@@ -296,6 +296,7 @@ def bestMoveCalc(possibleMoves, colour):
     totalList = []
 	# for every coordinate in possible moves list
     for x,y in possibleMoves:
+        # lists need to be emptied at each loop
         totalList[:] = []
         middleMoves[:] = []
 		# nested loop: for each coordinate, check each direction to see what moves would be filled in
