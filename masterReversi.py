@@ -351,19 +351,19 @@ def fillMoves(x, y, direction1, direction2, endSearch, colour):
         newy = y + direction2
         gameStatePos = returnGameStatePosition(newx,newy)
         if newx < 0 or newy < 0 or newx > 7 or newy > 7:
-            return -1
+            return []
         elif gameStatePos != "blank" and gameStatePos != playerTurn:
             endSearch = 2
             returnedMoves = fillMoves(newx, newy, direction1, direction2, endSearch, colour)
-            middleMoves.append([newx, newy])
-            if returnedMoves != -1:
+            if returnedMoves != []:
+                middleMoves.append([x, y]) 
                 return (middleMoves + returnedMoves)
             else:
-                return -1
+                return []
         elif gameStatePos == playerTurn and endSearch == 2:
-            return [middleMoves]
+            return [[x,y]]
         else:
-            return -1
+            return []
 
 # after the searchPossibleMoves function calculates the player's current pieces, their possible moves
 # are then calculated below. for each of the current player's pieces on the board, all directions are
@@ -661,7 +661,7 @@ gameState = createGameState()
 playerTurn = COLORNAME1
 instructionWindowActive = False
 endgameWindowActive = False
-difficultySetting = 1
+difficultySetting = 0
 # call main function to start the game
 main()
 # loop main function click event
