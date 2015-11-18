@@ -1,95 +1,40 @@
+"""
+Team 075: Yang Li, Chi Nguyen, Patrick Withams, Greg Young
+This program creates a Reversi game using Turtle Graphics
+"""
+
+import os
+import time
+from sys import exit
 import turtle as tt
 from random import randrange
-from sys import exit
-import time
-import os
 
-def openScreen():
-    userIn = wn.numinput('REVERSI','WELCOME TO REVERSI!\nEnter 1 to start a new game\nEnter 2 to load a game\nClick Cancel to quit',1,1,2)
-    if userIn == None:
-        exit()
-    else:
-        return int(userIn)
+def setupGameboard():
+    '''Sets up the gameboard by drawing the grid and surrounding items'''
+    setup.goto(80,80)
+    drawQuad(320,320,'#228B22',setup)
+    drawGrid(setup)
+    writeTitle(setup)
+    drawButtons(setup)
 
-def loadGame():
-    gamesList=[]
-    cwd=os.getcwd()
-    savedDir = os.path.join(cwd,'savedGames')
-    for file in os.listdir(savedDir):
-        if file.endswith('.reversi'):
-            gamesList.append(file)
-    text = ''
-    for i in range(len(gamesList)):
-        text = text+'\n'+str(i+1)+': '+str(os.path.splitext(gamesList[i])[0])
-    userIn = (wn.numinput('Load Game','Enter number of a saved game. Cancel to quit.'+text,None,1,len(gamesList)))
-    if userIn == None:
-        openScreen()
-    else:
-        userIn = int(userIn)
-        inFile = os.path.join(savedDir,gamesList[userIn-1])
-        with open(inFile, "r") as game:
-            lines = game.readlines()
-            newGameState = []
-            for i in range(len(lines)):
-                if i < 8:
-                    row = list(lines[i].strip('\n'))
-                    newGameState.append(row)
-                elif i == 8:
-                    lastLine = lines[i].strip()
-        global gameState,playerTurn,userColor
-        colorDict = {'COLOR1':COLOR1,'COLOR2':COLOR2}
-        gameState=newGameState
-        playerTurn = colorDict[lastLine]
-        userColor = colorDict[lastLine]
-        setup()
+def drawQuad(width,height,color,turt,depth=False):
+    '''Draws filled quadrilaterals with given Turtle.
 
-def rules(turt):
-    return
-
-def setup():
-    aroundBoard(board)
-    drawPiece()
-
-def drawBoard(turt):
-    turt.pu()
-    turt.goto(80,80)
-    drawQuad(BRDSZ,BRDSZ,BGCOL,turt)
-    drawLines(turt)
-    turt.goto(400,80)
-    turt.lt(ANGLE)
-    drawLines(turt)
-
-def aroundBoard(turt):
-    turt.goto(242,62)
-    turt.color('black')
-    turt.pd()
-    turt.write('*  R  E  V  E  R  S  I *', align='center', font=('',40,'bold'))
-    turt.pu()
-    turt.goto(240,60)
-    turt.color('white')
-    turt.pd()
-    turt.write('*  R  E  V  E  R  S  I *', align='center', font=('',40,'bold'))
-    turt.pu()
-    turt.goto(120,450)
-    turt.seth(270)
-    drawQuad(20,80,'#CCC',turt,True)
-    turt.goto(160,447)
-    turt.write('EXIT GAME', align='center', font=('',14))
-    turt.goto(280,450)
-    turt.seth(270)
-    drawQuad(20,80,'#CCC',turt,True)
-    turt.goto(320,447)
-    turt.write('SAVE GAME', align='center', font=('',14))
-
-def drawQuad(length,width,color,turt,depth=False):
+    Arguments:
+    width (int) -- the left to right size
+    height (int) -- the top to bottom size
+    color (str) -- the fill color
+    turt (Turtle) -- the Turtle that is used to draw quadrilateral
+    depth (bool) -- if True, will give the appearance of a 3D box (default False)
+    '''
     if depth == False:
         turt.pd()
         turt.color(color)
         turt.begin_fill()
         for i in range(2):
-            turt.fd(width)
+            turt.fd(height)
             turt.lt(90)
-            turt.fd(length)
+            turt.fd(width)
             turt.lt(90)
         turt.end_fill()
         turt.pu()
@@ -98,47 +43,184 @@ def drawQuad(length,width,color,turt,depth=False):
         turt.color('black', color)
         turt.begin_fill()
         turt.pensize(1)
-        turt.fd(length)
-        turt.lt(90)
         turt.fd(width)
+        turt.lt(90)
+        turt.fd(height)
         turt.lt(90)
         turt.pensize(3)
-        turt.fd(length)
-        turt.lt(90)
         turt.fd(width)
+        turt.lt(90)
+        turt.fd(height)
         turt.lt(90)
         turt.end_fill()
         turt.pu()
 
-def drawLines(turt):
-    for i in range(LINES):
-        turt.color(LNCOL)
-        turt.pd()
-        turt.fd(BRDSZ)
-        turt.pu()
-        turt.fd(-BRDSZ)
-        turt.lt(ANGLE)
-        turt.fd(BOXSZ)
-        turt.lt(-ANGLE)
+def drawGrid(turt):
+    '''Draws the playing grid on the game board.
 
-def drawPiece():
-    for y in range(len(gameState)):
-        for x in range(len(gameState[y])):
-            if gameState[y][x] == 'B':
+    Argument:
+    turt (Turtle)-- the Turtle used to draw the grid
+    '''
+    turt.color('#AAA')
+    drawLines(turt)
+    turt.goto(400,80)
+    turt.lt(90)
+    drawLines(turt)
+
+def drawLines(turt):
+    '''Draws the lines for the playing grid.
+
+    Argument:
+    turt (Turtle) -- the Turtle used to draw the lines
+    '''
+    for i in range(9):
+        turt.pd()
+        turt.fd(320)
+        turt.pu()
+        turt.fd(-320)
+        turt.lt(90)
+        turt.fd(40)
+        turt.lt(-90)
+
+def writeTitle(turt):
+    '''Write 'REVERSI' with drop shadow above grid'''
+    turt.goto(242,62)
+    turt.color('#000')
+    turt.pd()
+    turt.write('*  R  E  V  E  R  S  I *', align='center', font=('',40,'bold'))
+    turt.pu()
+    turt.goto(240,60)
+    turt.color('#FFF')
+    turt.pd()
+    turt.write('*  R  E  V  E  R  S  I *', align='center', font=('',40,'bold'))
+    turt.pu()
+
+def drawButtons(turt):
+    '''Draws "buttons" on the game screen to demarcate areas for the user to
+    click to either exit the game or save it.
+
+    Argument:
+    turt (Turtle) -- the Turtle used to draw the buttons
+    '''
+    turt.goto(120,450)
+    turt.seth(270)
+    drawQuad(20,80,'white',turt,True)
+    turt.goto(160,447)
+    turt.write('EXIT GAME',align='center',font=('',14))
+    turt.goto(280,450)
+    turt.seth(270)
+    drawQuad(20,80,'white',turt,True)
+    turt.goto(320,447)
+    turt.write('SAVE GAME',align='center',font=('',14))
+
+def openingWindow():
+    '''Input window where the user chooses an option from a list using
+    numeric input. Can start a new game or load a saved game. If the Cancel
+    button is pressed the game exits, otherwise it returns the integer value of
+    the input.
+    '''
+    userIn = wn.numinput('','WELCOME TO REVERSI!\n\nChoose an option or Cancel '
+                         'to quit.\n\n1) New Game\n2) Load Game\n',1,1,3)
+    if userIn == None:
+        exit()
+    else:
+        return int(userIn)
+
+def drawInitialPieces():
+    '''Commands to draw the initial 4 pieces of a new game'''
+    drawPiece(3,3,COLOR2)
+    drawPiece(3,4,COLOR1)
+    drawPiece(4,3,COLOR1)
+    drawPiece(4,4,COLOR2)
+
+def drawPiece(col,row,color):
+    '''Draws the player's new piece and flipped pieces using the global Turtle
+    name piece and updates the global variable gameState.
+
+    Arguments:
+    row (int) -- the row number of the gameboard grid (0-7)
+    col (int)-- the column number of the gameboard grid (0-7)
+    color (string) -- the color of the game piece to be drawn
+    '''
+    piece.pu()
+    xCoord = col * 40 + 80
+    yCoord = row * 40 + 80
+    piece.goto(xCoord+2,yCoord+2)
+    global gameState
+    if color == COLOR1:
+        gameState[row][col] = 'B'
+    else:
+        gameState[row][col] = 'W'
+    drawQuad(36,36,color,piece)
+    scorekeeper()
+
+def loadGame():
+    '''Produces a list of saved games from savedGames directory and the user
+    uses numerical input to select the game to load. The savedGames directory
+    must be in the same directory as this .py file.
+    '''
+    gamesList = []
+    '''Getting the path to the savedGames directory and appending saved games to
+    gamesList.
+    '''
+    cwd = os.getcwd()
+    savedDir = os.path.join(cwd,'savedGames')
+    for file_ in os.listdir(savedDir):
+        if file_.endswith('.reversi'):
+            gamesList.append(file_)
+    '''Bring up user input window and wait for numberical input that corresponds
+    to a game file.
+    '''
+    txt = ''
+    for i in range(len(gamesList)):
+        txt += '\n' + str(i + 1) + ') ' + str(os.path.splitext(gamesList[i])[0])
+    userIn = (wn.numinput('Load Game','Enter number of a saved game:' +
+             txt,None,1,len(gamesList)))
+    while userIn == None:
+        userIn = (wn.numinput('Load Game','Enter number of a saved game:' +
+                  txt,None,1,len(gamesList)))
+    userIn = int(userIn)
+    '''Opens the file selected by the user and reads the contents'''
+    inFile = os.path.join(savedDir,gamesList[userIn-1])
+    with open(inFile, 'r') as game:
+        lines = game.readlines()
+        newGameState = []
+        for i in range(len(lines)):
+            if i < 8:
+                row = list(lines[i].strip('\n'))
+                newGameState.append(row)
+            elif i == 8:
+                lastLine = lines[i].strip()
+    '''Change global variables to reflect where the game was when user saved.'''
+    colorDict = {'COLOR1' : COLOR1, 'COLOR2' : COLOR2}
+    global gameState, playerTurn, userColor
+    gameState = newGameState
+    playerTurn = colorDict[lastLine]
+    userColor = colorDict[lastLine]
+    drawLoadedPieces()
+
+def drawLoadedPieces():
+    '''Uses gameState to draw all the pieces from the saved game.'''
+    for row in range(len(gameState)):
+        for col in range(len(gameState[row])):
+            if gameState[row][col] == 'B':
                 color = COLOR1
-                coordX = x * BOXSZ + 80
-                coordY = y * BOXSZ + 80
-                piece.goto(coordX+2,coordY+2)
-                drawQuad(BOXSZ-4,BOXSZ-4,color,piece)
-            elif gameState[y][x] == 'W':
+                xCoord = col * 40 + 80
+                yCoord = row * 40 + 80
+                piece.goto(xCoord+2,yCoord+2)
+                drawQuad(36,36,color,piece)
+            elif gameState[row][col] == 'W':
                 color = COLOR2
-                coordX = x * BOXSZ + 80
-                coordY = y * BOXSZ + 80
-                piece.goto(coordX+2,coordY+2)
-                drawQuad(BOXSZ-4,BOXSZ-4,color,piece)
+                xCoord = col * 40 + 80
+                yCoord = row * 40 + 80
+                piece.goto(xCoord+2,yCoord+2)
+                drawQuad(36,36,color,piece)
     scorekeeper()
 
 def scorekeeper():
+    '''Uses gameState to count the number of each player's pieces and displays
+    the total beside the gameboard.
+    '''
     blkPc = 0
     whtPc = 0
     for i in range(len(gameState)):
@@ -147,291 +229,348 @@ def scorekeeper():
                 blkPc += 1
             if gameState[i][j] == 'W':
                 whtPc += 1
-    blkScor.clear()
-    blkScor.goto(40,110)
-    blkScor.write(str(blkPc), align='center', font=('',22,'bold'))
-    whtScor.clear()
-    whtScor.goto(440,110)
-    whtScor.write(str(whtPc), align='center', font=('',22,'bold'))
+    color1score.clear()
+    color1score.goto(40,110)
+    color1score.write(str(blkPc),align='center',font=('',22,'bold'))
+    color2score.clear()
+    color2score.goto(440,110)
+    color2score.write(str(whtPc),align='center',font=('',22,'bold'))
+    return blkPc, whtPc
 
-def chooseRandomColour():
+def chooseRandomColor():
+    '''Randomly select 0 or 1 and returns the value of the color assigned to
+    the user.
+    '''
     headstails = randrange(0,2)
     if headstails == 1:
-        user = COLOR1
+        color = COLOR1
     else:
-        user = COLOR2
-    return user
+        color = COLOR2
+    return color
 
-def saveGame():
-    saveName = str(wn.textinput('Save Game','Name of game:')) + '.reversi'
-    cwd=os.getcwd()
-    outFile = os.path.join(cwd,'savedGames',saveName)
-    colorDict = {COLOR1:'COLOR1',COLOR2:'COLOR2'}
-    with open(outFile,'w') as gameFile:
-        gameFile.writelines(''.join(str(j) for j in i) + '\n' for i in gameState)
-        gameFile.write(colorDict[userColor])
+def newGameAlert():
+    '''Draws popup to alert users of their color.'''
+    global activePopup
+    activePopup = True
+    popup.goto(100,300)
+    popup.seth(270)
+    drawQuad(280,120,'#333',popup)
+    popup.color('white')
+    popup.goto(240,220)
+    text1 = '{0} player goes first, your color is {1}'.format(
+            COLOR1.capitalize(),userColor.capitalize())
+    popup.write(text1,align='center',font=('',18))
+    popup.goto(240,280)
+    text2 = 'Click to continue...'
+    popup.write(text2,align='center',font=('',18))
+
+def loadGameAlert():
+    '''Draws popup to alert users of their color after loaded game.'''
+    global activePopup
+    activePopup = True
+    popup.goto(100,300)
+    popup.seth(270)
+    drawQuad(280,120,'#333',popup)
+    popup.color('white')
+    popup.goto(240,220)
+    text1 = 'Your turn, your color is {0}'.format(userColor.capitalize())
+    popup.write(text1,align='center',font=('',18))
+    popup.goto(240,280)
+    text2 = 'Click to continue...'
+    popup.write(text2,align='center',font=('',18))
 
 def userClickInput(x,y):
-    if (80 <= x <= 400) and (80 <= y <= 400):
-        userMove(x,y,playerTurn)
-    elif (280 <= x <= 360) and (430 <= y <=450):
-        saveGame()
-    elif (120 <= x <= 200) and (430 <= y <=450):
-        exit()
+    '''Takes the input from a user click and depending the values executes the
+    corresponding function.
 
-def updateGameState(turn,gridX,gridY):
-    global gameState
-    if turn == COLOR1:
-        playerValue = 'B'
-    elif turn == COLOR2:
-        playerValue = 'W'
-    gameState[gridY][gridX] = playerValue
+    Arguments:
+    x (float) -- x coordinate of where the user clicked
+    y (float) -- y coordinate of where the user clicked
+    '''
+    global activePopup
+    if activePopup == True:
+        popup.clear()
+        activePopup = False
+    else:
+        if (80 <= x <= 400) and (80 <= y <= 400):
+            userMove(x,y)
+        elif (280 <= x <= 360) and (430 <= y <=450):
+            saveGame()
+        elif (120 <= x <= 200) and (430 <= y <=450):
+            exit()
 
-def fillMoves(x,y,direct1,direct2,endSearch,middleMoves,turn,bestMove):
-    if turn == COLOR1:
-        playerValue = 'B'
-    elif turn == COLOR2:
-        playerValue = 'W'
-    while endSearch != 0:
-        newX = x + direct1
-        newY = y + direct2
-        gameStateValue = returnGameStateValue(newX,newY)
-        if newX < 0 or newY < 0 or newX > 7 or newY > 7:
-            endSearch = 0
-        elif gameStateValue != "O" and gameStateValue != playerValue:
-            endSearch = 2
-            middleMoves.append([newX, newY])
-            fillMoves(newX,newY,direct1,direct2,endSearch,middleMoves,turn,bestMove)
-            endSearch = 0
-        elif gameStateValue == playerValue and endSearch == 2:
-            if bestMove == False:
-                for i in range(len(middleMoves)):
-                    updateGameState(turn,middleMoves[i][0],middleMoves[i][1])
-                    drawPiece()
-            endSearch = 0
+def userMove(xCoord, yCoord):
+    '''Performs the actions a user needs in order to make their move. First by
+    finding the valid moves, checking if the clicked square is a valid move and
+    if it is then finds the locations of the pieces to be 'flipped'. Then checks
+    if the other player has valid moves to decide if it becomes the next
+    player's turn.
+
+    Arguments:
+    xCoord (int) -- x value from input click
+    yCoord (int) -- y value from input click
+    userColor (str) -- the user's piece color
+    '''
+    global playerTurn
+    validList = getValidMoves()
+    gridX = int(xCoord // 40 - 2)
+    gridY = int(yCoord // 40 - 2)
+    if [gridX,gridY] in validList:
+        drawPiece(gridX,gridY,playerTurn)
+        flipList = []
+        for dirX,dirY in dirList:
+            flipList = toFlip(gridX,gridY,dirX,dirY,flipList)
+            for col,row in flipList:
+                drawPiece(col,row,userColor)
+        playerTurn = playerSwap()
+        validList = getValidMoves()
+        if len(validList) == 0:
+            playerTurn = playerSwap()
+            validList = getValidMoves()
+            if len(validList) == 0:
+                endGame()
         else:
-            endSearch = 0
+            computerMove()
 
-def playerSwap(colour):
-    if colour == COLOR1:
+def getValidMoves():
+    '''Finds the pieces for the current player and uses their coordinates and
+    the find_moves function to search for legal moves. Returns a 2D list of
+    row and column values.
+    '''
+    validMoves = []
+    if playerTurn == COLOR1:
+        playerValue = 'B'
+    else:
+        playerValue = 'W'
+    for col in range(8):
+        for row in range(8):
+            if isValidMove(playerValue,col,row) == True:
+                validMoves.append([col,row])
+    return validMoves
+
+def isValidMove(playerValue,col,row):
+    '''Test each square on the board and tests that if the square was chosen
+    whether or not any opponent's tiles would be flipped. Returns a boolean.
+
+    Arguments:
+    playerValue (str) -- the value of the current player in the gameState
+    col (int) -- the column of the square being checked
+    row (int) -- the row of the square being checked
+    '''
+    x = col
+    y = row
+    if playerValue == 'B':
+        otherPlayer = 'W'
+    else:
+        otherPlayer = 'B'
+    if gameState[y][x] != 'O':
+        return False
+    for dirX, dirY in dirList:
+        x = col
+        y = row
+        x += dirX
+        y += dirY
+        if (0 <= x <= 7 and 0 <= y <= 7) and gameState[y][x] == otherPlayer:
+            x += dirX
+            y += dirY
+            if not (0 <= x <= 7 and 0 <= y <= 7):
+                continue
+            while gameState[y][x] == otherPlayer:
+                x += dirX
+                y += dirY
+                if not (0 <= x <= 7 and 0 <= y <= 7):
+                    break
+            if not (0 <= x <= 7 and 0 <= y <= 7):
+                continue
+            if gameState[y][x] == playerValue:
+                return True
+        else:
+            continue
+    return False
+
+def toFlip(gridX,gridY,dirX,dirY,inList):
+    '''Finds the opponents pieces to 'flip' after a valid move is chosen.
+
+    Arguments:
+    gridX (int) -- the column value from the grid
+    gridY (int)-- the row value from the grid
+    dirX (int) -- how far to move in the x direction
+    dirY (int) -- how far to move in the y direction
+    inList (list) -- the list of row and column values of pieces to 'flip'
+    '''
+    flipList = inList[:]
+    if playerTurn == COLOR1:
+        playerValue = 'B'
+    elif playerTurn == COLOR2:
+        playerValue = 'W'
+    newX = gridX + dirX
+    newY = gridY + dirY
+    if not (0 <= newX <= 7 and 0 <= newY <= 7):
+        flipList = []
+        return flipList
+    else:
+        gameStateValue = gameState[newY][newX]
+        if gameStateValue != playerValue and gameStateValue != 'O':
+            flipList.append([newX,newY])
+            flipList = toFlip(newX,newY,dirX,dirY,flipList)
+            return flipList
+        elif gameStateValue == playerValue:
+            return flipList
+        else:
+            flipList = []
+            return flipList
+
+def playerSwap():
+    '''Swaps the playerTurn global variable. Returns variable containing a
+    string.
+    '''
+    if playerTurn == COLOR1:
         return COLOR2
     else:
         return COLOR1
 
-def bestMoveCalc(validList,turn):
-    totalMoves = 0
-    middleMoves = []
-    totalList = []
-    for x,y in validList:
-        totalList[:] = []
-        middleMoves[:] = []
-        for direct1,direct2 in [[0,1],[1,1],[1,0],[1,-1],[0,-1],[-1,-1],[-1,0],[-1,1]]:
-            middleMoves[:] = []
-            fillMoves(x,y,direct1,direct2,1,middleMoves,turn,True)
-            if len(middleMoves) > 0:
-                for i in range(len(middleMoves)):
-                    first = middleMoves[i][0]
-                    second = middleMoves[i][1]
-                    totalList.append([first,second])
-        newList = []
-        newList[:] = []
-        for i in range(len(totalList)):
-            num1 = totalList[i][0]
-            num2 = totalList[i][1]
-            newList.append(str(num1)+str(num2))
-        tempList = set(newList)
-        tempList = list(tempList)
-        if len(tempList) > totalMoves:
-            totalMoves = len(tempList)
-            gridX = x
-            gridY = y
-    return (gridX,gridY)
-
-def computerMove(turn):
+def computerMove():
+    '''Performs the functions allowing the AI to take its turn.'''
+    global playerTurn
     time.sleep(0.5)
-    global playerTurn
-    middleMoves = []
-    validMove = False
-    validList = findPieces(turn)
-    (gridX,gridY) = bestMoveCalc(validList,turn)
-    for i in range(len(validList)):
-        if gridX == validList[i][0] and gridY == validList[i][1]:
-            validMove = True
-    if validMove == True:
-        updateGameState(turn,gridX,gridY)
-        drawPiece()
-        for direct1, direct2 in [[0, 1], [1, 1], [1, 0], [1, -1], [0, -1], [-1, -1], [-1, 0], [-1, 1]]:
-            middleMoves[:] = []
-            fillMoves(gridX,gridY,direct1,direct2,1,middleMoves,turn, False)
-        playerTurn = playerSwap(turn)
-        nextPossMoves = findPieces(playerTurn)
-        if len(nextPossMoves) == 0:
-            playerTurn = playerSwap(playerTurn)
-            nextPossMoves = findPieces(playerTurn)
-            if len(nextPossMoves) == 0:
-                gameOver()
-            else:
-                computerMove(playerTurn)
-
-def userMove(x,y,turn):
-    middleMoves = []
-    global playerTurn
-    validList = findPieces(turn)
-    validMove = False
-    gridX = int(x//40 - 2)
-    gridY = int(y//40 - 2)
-    for i in range(len(validList)):
-        if gridX == validList[i][0] and gridY == validList[i][1]:
-            validMove = True
-    if validMove == True:
-        updateGameState(turn,gridX,gridY)
-        drawPiece()
-        for direct1,direct2 in [[0,1],[1,1],[1,0],[1,-1],[0,-1],[-1,-1],[-1,0],[-1,1]]:
-            middleMoves[:] = []
-            fillMoves(gridX,gridY,direct1,direct2,1,middleMoves,turn,False)
-        playerTurn = playerSwap(turn)
-        nextPossMoves = findPieces(playerTurn)
-        if len(nextPossMoves) == 0:
-            playerTurn = playerSwap(playerTurn)
-            nextPossMoves = findPieces(playerTurn)
-            if len(nextPossMoves) == 0:
-                gameOver()
+    validList = getValidMoves()
+    gridX,gridY = AI1(validList)
+    drawPiece(gridX,gridY,'orange')
+    time.sleep(1)
+    drawPiece(gridX,gridY,playerTurn)
+    flipList = []
+    for dirX,dirY in dirList:
+        flipList = toFlip(gridX,gridY,dirX,dirY,flipList)
+        for col,row in flipList:
+            drawPiece(col,row,playerTurn)
+    playerTurn = playerSwap()
+    validList = getValidMoves()
+    if len(validList) == 0:
+        playerTurn = playerSwap()
+        validList = getValidMoves()
+        if len(validList) == 0:
+            endGame()
         else:
-            computerMove(playerTurn)
+            computerMove()
 
-def findPieces(turn):
-    possMoves = []
-    if turn == COLOR1:
-        gameStateValue = 'B'
-    elif turn == COLOR2:
-        gameStateValue = 'W'
-    for y in range(8):
-        for x in range(8):
-            if gameState[y][x] == gameStateValue:
-                for direct1, direct2 in [[0, 1], [1, 1], [1, 0], [1, -1], [0, -1], [-1, -1], [-1, 0], [-1, 1]]:
-                    (gridX,gridY) = findPossibleMoves(y,x,direct1,direct2,gameStateValue,1)
-                    if gridY >= 0:
-                        possMoves.append([gridX,gridY])
-    return possMoves
+def AI1(inList):
+    '''Calculates the optimal move for the AI in which its score increases the
+    most. Returns the row and column values.
 
-def findPossibleMoves(gridY,gridX,direct1,direct2,turn,endSearch):
-    while endSearch != 0:
-        playerTurn = turn
-        newX = gridX + direct1
-        newY = gridY + direct2
-        gameStateValue = returnGameStateValue(newX,newY)
-        if newX < 0 or newX > 7 or newY < 0 or newY > 7:
-            endSearch = 0
-            return(-1,-1)
-        elif gameStateValue != "O" and gameStateValue != playerTurn:
-            endSearch = 2
-            (nextX, nextY) = findPossibleMoves(newY,newX,direct1,direct2,playerTurn,endSearch)
-            endSearch = 0
-            return (nextX, nextY)
-        elif gameStateValue == "O" and endSearch == 2:
-            return (newX, newY)
-            endSearch = 0
-        elif gameStateValue == "O":
-            return (-1, -1)
-            endSearch = 0
-        else:
-            return (-1, -1)
-            endSearch = 0
+    Arguments:
+    inList (list) -- the list of valid moves for the AI
+    '''
+    validList = inList[:]
+    totFlip = 0
+    bestX = 0
+    bestY = 0
+    for gridX,gridY in validList:
+        totalFlipList = []
+        for dirX,dirY in dirList:
+            flipList = []
+            flipList = toFlip(gridX,gridY,dirX,dirY,flipList)
+            totalFlipList += flipList
+        if len(totalFlipList) > totFlip:
+            bestX = gridX
+            bestY = gridY
+    return gridX,gridY
 
-def returnGameStateValue(x,y):
-    if x < 0 or y < 0 or x > 7 or y > 7:
-    	gameStateValue = -1
+def endGame():
+    global endgameWindowActive
+    global activePopup
+    activePopup = True
+    endgameWindowActive = True
+    score1, score2 = scorekeeper()
+    if score1 > score2:
+        winner = COLOR1.capitalize()
+    elif score2 > score1:
+        winner = COLOR2.capitalize()
     else:
-    	gameStateValue = gameState[y][x]
-    return gameStateValue
-
-def finalScore():
-    blkPc = 0
-    whtPc = 0
+        winner = 'Draw'
+    popup.home()
+    popup.goto(100,380)
+    popup.seth(270)
+    drawQuad(280,280,'#333',popup)
+    popup.color('white')
+    popup.goto(240,220)
+    popup.write('Game Over',align='center',font=('',22,''))
+    if winner != 'draw':
+        popup.goto(240,300)
+        popup.write('{0} Wins!!!'.format(winner),align='center',font=('',22,''))
+    else:
+        popup.goto(240,300)
+        popup.write('It\'s a draw!',align='center',font=('',22,''))
     for i in range(len(gameState)):
-        for j in range(len(gameState[i])):
-            if gameState[i][j] == 'B':
-                blkPc += 1
-            if gameState[i][j] == 'W':
-                whtPc += 1
-    return blkPc, whtPc
-
-def gameOver():
-    score1, score2 = finalScore()
-    blkScor.clear()
-    whtScor.clear()
-    piece.clear()
-    board.clear()
-    if (userColor == COLOR1 and score1 > score2) or (userColor == COLOR2 and score1 < score2):
-        bgdir = os.path.join(os.getcwd(),'img')
-        bgpic = os.path.join(bgdir,'win.gif')
-        wn.setworldcoordinates(-400,-400,400,400)
-        wn.bgpic(bgpic)
-    elif (userColor == COLOR1 and score1 < score2) or (userColor == COLOR2 and score1 > score2):
-        bgdir = os.path.join(os.getcwd(),'img')
-        bgpic = os.path.join(bgdir,'lose.gif')
-        wn.bgpic(bgpic)
+        print gameState[i]
 
 def main():
-    drawBoard(board)
-    userIn = openScreen()
+    setupGameboard()
+    userIn = openingWindow()
     if userIn == 1:
-        setup()
+        drawInitialPieces()
         global userColor
-        userColor = chooseRandomColour()
+        userColor = chooseRandomColor()
+        newGameAlert()
     elif userIn == 2:
         loadGame()
+        loadGameAlert()
     if userColor != playerTurn:
         time.sleep(1)
-        computerMove(playerTurn)
+        popup.clear()
+        computerMove()
     wn.onclick(userClickInput)
 
-LINES = 9
-ANGLE = 90
-BOXSZ = 40
-BRDSZ = (LINES - 1) * BOXSZ
-BGCOL = '#228B22'
-LNCOL = '#AAA'
-COLOR1 = '#000'
-COLOR2 = '#FFF'
-
+'''Global variables used to initialize the game window.'''
 wn = tt.Screen()
 wn.setup(startx=None,starty=None)
-wn.screensize(BOXSZ*12,BOXSZ*12)
-wn.setworldcoordinates(0,BOXSZ*12,BOXSZ*12,0)
+wn.screensize(900,900)
+wn.setworldcoordinates(0,480,480,0)
 bgdir = os.path.join(os.getcwd(),'img')
 bgpic = os.path.join(bgdir,'table.gif')
 wn.bgpic(bgpic)
 wn.title('PYTHON REVERSI')
 wn.tracer(0)
 
-blkScor=tt.Turtle()
-blkScor.ht()
-blkScor.pu()
-blkScor.pencolor(COLOR1)
+setup = tt.Turtle()
+setup.ht()
+setup.pu()
 
-whtScor=tt.Turtle()
-whtScor.ht()
-whtScor.pu()
-whtScor.pencolor(COLOR2)
+'''Global variables and constants.'''
+COLOR1 = 'black'
+COLOR2 = 'white'
 
-board=tt.Turtle()
-board.ht()
-
-piece=tt.Turtle()
+piece = tt.Turtle()
 piece.ht()
 piece.pu()
+
+color1score = tt.Turtle()
+color1score.ht()
+color1score.pu()
+color1score.color(COLOR1)
+
+color2score = tt.Turtle()
+color2score.ht()
+color2score.pu()
+color2score.color(COLOR2)
+
+popup = tt.Turtle()
+popup.ht()
+popup.pu()
 
 userColor = ''
 playerTurn = COLOR1
 gameState = [['O','O','O','O','O','O','O','O'],
              ['O','O','O','O','O','O','O','O'],
              ['O','O','O','O','O','O','O','O'],
-             ['O','O','O','W','B','O','O','O'],
-             ['O','O','O','B','W','O','O','O'],
+             ['O','O','O','O','O','O','O','O'],
+             ['O','O','O','O','O','O','O','O'],
              ['O','O','O','O','O','O','O','O'],
              ['O','O','O','O','O','O','O','O'],
              ['O','O','O','O','O','O','O','O']]
+activePopup = False
+instructionWindowActive = False
+endgameWindowActive = False
+dirList = [[0, 1], [0, -1], [1, 0], [-1, 0], [1, 1], [1, -1], [-1, 1], [-1, -1]]
 
 main()
 wn.mainloop()
