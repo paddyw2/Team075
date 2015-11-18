@@ -473,6 +473,7 @@ def AI1(inList):
     bestX = 0
     bestY = 0
     for gridX,gridY in validList:
+
         totalFlipList = []
         for dirX,dirY in dirList:
             flipList = []
@@ -483,7 +484,7 @@ def AI1(inList):
             bestList[:] = []
             bestList.append([gridX,gridY])
         elif len(totalFlipList) == totFlip:
-            bestList.append([gridX,gridY
+            bestList.append([gridX,gridY])
     randIndex = randrange(0,len(bestList))
     bestMove = bestList[randIndex]
     return bestMove[0],bestMove[1]
