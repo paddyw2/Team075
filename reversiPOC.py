@@ -468,6 +468,7 @@ def AI1(inList):
     inList (list) -- the list of valid moves for the AI
     '''
     validList = inList[:]
+    bestList = []
     totFlip = 0
     bestX = 0
     bestY = 0
@@ -478,9 +479,14 @@ def AI1(inList):
             flipList = toFlip(gridX,gridY,dirX,dirY,flipList)
             totalFlipList += flipList
         if len(totalFlipList) > totFlip:
-            bestX = gridX
-            bestY = gridY
-    return gridX,gridY
+            totFlip = len(totalFlipList)
+            bestList[:] = []
+            bestList.append([gridX,gridY])
+        elif len(totalFlipList) == totFlip:
+            bestList.append([gridX,gridY
+    randIndex = randrange(0,len(bestList))
+    bestMove = bestList[randIndex]
+    return bestMove[0],bestMove[1]
 
 def endGame():
     '''Once no more move can be made the game will end and a popup displaying
