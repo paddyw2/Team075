@@ -102,16 +102,21 @@ def drawButtons(turt):
     Argument:
     turt (Turtle) -- the Turtle used to draw the buttons
     '''
-    turt.goto(120,450)
+    turt.goto(80,450)
     turt.seth(270)
     drawQuad(20,80,'white',turt,True)
-    turt.goto(160,447)
-    turt.write('EXIT GAME',align='center',font=('',14))
-    turt.goto(280,450)
+    turt.goto(120,447)
+    turt.write('RULES',align='center',font=('',14))
+    turt.goto(200,450)
     turt.seth(270)
     drawQuad(20,80,'white',turt,True)
-    turt.goto(320,447)
-    turt.write('SAVE GAME',align='center',font=('',14))
+    turt.goto(240,447)
+    turt.write('SAVE',align='center',font=('',14))
+    turt.goto(320,450)
+    turt.seth(270)
+    drawQuad(20,80,'white',turt,True)
+    turt.goto(360,447)
+    turt.write('EXIT',align='center',font=('',14))
 
 def openingWindow():
     '''Input window where the user chooses an option from a list using
@@ -294,9 +299,11 @@ def userClickInput(x,y):
     else:
         if (80 <= x <= 400) and (80 <= y <= 400):
             userMove(x,y)
-        elif (280 <= x <= 360) and (430 <= y <=450):
+        elif (80 <= x <= 160) and (430 <= y <=450):
+            rules()
+        elif (200 <= x <= 280) and (430 <= y <=450):
             saveGame()
-        elif (120 <= x <= 200) and (430 <= y <=450):
+        elif (320 <= x <= 400) and (430 <= y <=450):
             exit()
 
 def userMove(xCoord, yCoord):
@@ -476,10 +483,12 @@ def AI1(inList):
     return gridX,gridY
 
 def endGame():
-    global endgameWindowActive
+    '''Once no more move can be made the game will end and a popup displaying
+    the winning color will be made.'''
+    #global endgameWindowActive
     global activePopup
     activePopup = True
-    endgameWindowActive = True
+    #endgameWindowActive = True
     score1, score2 = scorekeeper()
     if score1 > score2:
         winner = COLOR1.capitalize()
@@ -501,7 +510,42 @@ def endGame():
         popup.goto(240,300)
         popup.write('It\'s a draw!',align='center',font=('',22,''))
     for i in range(len(gameState)):
-        print gameState[i]
+        print(gameState[i])
+
+def saveGame():
+    '''When the user clicks the save 'button' they will be given a dialogue in
+    which they can save the game with a unique name.'''
+    gamesList = []
+    cwd = os.getcwd()
+    savedDir = os.path.join(cwd,'savedGames')
+    for file_ in os.listdir(savedDir):
+        filename, fileext = os.path.splitext(file_)
+        if fileext == '.reversi':
+            gamesList.append(filename)
+    saveName = wn.textinput('','Name of game:')
+    print(saveName)
+    while saveName in gamesList:
+        saveName = wn.textinput('','File exists.\nName of game:')
+    if saveName != None:
+        cwd=os.getcwd()
+        outFile = os.path.join(cwd,'savedGames',saveName + '.reversi')
+        colorDict = {COLOR1:'COLOR1',COLOR2:'COLOR2'}
+        with open(outFile,'w') as gameFile:
+            gameFile.writelines(''.join(str(j) for j in i) +
+                                '\n' for i in gameState)
+            gameFile.write(colorDict[userColor])
+
+def rules():
+    '''When the rules 'button' is clicked this will bring up a popup that will
+    contain the rules of Reversi for the user to read.'''
+    global activePopup
+    activePopup = True
+    popup.goto(100,380)
+    popup.seth(270)
+    drawQuad(280,280,'#333',popup)
+    popup.color('white')
+    popup.goto(240,220)
+    popup.write('Under Construction',align='center',font=('',22,''))
 
 def main():
     setupGameboard()
@@ -568,8 +612,8 @@ gameState = [['O','O','O','O','O','O','O','O'],
              ['O','O','O','O','O','O','O','O'],
              ['O','O','O','O','O','O','O','O']]
 activePopup = False
-instructionWindowActive = False
-endgameWindowActive = False
+#instructionWindowActive = False
+#endgameWindowActive = False
 dirList = [[0, 1], [0, -1], [1, 0], [-1, 0], [1, 1], [1, -1], [-1, 1], [-1, -1]]
 
 main()
