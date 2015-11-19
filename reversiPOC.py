@@ -576,7 +576,11 @@ def AI3(possibleMoves):
     for coord in possibleMoves:
         if coord in (second8 + third7 + fourth6 + fifth4):
 	        refinedMoves.append([coord[0], coord[1]])
-    return(AI1(refinedMoves))
+
+    if len(refinedMoves) > 1:
+        return(AI1(refinedMoves))
+    elif len(refinedMoves) == 1:
+        return refinedMoves[0][0], refinedMoves[0][1]
 
     for coord in possibleMoves:
         if coord in sixth0:
