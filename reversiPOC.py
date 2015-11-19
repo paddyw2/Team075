@@ -441,7 +441,13 @@ def computerMove():
     global playerTurn
     time.sleep(0.5)
     validList = getValidMoves()
-    gridX,gridY = AI1(validList)
+    # AI based on diff setting
+    if difficultySetting == 0:
+        gridX,gridY = AI1(validList)
+    elif difficultySetting == 1:
+        gridX,gridY = AI3(validList)
+    elif difficultySetting == 2:
+        gridX,gridY = AI3(validList)
     drawPiece(gridX,gridY,'orange')
     time.sleep(1)
     drawPiece(gridX,gridY,playerTurn)
@@ -488,6 +494,112 @@ def AI1(inList):
     randIndex = randrange(0,len(bestList))
     bestMove = bestList[randIndex]
     return bestMove[0],bestMove[1]
+
+# choosing moves by their position worth
+def AI2(possibleMoves):
+    # coordinates ranked by favourability
+    best99 = [[0,0], [0,7],[7,0], [7,7]]
+    second8 = [[0,2],[2,0],[0,5],[5,0],[7,2],[2,7],[7,5],[5,7]]
+    third7 = [[2,2], [5,2],[2,5],[5,5]]
+    fourth6 = [[0,3],[3,0],[4,0],[0,4], [7,3],[3,7],[7,4],[4,7]]
+    fifth4 = [[3,2],[2,3],[4,2],[2,4],[5,3],[3,5],[5,4],[4,5]]
+    sixth0 = [[3,3],[3,4],[4,3],[4,4]]
+    seventh_3 = [[3,1],[1,3],[4,1],[1,4],[6,3],[3,6],[4,6],[6,4]]
+    eigth_4 = [[2,1],[1,2],[5,1],[1,5],[6,2],[2,6],[5,6],[6,5]]
+    ninth_8 = [[0,1],[1,0],[0,6],[6,0],[7,1],[1,7],[7,6],[6,7]]
+    tenth_24 = [[1,1],[6,6],[6,1],[1,6]]
+
+    for coord in possibleMoves:
+        if coord in best99:
+             return (coord[0], coord[1])
+
+    for coord in possibleMoves:
+        if coord in second8:
+	        return (coord[0], coord[1])
+
+    for coord in possibleMoves:
+        if coord in third7:
+	        return (coord[0], coord[1])
+
+    for coord in possibleMoves:
+        if coord in fourth6:
+	        return (coord[0], coord[1])
+
+    for coord in possibleMoves:
+        if coord in fifth4:
+	        return (coord[0], coord[1])
+
+    for coord in possibleMoves:
+        if coord in sixth0:
+	        return (coord[0], coord[1])
+
+    for coord in possibleMoves:
+        if coord in seventh_3:
+	        return (coord[0], coord[1])
+
+    for coord in possibleMoves:
+        if coord in eigth_4:
+	        return (coord[0], coord[1])
+
+    for coord in possibleMoves:
+        if coord in ninth_8:
+	        return (coord[0], coord[1])
+
+    for coord in possibleMoves:
+        if coord in tenth_24:
+	        return (coord[0], coord[1])
+        else:
+	        print("We have a problem")
+
+
+# choosing moves by their position worth, with extra twist
+def AI3(possibleMoves):
+    # coordinates ranked by favourability
+    best99 = [[0,0], [0,7],[7,0], [7,7]]
+    second8 = [[0,2],[2,0],[0,5],[5,0],[7,2],[2,7],[7,5],[5,7]]
+    third7 = [[2,2], [5,2],[2,5],[5,5]]
+    fourth6 = [[0,3],[3,0],[4,0],[0,4], [7,3],[3,7],[7,4],[4,7]]
+    fifth4 = [[3,2],[2,3],[4,2],[2,4],[5,3],[3,5],[5,4],[4,5]]
+    sixth0 = [[3,3],[3,4],[4,3],[4,4]]
+    seventh_3 = [[3,1],[1,3],[4,1],[1,4],[6,3],[3,6],[4,6],[6,4]]
+    eigth_4 = [[2,1],[1,2],[5,1],[1,5],[6,2],[2,6],[5,6],[6,5]]
+    ninth_8 = [[0,1],[1,0],[0,6],[6,0],[7,1],[1,7],[7,6],[6,7]]
+    tenth_24 = [[1,1],[6,6],[6,1],[1,6]]
+
+    for coord in possibleMoves:
+        if coord in best99:
+             return (coord[0], coord[1])
+
+    # takes 2nd, 3rd, 4th and 5th best moves, and picks the one
+    # that takes most pieces
+    refinedMoves = []    
+    for coord in possibleMoves:
+        if coord in (second8 + third7 + fourth6 + fifth4):
+	        refinedMoves.append([coord[0], coord[1]])
+    return(AI1(refinedMoves))
+
+    for coord in possibleMoves:
+        if coord in sixth0:
+	        return (coord[0], coord[1])
+
+    for coord in possibleMoves:
+        if coord in seventh_3:
+	        return (coord[0], coord[1])
+
+    for coord in possibleMoves:
+        if coord in eigth_4:
+	        return (coord[0], coord[1])
+
+    for coord in possibleMoves:
+        if coord in ninth_8:
+	        return (coord[0], coord[1])
+
+    for coord in possibleMoves:
+        if coord in tenth_24:
+	        return (coord[0], coord[1])
+        else:
+	        print("We have a problem")
+
 
 def endGame():
     '''Once no more move can be made the game will end and a popup displaying
@@ -608,6 +720,7 @@ popup = tt.Turtle()
 popup.ht()
 popup.pu()
 
+difficultySetting = 2
 userColor = ''
 playerTurn = COLOR1
 gameState = [['O','O','O','O','O','O','O','O'],
