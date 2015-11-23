@@ -3,6 +3,7 @@ Team 075: Yang Li, Chi Nguyen, Patrick Withams, Greg Young
 This program creates a Reversi game using Turtle Graphics
 """
 
+import copy
 import os
 import time
 from sys import exit
@@ -293,9 +294,13 @@ def userClickInput(x,y):
     y (float) -- y coordinate of where the user clicked
     '''
     global activePopup
+    global gameHasEnded
     if activePopup == True:
         popup.clear()
         activePopup = False
+        if gameHasEnded:
+            newGame()
+            gameHasEnded = False
     else:
         if (80 <= x <= 400) and (80 <= y <= 400):
             userMove(x,y)
@@ -610,6 +615,8 @@ def endGame():
     the winning color will be made.'''
     #global endgameWindowActive
     global activePopup
+    global gameHasEnded
+    gameHasEnded = True
     activePopup = True
     #endgameWindowActive = True
     score1, score2 = scorekeeper()
@@ -632,8 +639,6 @@ def endGame():
     else:
         popup.goto(240,300)
         popup.write('It\'s a draw!',align='center',font=('',22,''))
-    for i in range(len(gameState)):
-        print(gameState[i])
 
 def saveGame():
     '''When the user clicks the save 'button' they will be given a dialogue in
@@ -646,7 +651,6 @@ def saveGame():
         if fileext == '.reversi':
             gamesList.append(filename)
     saveName = wn.textinput('','Name of game:')
-    print(saveName)
     while saveName in gamesList:
         saveName = wn.textinput('','File exists.\nName of game:')
     if saveName != None:
@@ -669,6 +673,25 @@ def rules():
     popup.color('white')
     popup.goto(240,220)
     popup.write('Under Construction',align='center',font=('',22,''))
+
+def newGame():
+    global gameState, playerTurn
+    playerTurn = COLOR1
+    piece.clear()
+    gameState = copy.deepcopy(origGameState)
+    userIn = openingWindow()
+    if userIn == 1:
+        drawInitialPieces()
+        global userColor
+        userColor = chooseRandomColor()
+        newGameAlert()
+    elif userIn == 2:
+        loadGame()
+        loadGameAlert()
+    if userColor != playerTurn:
+        time.sleep(1)
+        popup.clear()
+        computerMove()
 
 def main():
     setupGameboard()
@@ -727,15 +750,17 @@ popup.pu()
 difficultySetting = 2
 userColor = ''
 playerTurn = COLOR1
-gameState = [['O','O','O','O','O','O','O','O'],
-             ['O','O','O','O','O','O','O','O'],
-             ['O','O','O','O','O','O','O','O'],
-             ['O','O','O','O','O','O','O','O'],
-             ['O','O','O','O','O','O','O','O'],
-             ['O','O','O','O','O','O','O','O'],
-             ['O','O','O','O','O','O','O','O'],
-             ['O','O','O','O','O','O','O','O']]
+origGameState = [['O','O','O','O','O','O','O','O'],
+                 ['O','O','O','O','O','O','O','O'],
+                 ['O','O','O','O','O','O','O','O'],
+                 ['O','O','O','O','O','O','O','O'],
+                 ['O','O','O','O','O','O','O','O'],
+                 ['O','O','O','O','O','O','O','O'],
+                 ['O','O','O','O','O','O','O','O'],
+                 ['O','O','O','O','O','O','O','O']]
 activePopup = False
+gameHasEnded = False
+gameState = copy.deepcopy(origGameState)
 #instructionWindowActive = False
 #endgameWindowActive = False
 dirList = [[0, 1], [0, -1], [1, 0], [-1, 0], [1, 1], [1, -1], [-1, 1], [-1, -1]]
