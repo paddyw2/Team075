@@ -719,9 +719,12 @@ wn = tt.Screen()
 wn.setup(startx=None,starty=None)
 wn.screensize(900,900)
 wn.setworldcoordinates(0,480,480,0)
-bgdir = os.path.join(os.getcwd(),'img')
-bgpic = os.path.join(bgdir,'table.gif')
-wn.bgpic(bgpic)
+try:
+    bgdir = os.path.join(os.getcwd(),'img')
+    bgpic = os.path.join(bgdir,'table.gif')
+    wn.bgpic(bgpic)
+except:
+    wn.bgcolor("green")
 wn.title('PYTHON REVERSI')
 wn.tracer(0)
 
