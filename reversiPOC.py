@@ -169,41 +169,44 @@ def loadGame():
     '''Getting the path to the savedGames directory and appending saved games to
     gamesList.
     '''
-    cwd = os.getcwd()
-    savedDir = os.path.join(cwd,'savedGames')
-    for file_ in os.listdir(savedDir):
-        if file_.endswith('.reversi'):
-            gamesList.append(file_)
-    '''Bring up user input window and wait for numberical input that corresponds
-    to a game file.
-    '''
-    txt = ''
-    for i in range(len(gamesList)):
-        txt += '\n' + str(i + 1) + ') ' + str(os.path.splitext(gamesList[i])[0])
-    userIn = (wn.numinput('Load Game','Enter number of a saved game:' +
-             txt,None,1,len(gamesList)))
-    while userIn == None:
+    try:
+        cwd = os.getcwd()
+        savedDir = os.path.join(cwd,'savedGames')
+        for file_ in os.listdir(savedDir):
+            if file_.endswith('.reversi'):
+                gamesList.append(file_)
+        # Bring up user input window and wait for numberical input that corresponds
+        # to a game file.
+        txt = ''
+        for i in range(len(gamesList)):
+            txt += '\n' + str(i + 1) + ') ' + str(os.path.splitext(gamesList[i])[0])
         userIn = (wn.numinput('Load Game','Enter number of a saved game:' +
-                  txt,None,1,len(gamesList)))
-    userIn = int(userIn)
-    '''Opens the file selected by the user and reads the contents'''
-    inFile = os.path.join(savedDir,gamesList[userIn-1])
-    with open(inFile, 'r') as game:
-        lines = game.readlines()
-        newGameState = []
-        for i in range(len(lines)):
-            if i < 8:
-                row = list(lines[i].strip('\n'))
-                newGameState.append(row)
-            elif i == 8:
-                lastLine = lines[i].strip()
-    '''Change global variables to reflect where the game was when user saved.'''
-    colorDict = {'COLOR1' : COLOR1, 'COLOR2' : COLOR2}
-    global gameState, playerTurn, userColor
-    gameState = newGameState
-    playerTurn = colorDict[lastLine]
-    userColor = colorDict[lastLine]
-    drawLoadedPieces()
+                 txt,None,1,len(gamesList)))
+        while userIn == None:
+            userIn = (wn.numinput('Load Game','Enter number of a saved game:' +
+                      txt,None,1,len(gamesList)))
+        userIn = int(userIn)
+        # Opens the file selected by the user and reads the contents
+        inFile = os.path.join(savedDir,gamesList[userIn-1])
+        with open(inFile, 'r') as game:
+            lines = game.readlines()
+            newGameState = []
+            for i in range(len(lines)):
+                if i < 8:
+                    row = list(lines[i].strip('\n'))
+                    newGameState.append(row)
+                elif i == 8:
+                    lastLine = lines[i].strip()
+        # Change global variables to reflect where the game was when user saved.'''
+        colorDict = {'COLOR1' : COLOR1, 'COLOR2' : COLOR2}
+        global gameState, playerTurn, userColor
+        gameState = newGameState
+        playerTurn = colorDict[lastLine]
+        userColor = colorDict[lastLine]
+        drawLoadedPieces()
+    except:
+        print("The savedGames directory does not exist.")
+        newGame()
 
 def drawLoadedPieces():
     '''Uses gameState to draw all the pieces from the saved game.'''
@@ -577,7 +580,7 @@ def AI3(possibleMoves):
 
     # takes 2nd, 3rd, 4th and 5th best moves, and picks the one
     # that takes most pieces
-    refinedMoves = []    
+    refinedMoves = []
     for coord in possibleMoves:
         if coord in (second8 + third7 + fourth6 + fifth4):
 	        refinedMoves.append([coord[0], coord[1]])
@@ -644,23 +647,26 @@ def saveGame():
     '''When the user clicks the save 'button' they will be given a dialogue in
     which they can save the game with a unique name.'''
     gamesList = []
-    cwd = os.getcwd()
-    savedDir = os.path.join(cwd,'savedGames')
-    for file_ in os.listdir(savedDir):
-        filename, fileext = os.path.splitext(file_)
-        if fileext == '.reversi':
-            gamesList.append(filename)
-    saveName = wn.textinput('','Name of game:')
-    while saveName in gamesList:
-        saveName = wn.textinput('','File exists.\nName of game:')
-    if saveName != None:
-        cwd=os.getcwd()
-        outFile = os.path.join(cwd,'savedGames',saveName + '.reversi')
-        colorDict = {COLOR1:'COLOR1',COLOR2:'COLOR2'}
-        with open(outFile,'w') as gameFile:
-            gameFile.writelines(''.join(str(j) for j in i) +
-                                '\n' for i in gameState)
-            gameFile.write(colorDict[userColor])
+    try:
+        cwd = os.getcwd()
+        savedDir = os.path.join(cwd,'savedGames')
+        for file_ in os.listdir(savedDir):
+            filename, fileext = os.path.splitext(file_)
+            if fileext == '.reversi':
+                gamesList.append(filename)
+        saveName = wn.textinput('','Name of game:')
+        while saveName in gamesList:
+            saveName = wn.textinput('','File exists.\nName of game:')
+        if saveName != None:
+            cwd=os.getcwd()
+            outFile = os.path.join(cwd,'savedGames',saveName + '.reversi')
+            colorDict = {COLOR1:'COLOR1',COLOR2:'COLOR2'}
+            with open(outFile,'w') as gameFile:
+                gameFile.writelines(''.join(str(j) for j in i) +
+                                    '\n' for i in gameState)
+                gameFile.write(colorDict[userColor])
+    except:
+        print("The savedGames directory does not exist. Game not saved.")
 
 def rules():
     '''When the rules 'button' is clicked this will bring up a popup that will
