@@ -616,12 +616,10 @@ def AI3(possibleMoves):
 def endGame():
     '''Once no more move can be made the game will end and a popup displaying
     the winning color will be made.'''
-    #global endgameWindowActive
     global activePopup
     global gameHasEnded
     gameHasEnded = True
     activePopup = True
-    #endgameWindowActive = True
     score1, score2 = scorekeeper()
     if score1 > score2:
         winner = COLOR1.capitalize()
@@ -767,8 +765,6 @@ origGameState = [['O','O','O','O','O','O','O','O'],
 activePopup = False
 gameHasEnded = False
 gameState = copy.deepcopy(origGameState)
-#instructionWindowActive = False
-#endgameWindowActive = False
 dirList = [[0, 1], [0, -1], [1, 0], [-1, 0], [1, 1], [1, -1], [-1, 1], [-1, -1]]
 
 main()
