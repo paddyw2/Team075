@@ -10,6 +10,67 @@ from sys import exit
 import turtle as tt
 from random import randrange
 
+
+# Global variables used to initialize the game window.
+
+wn = tt.Screen()
+wn.setup(startx=None,starty=None)
+wn.screensize(900,900)
+wn.setworldcoordinates(0,480,480,0)
+try:
+    bgdir = os.path.join(os.getcwd(),'img')
+    bgpic = os.path.join(bgdir,'table.gif')
+    wn.bgpic(bgpic)
+except:
+    wn.bgcolor("green")
+wn.title('PYTHON REVERSI')
+wn.tracer(0)
+
+setup = tt.Turtle()
+setup.ht()
+setup.pu()
+
+# Global variables and constants.
+COLOR1 = 'black'
+COLOR2 = 'white'
+
+piece = tt.Turtle()
+piece.ht()
+piece.pu()
+
+color1score = tt.Turtle()
+color1score.ht()
+color1score.pu()
+color1score.color(COLOR1)
+
+color2score = tt.Turtle()
+color2score.ht()
+color2score.pu()
+color2score.color(COLOR2)
+
+popup = tt.Turtle()
+popup.ht()
+popup.pu()
+
+difficultySetting = 2
+userColor = ''
+playerTurn = COLOR1
+origGameState = [['O','O','O','O','O','O','O','O'],
+                 ['O','O','O','O','O','O','O','O'],
+                 ['O','O','O','O','O','O','O','O'],
+                 ['O','O','O','O','O','O','O','O'],
+                 ['O','O','O','O','O','O','O','O'],
+                 ['O','O','O','O','O','O','O','O'],
+                 ['O','O','O','O','O','O','O','O'],
+                 ['O','O','O','O','O','O','O','O']]
+activePopup = False
+gameHasEnded = False
+gameState = copy.deepcopy(origGameState)
+dirList = [[0, 1], [0, -1], [1, 0], [-1, 0], [1, 1], [1, -1], [-1, 1], [-1, -1]]
+
+
+# game functions
+
 def setupGameboard():
     '''Sets up the gameboard by drawing the grid and surrounding items'''
     setup.goto(80,80)
@@ -679,6 +740,7 @@ def rules():
     popup.write('Under Construction',align='center',font=('',22,''))
 
 def newGame():
+    ''' Creates a new game. '''
     global gameState, playerTurn
     playerTurn = COLOR1
     piece.clear()
@@ -698,77 +760,13 @@ def newGame():
         computerMove()
 
 def main():
+    ''' Starts the game '''
     setupGameboard()
-    userIn = openingWindow()
-    if userIn == 1:
-        drawInitialPieces()
-        global userColor
-        userColor = chooseRandomColor()
-        newGameAlert()
-    elif userIn == 2:
-        loadGame()
-        loadGameAlert()
-    if userColor != playerTurn:
-        time.sleep(1)
-        popup.clear()
-        computerMove()
+    newGame()
     wn.onclick(userClickInput)
 
-'''Global variables used to initialize the game window.'''
-wn = tt.Screen()
-wn.setup(startx=None,starty=None)
-wn.screensize(900,900)
-wn.setworldcoordinates(0,480,480,0)
-try:
-    bgdir = os.path.join(os.getcwd(),'img')
-    bgpic = os.path.join(bgdir,'table.gif')
-    wn.bgpic(bgpic)
-except:
-    wn.bgcolor("green")
-wn.title('PYTHON REVERSI')
-wn.tracer(0)
+# call main function to start game
+if __name__ == '__main__':
+    main()
 
-setup = tt.Turtle()
-setup.ht()
-setup.pu()
-
-'''Global variables and constants.'''
-COLOR1 = 'black'
-COLOR2 = 'white'
-
-piece = tt.Turtle()
-piece.ht()
-piece.pu()
-
-color1score = tt.Turtle()
-color1score.ht()
-color1score.pu()
-color1score.color(COLOR1)
-
-color2score = tt.Turtle()
-color2score.ht()
-color2score.pu()
-color2score.color(COLOR2)
-
-popup = tt.Turtle()
-popup.ht()
-popup.pu()
-
-difficultySetting = 2
-userColor = ''
-playerTurn = COLOR1
-origGameState = [['O','O','O','O','O','O','O','O'],
-                 ['O','O','O','O','O','O','O','O'],
-                 ['O','O','O','O','O','O','O','O'],
-                 ['O','O','O','O','O','O','O','O'],
-                 ['O','O','O','O','O','O','O','O'],
-                 ['O','O','O','O','O','O','O','O'],
-                 ['O','O','O','O','O','O','O','O'],
-                 ['O','O','O','O','O','O','O','O']]
-activePopup = False
-gameHasEnded = False
-gameState = copy.deepcopy(origGameState)
-dirList = [[0, 1], [0, -1], [1, 0], [-1, 0], [1, 1], [1, -1], [-1, 1], [-1, -1]]
-
-main()
 wn.mainloop()
