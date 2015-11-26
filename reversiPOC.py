@@ -70,6 +70,7 @@ origGameState = [['O','O','O','O','O','O','O','O'],
                  ['O','O','O','O','O','O','O','O']]
 activePopup = False
 gameHasEnded = False
+moveInProgress = False
 gameState = copy.deepcopy(origGameState)
 dirList = [[0, 1], [0, -1], [1, 0], [-1, 0], [1, 1], [1, -1], [-1, 1], [-1, -1]]
 
@@ -362,8 +363,7 @@ def userClickInput(x,y):
     x (float) -- x coordinate of where the user clicked
     y (float) -- y coordinate of where the user clicked
     '''
-    global activePopup
-    global gameHasEnded
+    global activePopup, gameHasEnded, moveInProgress
     if activePopup == True:
         popup.clear()
         activePopup = False
@@ -371,7 +371,7 @@ def userClickInput(x,y):
             newGame()
             gameHasEnded = False
     else:
-        if (80 <= x <= 400) and (80 <= y <= 400):
+        if (80 <= x <= 400) and (80 <= y <= 400) and (not moveInProgress):
             userMove(x,y)
         elif (80 <= x <= 160) and (430 <= y <=450):
             rules()
@@ -392,7 +392,8 @@ def userMove(xCoord, yCoord):
     yCoord (int) -- y value from input click
     userColor (str) -- the user's piece color
     '''
-    global playerTurn
+    global playerTurn, moveInProgress
+    moveInProgress = True
     validList = getValidMoves()
     gridX = int(xCoord // 40 - 2)
     gridY = int(yCoord // 40 - 2)
@@ -409,8 +410,10 @@ def userMove(xCoord, yCoord):
             playerTurn = playerSwap()
             validList = getValidMoves()
             if len(validList) == 0:
+                moveInProgress = False
                 endGame()
         else:
+            moveInProgress = False
             computerMove()
 
 def getValidMoves():
@@ -512,7 +515,8 @@ def playerSwap():
 
 def computerMove():
     '''Performs the functions allowing the AI to take its turn.'''
-    global playerTurn
+    global playerTurn, moveInProgress
+    moveInProgress = True
     time.sleep(0.5)
     validList = getValidMoves()
     # AI based on diff setting
@@ -536,9 +540,12 @@ def computerMove():
         playerTurn = playerSwap()
         validList = getValidMoves()
         if len(validList) == 0:
+            moveInProgress = False
             endGame()
         else:
             computerMove()
+    else:
+        moveInProgress = False
 
 def AI1(inList):
     '''Calculates the optimal move for the AI in which its score increases the
