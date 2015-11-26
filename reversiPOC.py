@@ -458,6 +458,8 @@ def userMove(xCoord, yCoord):
         else:
             moveInProgress = False
             computerMove()
+    # to take into account invalid board clicks
+    moveInProgress = False
 
 def getValidMoves():
     '''Finds the pieces for the current player and uses their coordinates and
