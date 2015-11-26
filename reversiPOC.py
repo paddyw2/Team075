@@ -10,6 +10,11 @@ from sys import exit
 import turtle as tt
 from random import randrange
 
+# Game Description
+#
+# sources: http://www.samsoft.org.uk/reversi/strategy.htm
+# used this link for the position value based AI2 and AI3
+
 
 # Global variables used to initialize the game window.
 
@@ -30,7 +35,7 @@ setup = tt.Turtle()
 setup.ht()
 setup.pu()
 
-# Global variables and constants.
+# Global variables and constants
 COLOR1 = 'black'
 COLOR2 = 'white'
 
@@ -564,9 +569,14 @@ def AI1(inList):
     bestMove = bestList[randIndex]
     return bestMove[0],bestMove[1]
 
-# choosing moves by their position worth
 def AI2(possibleMoves):
-    # coordinates ranked by favourability
+    '''Chooses best move by their position worth. If there is
+    a corner move, choose that. If not, continue to next best
+    category, etc.
+
+    Arguments:
+    possibleMoves (list) -- the list of valid moves for the AI
+    '''
     best99 = [[0,0], [0,7],[7,0], [7,7]]
     second8 = [[0,2],[2,0],[0,5],[5,0],[7,2],[2,7],[7,5],[5,7]]
     third7 = [[2,2], [5,2],[2,5],[5,5]]
@@ -620,10 +630,14 @@ def AI2(possibleMoves):
         else:
 	        print("We have a problem")
 
-
-# choosing moves by their position worth, with extra twist
 def AI3(possibleMoves):
-    # coordinates ranked by favourability
+    '''Follows same principles as AI2 function, except that
+    if there are moves that rank second to fifth, the move
+    that takes the most pieces is chosen.
+
+    Arguments:
+    possibleMoves (list) -- the list of valid moves for the AI
+    '''
     best99 = [[0,0], [0,7],[7,0], [7,7]]
     second8 = [[0,2],[2,0],[0,5],[5,0],[7,2],[2,7],[7,5],[5,7]]
     third7 = [[2,2], [5,2],[2,5],[5,5]]
