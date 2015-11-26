@@ -57,6 +57,11 @@ popup = tt.Turtle()
 popup.ht()
 popup.pu()
 
+turnturt = tt.Turtle()
+turnturt.pensize(5)
+turnturt.ht()
+turnturt.pu()
+
 difficultySetting = 2
 userColor = ''
 playerTurn = COLOR1
@@ -293,12 +298,31 @@ def drawLoadedPieces():
                 drawQuad(36,36,color,piece)
     scorekeeper()
 
+def turnIndicator():
+#Draws a line under the score of the current player's turn
+
+    if playerTurn == COLOR1:
+        turnturt.clear()
+        turnturt.color(COLOR1)
+        turnturt.goto(25,110)
+        turnturt.pd()
+        turnturt.fd(30)
+        turnturt.pu()
+    else:
+        turnturt.clear()
+        turnturt.color(COLOR2)
+        turnturt.goto(425,110)
+        turnturt.pd()
+        turnturt.fd(30)
+        turnturt.pu()
+
 def scorekeeper():
     '''Uses gameState to count the number of each player's pieces and displays
     the total beside the gameboard.
     '''
     blkPc = 0
     whtPc = 0
+    turnIndicator()
     for i in range(len(gameState)):
         for j in range(len(gameState[i])):
             if gameState[i][j] == 'B':
@@ -545,6 +569,7 @@ def computerMove():
         else:
             computerMove()
     else:
+        turnIndicator()
         moveInProgress = False
 
 def AI1(inList):
