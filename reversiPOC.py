@@ -763,7 +763,10 @@ color2score.ht()
 color2score.pu()
 color2score.color(COLOR2)
 
-
+turnturt = tt.Turtle()
+turnturt.pensize(5)
+turnturt.ht()
+turnturt.pu()
 
 popup = tt.Turtle()
 popup.ht()
