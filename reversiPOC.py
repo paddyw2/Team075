@@ -302,17 +302,9 @@ def drawLoadedPieces():
     for row in range(len(gameState)):
         for col in range(len(gameState[row])):
             if gameState[row][col] == 'B':
-                color = COLOR1
-                xCoord = col * 40 + 80
-                yCoord = row * 40 + 80
-                piece.goto(xCoord+2,yCoord+2)
-                drawQuad(36,36,color,piece)
+                drawPiece(row, col, COLOR1)
             elif gameState[row][col] == 'W':
-                color = COLOR2
-                xCoord = col * 40 + 80
-                yCoord = row * 40 + 80
-                piece.goto(xCoord+2,yCoord+2)
-                drawQuad(36,36,color,piece)
+                drawPiece(row, col, COLOR2)
     scorekeeper()
 
 def turnIndicator():
@@ -409,8 +401,8 @@ def userClickInput(x,y):
         popup.clear()
         activePopup = False
         if gameHasEnded:
-            newGame()
             gameHasEnded = False
+            newGame()
     else:
         if (80 <= x <= 400) and (80 <= y <= 400) and (not moveInProgress):
             userMove(x,y)
