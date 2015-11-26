@@ -62,7 +62,7 @@ turnturt.pensize(5)
 turnturt.ht()
 turnturt.pu()
 
-difficultySetting = 2
+difficultySetting = 0
 userColor = ''
 playerTurn = COLOR1
 origGameState = [['O','O','O','O','O','O','O','O'],
@@ -190,6 +190,11 @@ def drawButtons(turt):
     drawQuad(20,80,'white',turt,True)
     turt.goto(360,447)
     turt.write('EXIT',align='center',font=('',14))
+    turt.goto(200,475)
+    turt.seth(270)
+    drawQuad(20,80,'white',turt,True)
+    turt.goto(240,472)
+    turt.write('DIFFICULTY',align='center',font=('',14))
 
 def openingWindow():
     '''Input window where the user chooses an option from a list using
@@ -197,12 +202,24 @@ def openingWindow():
     button is pressed the game exits, otherwise it returns the integer value of
     the input.
     '''
-    userIn = wn.numinput('','WELCOME TO REVERSI!\n\nChoose an option or Cancel '
+    userIn = wn.numinput('Welcome','WELCOME TO REVERSI!\n\nChoose an option or Cancel '
                          'to quit.\n\n1) New Game\n2) Load Game\n',1,1,3)
     if userIn == None:
         exit()
     else:
         return int(userIn)
+
+def changeDifficulty():
+    '''Change difficultySetting.'''
+    global difficultySetting
+    difflist = ["Easy", "Medium", "Difficult"]
+    userIn = wn.numinput('Change Difficulty','Current difficulty setting: '+difflist[difficultySetting]+'\n\nChoose an option:'
+                         '\n\n1) Easy\n2) Medium\n3) Difficult',1,1,3)
+    if userIn == None:
+        return
+    else:
+        difficultySetting = int(userIn) - 1
+        return difficultySetting
 
 def drawInitialPieces():
     '''Commands to draw the initial 4 pieces of a new game'''
@@ -403,6 +420,8 @@ def userClickInput(x,y):
             saveGame()
         elif (320 <= x <= 400) and (430 <= y <=450):
             exit()
+        elif (200 <= x <= 280) and (455 <= y <=475):
+            changeDifficulty()
 
 def userMove(xCoord, yCoord):
     '''Performs the actions a user needs in order to make their move. First by
