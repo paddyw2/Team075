@@ -17,13 +17,13 @@ from random import randrange
 
 
 # Global variables used to initialize the game window.
-SIZE_CONSTANT = 60
+SIZE_CONSTANT = 35 # change to 40 to view original size
 ROWS = 8
 BOARD_SIZE = SIZE_CONSTANT * ROWS
 wn = tt.Screen()
 wn.setup(startx=None,starty=None)
-wn.screensize(SIZE_CONSTANT * 22,SIZE_CONSTANT * 22)
-wn.setworldcoordinates(0,SIZE_CONSTANT * 12,SIZE_CONSTANT * 12,0)
+wn.screensize(SIZE_CONSTANT * 22.5,SIZE_CONSTANT * 22.5)
+wn.setworldcoordinates(0,480,480,0) # change to SIZE_CONSTANT * 12 to avoid screen shrinkage
 try:
     bgdir = os.path.join(os.getcwd(),'img')
     bgpic = os.path.join(bgdir,'table.gif')
@@ -819,7 +819,7 @@ def newGame():
         time.sleep(1)
         popup.clear()
         computerMove()
-        
+
 def main():
     ''' Starts the game '''
     setupGameboard()
