@@ -28,7 +28,8 @@ FONTSIZE_LARGE = int(SIZE_CONSTANT // 1.8)
 wn = tt.Screen()
 wn.setup(startx=None,starty=None)
 wn.screensize(SIZE_CONSTANT * 22.5,SIZE_CONSTANT * 22.5)
-wn.setworldcoordinates(0,480,480,0) # change to SIZE_CONSTANT * 12 to avoid screen shrinkage
+# change to world coords to SIZE_CONSTANT * 12 to avoid screen shrinkage
+wn.setworldcoordinates(0,480,480,0)
 try:
     bgdir = os.path.join(os.getcwd(),'img')
     bgpic = os.path.join(bgdir,'table.gif')
@@ -105,7 +106,7 @@ def drawQuad(width,height,color,turt,depth=False):
     height (int) -- the top to bottom size
     color (str) -- the fill color
     turt (Turtle) -- the Turtle that is used to draw quadrilateral
-    depth (bool) -- if True, will give the appearance of a 3D box (default False)
+    depth (bool) -- if True, will give the look of a 3D box (default False)
     '''
     if depth == False:
         turt.pd()
@@ -167,12 +168,14 @@ def writeTitle(turt):
     turt.goto(SIZE_CONSTANT * 6.05, SIZE_CONSTANT * 1.55)
     turt.color('#000')
     turt.pd()
-    turt.write('*  R  E  V  E  R  S  I *', align='center', font=('',SIZE_CONSTANT,'bold'))
+    turt.write('*  R  E  V  E  R  S  I *', align='center',
+    font=('',SIZE_CONSTANT,'bold'))
     turt.pu()
     turt.goto(SIZE_CONSTANT * 6, SIZE_CONSTANT * 1.5)
     turt.color('#FFF')
     turt.pd()
-    turt.write('*  R  E  V  E  R  S  I *', align='center', font=('',SIZE_CONSTANT,'bold'))
+    turt.write('*  R  E  V  E  R  S  I *', align='center',
+    font=('',SIZE_CONSTANT,'bold'))
     turt.pu()
 
 def drawButtons(turt):
@@ -209,8 +212,8 @@ def openingWindow():
     button is pressed the game exits, otherwise it returns the integer value of
     the input.
     '''
-    userIn = wn.numinput('Welcome','WELCOME TO REVERSI!\n\nChoose an option or Cancel '
-                         'to quit.\n\n1) New Game\n2) Load Game\n',1,1,3)
+    userIn = wn.numinput('Welcome','WELCOME TO REVERSI!\n\nChoose an option or'
+                        'Cancel to quit.\n\n1) New Game\n2) Load Game\n',1,1,3)
     if userIn == None:
         exit()
     else:
@@ -220,7 +223,8 @@ def changeDifficulty():
     '''Change difficultySetting.'''
     global difficultySetting
     difflist = ["Easy", "Medium", "Difficult"]
-    userIn = wn.numinput('Change Difficulty','Current difficulty setting: '+difflist[difficultySetting]+'\n\nChoose an option:'
+    userIn = wn.numinput('Change Difficulty','Current difficulty setting: '+
+                         difflist[difficultySetting]+'\n\nChoose an option:'
                          '\n\n1) Easy\n2) Medium\n3) Difficult',1,1,3)
     if userIn == None:
         return
@@ -262,20 +266,20 @@ def loadGame():
     must be in the same directory as this .py file.
     '''
     gamesList = []
-    '''Getting the path to the savedGames directory and appending saved games to
-    gamesList.
-    '''
+    #Getting the path to the savedGames directory and appending saved games to
+    # gamesList.
     try:
         cwd = os.getcwd()
         savedDir = os.path.join(cwd,'savedGames')
         for file_ in os.listdir(savedDir):
             if file_.endswith('.reversi'):
                 gamesList.append(file_)
-        # Bring up user input window and wait for numberical input that corresponds
-        # to a game file.
+        # Bring up user input window and wait for numberical input that
+        # corresponds to a game file.
         txt = ''
         for i in range(len(gamesList)):
-            txt += '\n' + str(i + 1) + ') ' + str(os.path.splitext(gamesList[i])[0])
+            txt += ('\n' + str(i + 1) + ') ' +
+            str(os.path.splitext(gamesList[i])[0]))
         userIn = (wn.numinput('Load Game','Enter number of a saved game:' +
                  txt,None,1,len(gamesList)))
         while userIn == None:
@@ -293,7 +297,7 @@ def loadGame():
                     newGameState.append(row)
                 elif i == ROWS:
                     lastLine = lines[i].strip()
-        # Change global variables to reflect where the game was when user saved.'''
+        # Change global variables to reflect where the game was when user saved.
         colorDict = {'COLOR1' : COLOR1, 'COLOR2' : COLOR2}
         global gameState, playerTurn, userColor
         gameState = newGameState
@@ -315,8 +319,7 @@ def drawLoadedPieces():
     scorekeeper()
 
 def turnIndicator():
-#Draws a line under the score of the current player's turn
-
+    '''Draws a line under the score of the current player's turn.'''
     if playerTurn == COLOR1:
         turnturt.clear()
         turnturt.color(COLOR1)
@@ -411,15 +414,21 @@ def userClickInput(x,y):
             gameHasEnded = False
             newGame()
     else:
-        if (BUTTONWIDTH <= x <= SIZE_CONSTANT * 10) and (SIZE_CONSTANT * 2 <= y <= SIZE_CONSTANT * 10) and (not moveInProgress):
+        if ((BUTTONWIDTH <= x <= SIZE_CONSTANT * 10) and
+        (SIZE_CONSTANT * 2 <= y <= SIZE_CONSTANT * 10) and
+        (not moveInProgress)):
             userMove(x,y)
-        elif (BUTTONWIDTH <= x <= SIZE_CONSTANT * 4) and (SIZE_CONSTANT * 10.75 <= y <=SIZE_CONSTANT * 11.25):
+        elif ((BUTTONWIDTH <= x <= SIZE_CONSTANT * 4) and
+        (SIZE_CONSTANT * 10.75 <= y <=SIZE_CONSTANT * 11.25)):
             rules()
-        elif (SIZE_CONSTANT * 5 <= x <= SIZE_CONSTANT * 7) and ( SIZE_CONSTANT * 10.5 <= y <= SIZE_CONSTANT * 11.25):
+        elif ((SIZE_CONSTANT * 5 <= x <= SIZE_CONSTANT * 7) and
+        (SIZE_CONSTANT * 10.5 <= y <= SIZE_CONSTANT * 11.25)):
             saveGame()
-        elif (SIZE_CONSTANT * 8 <= x <= SIZE_CONSTANT * 10) and (SIZE_CONSTANT * 10.75 <= y <= SIZE_CONSTANT * 11.25):
+        elif ((SIZE_CONSTANT * 8 <= x <= SIZE_CONSTANT * 10) and
+        (SIZE_CONSTANT * 10.75 <= y <= SIZE_CONSTANT * 11.25)):
             exit()
-        elif (SIZE_CONSTANT * 5 <= x <= SIZE_CONSTANT * 7) and (SIZE_CONSTANT * 11.38 <= y <= SIZE_CONSTANT * 11.88):
+        elif ((SIZE_CONSTANT * 5 <= x <= SIZE_CONSTANT * 7) and
+        (SIZE_CONSTANT * 11.38 <= y <= SIZE_CONSTANT * 11.88)):
             changeDifficulty()
 
 def userMove(xCoord, yCoord):
@@ -563,7 +572,7 @@ def computerMove():
     moveInProgress = True
     time.sleep(0.5)
     validList = getValidMoves()
-    # AI based on diff setting
+    # choose AI based on diff setting
     if difficultySetting == 0:
         gridX,gridY = AI1(validList)
     elif difficultySetting == 1:
@@ -763,7 +772,8 @@ def endGame():
     popup.write('Game Over',align='center',font=('',FONTSIZE_LARGE,''))
     if winner != 'draw':
         popup.goto(SIZE_CONSTANT * 6,SIZE_CONSTANT * 7.5)
-        popup.write('{0} Wins!!!'.format(winner),align='center',font=('',FONTSIZE_LARGE,''))
+        popup.write('{0} Wins!!!'.format(winner),align='center',
+        font=('',FONTSIZE_LARGE,''))
     else:
         popup.goto(SIZE_CONSTANT * 6, SIZE_CONSTANT * 7.5)
         popup.write('It\'s a draw!',align='center',font=('',FONTSIZE_LARGE,''))
