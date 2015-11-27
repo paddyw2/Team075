@@ -1,12 +1,10 @@
 # Team075
 
 ### Nov 26 Updates
-The reversiPOC.py file now has the ability to change the difficulty setting and to view the current move in progress. The file masterReversi.py has also now been updated to show what it would look like if the pieces were stamped with images, rather than just turtle fills. There is nothing in place for the orange indicator move, so that's the wrong colour at the moment.
-
-Also, the strange behaviour of the newGame() function has now been fixed and the drawLoadedPieces() function has been simplified.
+The reversiPOCmagic.py file has been updated to mirror the latest code from reversiPOC.py and to define all numbers by reference to our constant, SIZE_CONSTANT. Note how it is now set to 35, not 40, and everything looks the same just smaller. It will (probably) need more work in defining subconstants etc. but I think this is a good start - we can change the size of the board etc. and nothing will break.
 
 ### To Do:
- * Still need to work on getting the coordinates and numbers set to constants
+ * Still need to work on sub constants, such as FONT_SIZE etc.
  * I might look into setting up the hints functionality
 
 #### Misc Tasks
