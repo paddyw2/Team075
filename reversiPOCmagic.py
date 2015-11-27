@@ -162,12 +162,12 @@ def writeTitle(turt):
     turt.goto(SIZE_CONSTANT * 6.05, SIZE_CONSTANT * 1.55)
     turt.color('#000')
     turt.pd()
-    turt.write('*  R  E  V  E  R  S  I *', align='center', font=('',40,'bold'))
+    turt.write('*  R  E  V  E  R  S  I *', align='center', font=('',SIZE_CONSTANT,'bold'))
     turt.pu()
     turt.goto(SIZE_CONSTANT * 6, SIZE_CONSTANT * 1.5)
     turt.color('#FFF')
     turt.pd()
-    turt.write('*  R  E  V  E  R  S  I *', align='center', font=('',40,'bold'))
+    turt.write('*  R  E  V  E  R  S  I *', align='center', font=('',SIZE_CONSTANT,'bold'))
     turt.pu()
 
 def drawButtons(turt):
@@ -181,22 +181,22 @@ def drawButtons(turt):
     turt.seth(270)
     drawQuad(SIZE_CONSTANT / 2, SIZE_CONSTANT * 2,'white',turt,True)
     turt.goto(SIZE_CONSTANT * 3,SIZE_CONSTANT * 11.18)
-    turt.write('RULES',align='center',font=('',14))
+    turt.write('RULES',align='center',font=('',int(SIZE_CONSTANT // 2.8)))
     turt.goto(SIZE_CONSTANT * 5,SIZE_CONSTANT * 11.25)
     turt.seth(270)
     drawQuad(SIZE_CONSTANT / 2, SIZE_CONSTANT * 2,'white',turt,True)
     turt.goto(SIZE_CONSTANT * 6, SIZE_CONSTANT * 11.18)
-    turt.write('SAVE',align='center',font=('',14))
+    turt.write('SAVE',align='center',font=('',int(SIZE_CONSTANT // 2.8)))
     turt.goto(SIZE_CONSTANT * 8, SIZE_CONSTANT * 11.25)
     turt.seth(270)
     drawQuad(SIZE_CONSTANT // 2, SIZE_CONSTANT * 2,'white',turt,True)
     turt.goto(SIZE_CONSTANT * 9,SIZE_CONSTANT * 11.18)
-    turt.write('EXIT',align='center',font=('',14))
+    turt.write('EXIT',align='center',font=('',int(SIZE_CONSTANT // 2.8)))
     turt.goto(SIZE_CONSTANT * 5,SIZE_CONSTANT * 11.89)
     turt.seth(270)
     drawQuad(SIZE_CONSTANT / 2, SIZE_CONSTANT * 2,'white',turt,True)
     turt.goto(SIZE_CONSTANT * 6,SIZE_CONSTANT * 11.8)
-    turt.write('DIFFICULTY',align='center',font=('',14))
+    turt.write('DIFFICULTY',align='center',font=('',int(SIZE_CONSTANT // 2.8)))
 
 def openingWindow():
     '''Input window where the user chooses an option from a list using
@@ -342,10 +342,10 @@ def scorekeeper():
                 whtPc += 1
     color1score.clear()
     color1score.goto(SIZE_CONSTANT,SIZE_CONSTANT * 2.75)
-    color1score.write(str(blkPc),align='center',font=('',22,'bold'))
+    color1score.write(str(blkPc),align='center',font=('',int(SIZE_CONSTANT // 1.8),'bold'))
     color2score.clear()
     color2score.goto(SIZE_CONSTANT * 11, SIZE_CONSTANT * 2.75)
-    color2score.write(str(whtPc),align='center',font=('',22,'bold'))
+    color2score.write(str(whtPc),align='center',font=('',int(SIZE_CONSTANT // 1.8),'bold'))
     return blkPc, whtPc
 
 def chooseRandomColor():
@@ -370,10 +370,10 @@ def newGameAlert():
     popup.goto(SIZE_CONSTANT * 6, SIZE_CONSTANT * 5.5)
     text1 = '{0} player goes first, your color is {1}'.format(
             COLOR1.capitalize(),userColor.capitalize())
-    popup.write(text1,align='center',font=('',18))
+    popup.write(text1,align='center',font=('',int(SIZE_CONSTANT // 2.2)))
     popup.goto(SIZE_CONSTANT * 6, SIZE_CONSTANT * 7)
     text2 = 'Click to continue...'
-    popup.write(text2,align='center',font=('',18))
+    popup.write(text2,align='center',font=('',int(SIZE_CONSTANT // 2.2)))
 
 def loadGameAlert():
     '''Draws popup to alert users of their color after loaded game.'''
@@ -385,10 +385,10 @@ def loadGameAlert():
     popup.color('white')
     popup.goto(SIZE_CONSTANT * 6, SIZE_CONSTANT * 5.5)
     text1 = 'Your turn, your color is {0}'.format(userColor.capitalize())
-    popup.write(text1,align='center',font=('',18))
+    popup.write(text1,align='center',font=('',int(SIZE_CONSTANT // 2.2)))
     popup.goto(SIZE_CONSTANT * 6, SIZE_CONSTANT * 7)
     text2 = 'Click to continue...'
-    popup.write(text2,align='center',font=('',18))
+    popup.write(text2,align='center',font=('',int(SIZE_CONSTANT // 2.2)))
 
 def userClickInput(x,y):
     '''Takes the input from a user click and depending the values executes the
@@ -755,13 +755,13 @@ def endGame():
     drawQuad(SIZE_CONSTANT * 7,SIZE_CONSTANT * 7,'#333',popup)
     popup.color('white')
     popup.goto(SIZE_CONSTANT * 6,SIZE_CONSTANT * 5.5)
-    popup.write('Game Over',align='center',font=('',22,''))
+    popup.write('Game Over',align='center',font=('',int(SIZE_CONSTANT // 1.8),''))
     if winner != 'draw':
         popup.goto(SIZE_CONSTANT * 6,SIZE_CONSTANT * 7.5)
-        popup.write('{0} Wins!!!'.format(winner),align='center',font=('',22,''))
+        popup.write('{0} Wins!!!'.format(winner),align='center',font=('',int(SIZE_CONSTANT // 1.8),''))
     else:
         popup.goto(SIZE_CONSTANT * 6, SIZE_CONSTANT * 7.5)
-        popup.write('It\'s a draw!',align='center',font=('',22,''))
+        popup.write('It\'s a draw!',align='center',font=('',int(SIZE_CONSTANT // 1.8),''))
 
 def saveGame():
     '''When the user clicks the save 'button' they will be given a dialogue in
@@ -798,7 +798,7 @@ def rules():
     drawQuad(SIZE_CONSTANT * 7, SIZE_CONSTANT * 7,'#333',popup)
     popup.color('white')
     popup.goto(SIZE_CONSTANT * 6,SIZE_CONSTANT * 5.5)
-    popup.write('Under Construction',align='center',font=('',22,''))
+    popup.write('Under Construction',align='center',font=('',int(SIZE_CONSTANT // 1.8),''))
 
 def newGame():
     ''' Creates a new game. '''
