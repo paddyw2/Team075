@@ -9,18 +9,85 @@ import time
 from sys import exit
 import turtle as tt
 from random import randrange
-#constant
-SQUARESIZE = 80
-TOPLEFT = (SQUARESIZE*2,SQUARESIZE*2)
-BOARDWIDTH = SQUARESIZE*8
-BUTTONHEIGHT = SQUARESIZE/2
-BUTTONWIDTH = SQUARESIZE*2
-PIECESIZE = SQUARESIZE - 4
+
+# Game Description
+#
+# sources: http://www.samsoft.org.uk/reversi/strategy.htm
+# used this link for the position value based AI2 and AI3
+
+
+# Global variables used to initialize the game window.
+SIZE_CONSTANT = 60
+ROWS = 8
+BOARD_SIZE = SIZE_CONSTANT * ROWS
+wn = tt.Screen()
+wn.setup(startx=None,starty=None)
+wn.screensize(SIZE_CONSTANT * 22,SIZE_CONSTANT * 22)
+wn.setworldcoordinates(0,SIZE_CONSTANT * 12,SIZE_CONSTANT * 12,0)
+try:
+    bgdir = os.path.join(os.getcwd(),'img')
+    bgpic = os.path.join(bgdir,'table.gif')
+    wn.bgpic(bgpic)
+except:
+    wn.bgcolor("green")
+wn.title('PYTHON REVERSI')
+wn.tracer(0)
+
+setup = tt.Turtle()
+setup.ht()
+setup.pu()
+
+# Global variables and constants
+COLOR1 = 'black'
+COLOR2 = 'white'
+
+piece = tt.Turtle()
+piece.ht()
+piece.pu()
+
+color1score = tt.Turtle()
+color1score.ht()
+color1score.pu()
+color1score.color(COLOR1)
+
+color2score = tt.Turtle()
+color2score.ht()
+color2score.pu()
+color2score.color(COLOR2)
+
+popup = tt.Turtle()
+popup.ht()
+popup.pu()
+
+turnturt = tt.Turtle()
+turnturt.pensize(5)
+turnturt.ht()
+turnturt.pu()
+
+difficultySetting = 0
+userColor = ''
+playerTurn = COLOR1
+origGameState = [['O','O','O','O','O','O','O','O'],
+                 ['O','O','O','O','O','O','O','O'],
+                 ['O','O','O','O','O','O','O','O'],
+                 ['O','O','O','O','O','O','O','O'],
+                 ['O','O','O','O','O','O','O','O'],
+                 ['O','O','O','O','O','O','O','O'],
+                 ['O','O','O','O','O','O','O','O'],
+                 ['O','O','O','O','O','O','O','O']]
+activePopup = False
+gameHasEnded = False
+moveInProgress = False
+gameState = copy.deepcopy(origGameState)
+dirList = [[0, 1], [0, -1], [1, 0], [-1, 0], [1, 1], [1, -1], [-1, 1], [-1, -1]]
+
+
+# game functions
+
 def setupGameboard():
     '''Sets up the gameboard by drawing the grid and surrounding items'''
-    
-    setup.goto(TOPLEFT)
-    drawQuad(BOARDWIDTH,BOARDWIDTH,'#228B22',setup)
+    setup.goto(SIZE_CONSTANT * 2, SIZE_CONSTANT * 2)
+    drawQuad(BOARD_SIZE, BOARD_SIZE,'#228B22',setup)
     drawGrid(setup)
     writeTitle(setup)
     drawButtons(setup)
@@ -71,7 +138,7 @@ def drawGrid(turt):
     '''
     turt.color('#AAA')
     drawLines(turt)
-    turt.goto(SQUARESIZE*10,SQUARESIZE*2)
+    turt.goto(SIZE_CONSTANT * 10, SIZE_CONSTANT * 2)
     turt.lt(90)
     drawLines(turt)
 
@@ -83,21 +150,21 @@ def drawLines(turt):
     '''
     for i in range(9):
         turt.pd()
-        turt.fd(BOARDWIDTH)
+        turt.fd(BOARD_SIZE)
         turt.pu()
-        turt.fd(-BOARDWIDTH)
+        turt.fd(-BOARD_SIZE)
         turt.lt(90)
-        turt.fd(SQUARESIZE)
+        turt.fd(SIZE_CONSTANT)
         turt.lt(-90)
 
 def writeTitle(turt):
     '''Write 'REVERSI' with drop shadow above grid'''
-    turt.goto((SQUARESIZE*6+2),(SQUARESIZE*1.5+2))
+    turt.goto(SIZE_CONSTANT * 6.05, SIZE_CONSTANT * 1.55)
     turt.color('#000')
     turt.pd()
     turt.write('*  R  E  V  E  R  S  I *', align='center', font=('',40,'bold'))
     turt.pu()
-    turt.goto((SQUARESIZE*6),(SQUARESIZE*1.5))
+    turt.goto(SIZE_CONSTANT * 6, SIZE_CONSTANT * 1.5)
     turt.color('#FFF')
     turt.pd()
     turt.write('*  R  E  V  E  R  S  I *', align='center', font=('',40,'bold'))
@@ -110,21 +177,26 @@ def drawButtons(turt):
     Argument:
     turt (Turtle) -- the Turtle used to draw the buttons
     '''
-    turt.goto(80,450)
+    turt.goto(SIZE_CONSTANT * 2, SIZE_CONSTANT * 11.25)
     turt.seth(270)
-    drawQuad(BUTTONHEIGHT,BUTTONWIDTH,'white',turt,True)
-    turt.goto(120,447)
+    drawQuad(SIZE_CONSTANT / 2, SIZE_CONSTANT * 2,'white',turt,True)
+    turt.goto(SIZE_CONSTANT * 3,SIZE_CONSTANT * 11.18)
     turt.write('RULES',align='center',font=('',14))
-    turt.goto(200,450)
+    turt.goto(SIZE_CONSTANT * 5,SIZE_CONSTANT * 11.25)
     turt.seth(270)
-    drawQuad(BUTTONHEIGHT,BUTTONWIDTH,'white',turt,True)
-    turt.goto(240,447)
+    drawQuad(SIZE_CONSTANT / 2, SIZE_CONSTANT * 2,'white',turt,True)
+    turt.goto(SIZE_CONSTANT * 6, SIZE_CONSTANT * 11.18)
     turt.write('SAVE',align='center',font=('',14))
-    turt.goto(320,450)
+    turt.goto(SIZE_CONSTANT * 8, SIZE_CONSTANT * 11.25)
     turt.seth(270)
-    drawQuad(BUTTONHEIGHT,BUTTONWIDTH,'white',turt,True)
-    turt.goto(360,447)
+    drawQuad(SIZE_CONSTANT // 2, SIZE_CONSTANT * 2,'white',turt,True)
+    turt.goto(SIZE_CONSTANT * 9,SIZE_CONSTANT * 11.18)
     turt.write('EXIT',align='center',font=('',14))
+    turt.goto(SIZE_CONSTANT * 5,SIZE_CONSTANT * 11.89)
+    turt.seth(270)
+    drawQuad(SIZE_CONSTANT / 2, SIZE_CONSTANT * 2,'white',turt,True)
+    turt.goto(SIZE_CONSTANT * 6,SIZE_CONSTANT * 11.8)
+    turt.write('DIFFICULTY',align='center',font=('',14))
 
 def openingWindow():
     '''Input window where the user chooses an option from a list using
@@ -132,12 +204,24 @@ def openingWindow():
     button is pressed the game exits, otherwise it returns the integer value of
     the input.
     '''
-    userIn = wn.numinput('','WELCOME TO REVERSI!\n\nChoose an option or Cancel '
+    userIn = wn.numinput('Welcome','WELCOME TO REVERSI!\n\nChoose an option or Cancel '
                          'to quit.\n\n1) New Game\n2) Load Game\n',1,1,3)
     if userIn == None:
         exit()
     else:
         return int(userIn)
+
+def changeDifficulty():
+    '''Change difficultySetting.'''
+    global difficultySetting
+    difflist = ["Easy", "Medium", "Difficult"]
+    userIn = wn.numinput('Change Difficulty','Current difficulty setting: '+difflist[difficultySetting]+'\n\nChoose an option:'
+                         '\n\n1) Easy\n2) Medium\n3) Difficult',1,1,3)
+    if userIn == None:
+        return
+    else:
+        difficultySetting = int(userIn) - 1
+        return difficultySetting
 
 def drawInitialPieces():
     '''Commands to draw the initial 4 pieces of a new game'''
@@ -156,15 +240,15 @@ def drawPiece(col,row,color):
     color (string) -- the color of the game piece to be drawn
     '''
     piece.pu()
-    xCoord = col * SQUARESIZE + SQUARESIZE*2
-    yCoord = row * SQUARESIZE + SQUARESIZE*2
+    xCoord = col * SIZE_CONSTANT + SIZE_CONSTANT * 2
+    yCoord = row * SIZE_CONSTANT + SIZE_CONSTANT * 2
     piece.goto(xCoord+2,yCoord+2)
     global gameState
     if color == COLOR1:
         gameState[row][col] = 'B'
     else:
         gameState[row][col] = 'W'
-    drawQuad(PIECESIZE,PIECESIZE,color,piece)
+    drawQuad(SIZE_CONSTANT - 4,SIZE_CONSTANT - 4,color,piece)
     scorekeeper()
 
 def loadGame():
@@ -176,59 +260,72 @@ def loadGame():
     '''Getting the path to the savedGames directory and appending saved games to
     gamesList.
     '''
-    cwd = os.getcwd()
-    savedDir = os.path.join(cwd,'savedGames')
-    for file_ in os.listdir(savedDir):
-        if file_.endswith('.reversi'):
-            gamesList.append(file_)
-    '''Bring up user input window and wait for numberical input that corresponds
-    to a game file.
-    '''
-    txt = ''
-    for i in range(len(gamesList)):
-        txt += '\n' + str(i + 1) + ') ' + str(os.path.splitext(gamesList[i])[0])
-    userIn = (wn.numinput('Load Game','Enter number of a saved game:' +
-             txt,None,1,len(gamesList)))
-    while userIn == None:
+    try:
+        cwd = os.getcwd()
+        savedDir = os.path.join(cwd,'savedGames')
+        for file_ in os.listdir(savedDir):
+            if file_.endswith('.reversi'):
+                gamesList.append(file_)
+        # Bring up user input window and wait for numberical input that corresponds
+        # to a game file.
+        txt = ''
+        for i in range(len(gamesList)):
+            txt += '\n' + str(i + 1) + ') ' + str(os.path.splitext(gamesList[i])[0])
         userIn = (wn.numinput('Load Game','Enter number of a saved game:' +
-                  txt,None,1,len(gamesList)))
-    userIn = int(userIn)
-    '''Opens the file selected by the user and reads the contents'''
-    inFile = os.path.join(savedDir,gamesList[userIn-1])
-    with open(inFile, 'r') as game:
-        lines = game.readlines()
-        newGameState = []
-        for i in range(len(lines)):
-            if i < 8:
-                row = list(lines[i].strip('\n'))
-                newGameState.append(row)
-            elif i == 8:
-                lastLine = lines[i].strip()
-    '''Change global variables to reflect where the game was when user saved.'''
-    colorDict = {'COLOR1' : COLOR1, 'COLOR2' : COLOR2}
-    global gameState, playerTurn, userColor
-    gameState = newGameState
-    playerTurn = colorDict[lastLine]
-    userColor = colorDict[lastLine]
-    drawLoadedPieces()
+                 txt,None,1,len(gamesList)))
+        while userIn == None:
+            userIn = (wn.numinput('Load Game','Enter number of a saved game:' +
+                      txt,None,1,len(gamesList)))
+        userIn = int(userIn)
+        # Opens the file selected by the user and reads the contents
+        inFile = os.path.join(savedDir,gamesList[userIn-1])
+        with open(inFile, 'r') as game:
+            lines = game.readlines()
+            newGameState = []
+            for i in range(len(lines)):
+                if i < ROWS:
+                    row = list(lines[i].strip('\n'))
+                    newGameState.append(row)
+                elif i == ROWS:
+                    lastLine = lines[i].strip()
+        # Change global variables to reflect where the game was when user saved.'''
+        colorDict = {'COLOR1' : COLOR1, 'COLOR2' : COLOR2}
+        global gameState, playerTurn, userColor
+        gameState = newGameState
+        playerTurn = colorDict[lastLine]
+        userColor = colorDict[lastLine]
+        drawLoadedPieces()
+    except:
+        print("The savedGames directory does not exist.")
+        newGame()
 
 def drawLoadedPieces():
     '''Uses gameState to draw all the pieces from the saved game.'''
     for row in range(len(gameState)):
         for col in range(len(gameState[row])):
             if gameState[row][col] == 'B':
-                color = COLOR1
-                xCoord = col * SQUARESIZE + SQUARESIZE*2
-                yCoord = row * SQUARESIZE + SQUARESIZE*2
-                piece.goto(xCoord+2,yCoord+2)
-                drawQuad(PIECESIZE,PIECESIZE,color,piece)
+                drawPiece(row, col, COLOR1)
             elif gameState[row][col] == 'W':
-                color = COLOR2
-                xCoord = col * SQUARESIZE + SQUARESIZE*2
-                yCoord = row * SQUARESIZE + SQUARESIZE*2
-                piece.goto(xCoord+2,yCoord+2)
-                drawQuad(PIECESIZE,PIECESIZE,color,piece)
+                drawPiece(row, col, COLOR2)
     scorekeeper()
+
+def turnIndicator():
+#Draws a line under the score of the current player's turn
+
+    if playerTurn == COLOR1:
+        turnturt.clear()
+        turnturt.color(COLOR1)
+        turnturt.goto(SIZE_CONSTANT * 0.63,SIZE_CONSTANT * 2.75)
+        turnturt.pd()
+        turnturt.fd(SIZE_CONSTANT - 10)
+        turnturt.pu()
+    else:
+        turnturt.clear()
+        turnturt.color(COLOR2)
+        turnturt.goto(SIZE_CONSTANT * 10.63,SIZE_CONSTANT * 2.75)
+        turnturt.pd()
+        turnturt.fd( SIZE_CONSTANT - 10)
+        turnturt.pu()
 
 def scorekeeper():
     '''Uses gameState to count the number of each player's pieces and displays
@@ -236,6 +333,7 @@ def scorekeeper():
     '''
     blkPc = 0
     whtPc = 0
+    turnIndicator()
     for i in range(len(gameState)):
         for j in range(len(gameState[i])):
             if gameState[i][j] == 'B':
@@ -243,10 +341,10 @@ def scorekeeper():
             if gameState[i][j] == 'W':
                 whtPc += 1
     color1score.clear()
-    color1score.goto(40,110)
+    color1score.goto(SIZE_CONSTANT,SIZE_CONSTANT * 2.75)
     color1score.write(str(blkPc),align='center',font=('',22,'bold'))
     color2score.clear()
-    color2score.goto(440,110)
+    color2score.goto(SIZE_CONSTANT * 11, SIZE_CONSTANT * 2.75)
     color2score.write(str(whtPc),align='center',font=('',22,'bold'))
     return blkPc, whtPc
 
@@ -265,15 +363,15 @@ def newGameAlert():
     '''Draws popup to alert users of their color.'''
     global activePopup
     activePopup = True
-    popup.goto(100,300)
+    popup.goto(SIZE_CONSTANT * 2.5,SIZE_CONSTANT * 7.5)
     popup.seth(270)
-    drawQuad(280,120,'#333',popup)
+    drawQuad(SIZE_CONSTANT * 7,SIZE_CONSTANT * 3,'#333',popup)
     popup.color('white')
-    popup.goto(240,220)
+    popup.goto(SIZE_CONSTANT * 6, SIZE_CONSTANT * 5.5)
     text1 = '{0} player goes first, your color is {1}'.format(
             COLOR1.capitalize(),userColor.capitalize())
     popup.write(text1,align='center',font=('',18))
-    popup.goto(240,280)
+    popup.goto(SIZE_CONSTANT * 6, SIZE_CONSTANT * 7)
     text2 = 'Click to continue...'
     popup.write(text2,align='center',font=('',18))
 
@@ -281,14 +379,14 @@ def loadGameAlert():
     '''Draws popup to alert users of their color after loaded game.'''
     global activePopup
     activePopup = True
-    popup.goto(100,300)
+    popup.goto(SIZE_CONSTANT * 2.5, SIZE_CONSTANT * 7.5)
     popup.seth(270)
-    drawQuad(280,120,'#333',popup)
+    drawQuad(SIZE_CONSTANT * 7, SIZE_CONSTANT * 6,'#333',popup)
     popup.color('white')
-    popup.goto(240,220)
+    popup.goto(SIZE_CONSTANT * 6, SIZE_CONSTANT * 5.5)
     text1 = 'Your turn, your color is {0}'.format(userColor.capitalize())
     popup.write(text1,align='center',font=('',18))
-    popup.goto(240,280)
+    popup.goto(SIZE_CONSTANT * 6, SIZE_CONSTANT * 7)
     text2 = 'Click to continue...'
     popup.write(text2,align='center',font=('',18))
 
@@ -300,23 +398,24 @@ def userClickInput(x,y):
     x (float) -- x coordinate of where the user clicked
     y (float) -- y coordinate of where the user clicked
     '''
-    global activePopup
-    global gameHasEnded
+    global activePopup, gameHasEnded, moveInProgress
     if activePopup == True:
         popup.clear()
         activePopup = False
         if gameHasEnded:
-            newGame()
             gameHasEnded = False
+            newGame()
     else:
-        if (80 <= x <= 400) and (80 <= y <= 400):
+        if (SIZE_CONSTANT * 2 <= x <= SIZE_CONSTANT * 10) and (SIZE_CONSTANT * 2 <= y <= SIZE_CONSTANT * 10) and (not moveInProgress):
             userMove(x,y)
-        elif (80 <= x <= 160) and (430 <= y <=450):
+        elif (SIZE_CONSTANT * 2 <= x <= SIZE_CONSTANT * 4) and (SIZE_CONSTANT * 10.75 <= y <=SIZE_CONSTANT * 11.25):
             rules()
-        elif (200 <= x <= 280) and (430 <= y <=450):
+        elif (SIZE_CONSTANT * 5 <= x <= SIZE_CONSTANT * 7) and ( SIZE_CONSTANT * 10.5 <= y <= SIZE_CONSTANT * 11.25):
             saveGame()
-        elif (320 <= x <= 400) and (430 <= y <=450):
+        elif (SIZE_CONSTANT * 8 <= x <= SIZE_CONSTANT * 10) and (SIZE_CONSTANT * 10.75 <= y <= SIZE_CONSTANT * 11.25):
             exit()
+        elif (SIZE_CONSTANT * 5 <= x <= SIZE_CONSTANT * 7) and (SIZE_CONSTANT * 11.38 <= y <= SIZE_CONSTANT * 11.88):
+            changeDifficulty()
 
 def userMove(xCoord, yCoord):
     '''Performs the actions a user needs in order to make their move. First by
@@ -330,10 +429,11 @@ def userMove(xCoord, yCoord):
     yCoord (int) -- y value from input click
     userColor (str) -- the user's piece color
     '''
-    global playerTurn
+    global playerTurn, moveInProgress
+    moveInProgress = True
     validList = getValidMoves()
-    gridX = int(xCoord // SQUARESIZE - 2)
-    gridY = int(yCoord // SQUARESIZE - 2)
+    gridX = int(xCoord // SIZE_CONSTANT - 2)
+    gridY = int(yCoord // SIZE_CONSTANT - 2)
     if [gridX,gridY] in validList:
         drawPiece(gridX,gridY,playerTurn)
         flipList = []
@@ -347,9 +447,13 @@ def userMove(xCoord, yCoord):
             playerTurn = playerSwap()
             validList = getValidMoves()
             if len(validList) == 0:
+                moveInProgress = False
                 endGame()
         else:
+            moveInProgress = False
             computerMove()
+    # to take into account invalid board clicks
+    moveInProgress = False
 
 def getValidMoves():
     '''Finds the pieces for the current player and uses their coordinates and
@@ -450,7 +554,8 @@ def playerSwap():
 
 def computerMove():
     '''Performs the functions allowing the AI to take its turn.'''
-    global playerTurn
+    global playerTurn, moveInProgress
+    moveInProgress = True
     time.sleep(0.5)
     validList = getValidMoves()
     # AI based on diff setting
@@ -474,9 +579,13 @@ def computerMove():
         playerTurn = playerSwap()
         validList = getValidMoves()
         if len(validList) == 0:
+            moveInProgress = False
             endGame()
         else:
             computerMove()
+    else:
+        turnIndicator()
+        moveInProgress = False
 
 def AI1(inList):
     '''Calculates the optimal move for the AI in which its score increases the
@@ -507,9 +616,14 @@ def AI1(inList):
     bestMove = bestList[randIndex]
     return bestMove[0],bestMove[1]
 
-# choosing moves by their position worth
 def AI2(possibleMoves):
-    # coordinates ranked by favourability
+    '''Chooses best move by their position worth. If there is
+    a corner move, choose that. If not, continue to next best
+    category, etc.
+
+    Arguments:
+    possibleMoves (list) -- the list of valid moves for the AI
+    '''
     best99 = [[0,0], [0,7],[7,0], [7,7]]
     second8 = [[0,2],[2,0],[0,5],[5,0],[7,2],[2,7],[7,5],[5,7]]
     third7 = [[2,2], [5,2],[2,5],[5,5]]
@@ -563,10 +677,14 @@ def AI2(possibleMoves):
         else:
 	        print("We have a problem")
 
-
-# choosing moves by their position worth, with extra twist
 def AI3(possibleMoves):
-    # coordinates ranked by favourability
+    '''Follows same principles as AI2 function, except that
+    if there are moves that rank second to fifth, the move
+    that takes the most pieces is chosen.
+
+    Arguments:
+    possibleMoves (list) -- the list of valid moves for the AI
+    '''
     best99 = [[0,0], [0,7],[7,0], [7,7]]
     second8 = [[0,2],[2,0],[0,5],[5,0],[7,2],[2,7],[7,5],[5,7]]
     third7 = [[2,2], [5,2],[2,5],[5,5]]
@@ -584,7 +702,7 @@ def AI3(possibleMoves):
 
     # takes 2nd, 3rd, 4th and 5th best moves, and picks the one
     # that takes most pieces
-    refinedMoves = []    
+    refinedMoves = []
     for coord in possibleMoves:
         if coord in (second8 + third7 + fourth6 + fifth4):
 	        refinedMoves.append([coord[0], coord[1]])
@@ -620,12 +738,10 @@ def AI3(possibleMoves):
 def endGame():
     '''Once no more move can be made the game will end and a popup displaying
     the winning color will be made.'''
-    #global endgameWindowActive
     global activePopup
     global gameHasEnded
     gameHasEnded = True
     activePopup = True
-    #endgameWindowActive = True
     score1, score2 = scorekeeper()
     if score1 > score2:
         winner = COLOR1.capitalize()
@@ -634,54 +750,58 @@ def endGame():
     else:
         winner = 'Draw'
     popup.home()
-    popup.goto(100,380)
+    popup.goto(SIZE_CONSTANT * 5,SIZE_CONSTANT * 9.5)
     popup.seth(270)
-    drawQuad(280,280,'#333',popup)
+    drawQuad(SIZE_CONSTANT * 7,SIZE_CONSTANT * 7,'#333',popup)
     popup.color('white')
-    popup.goto(240,220)
+    popup.goto(SIZE_CONSTANT * 6,SIZE_CONSTANT * 5.5)
     popup.write('Game Over',align='center',font=('',22,''))
     if winner != 'draw':
-        popup.goto(240,300)
+        popup.goto(SIZE_CONSTANT * 6,SIZE_CONSTANT * 7.5)
         popup.write('{0} Wins!!!'.format(winner),align='center',font=('',22,''))
     else:
-        popup.goto(240,300)
+        popup.goto(SIZE_CONSTANT * 6, SIZE_CONSTANT * 7.5)
         popup.write('It\'s a draw!',align='center',font=('',22,''))
 
 def saveGame():
     '''When the user clicks the save 'button' they will be given a dialogue in
     which they can save the game with a unique name.'''
     gamesList = []
-    cwd = os.getcwd()
-    savedDir = os.path.join(cwd,'savedGames')
-    for file_ in os.listdir(savedDir):
-        filename, fileext = os.path.splitext(file_)
-        if fileext == '.reversi':
-            gamesList.append(filename)
-    saveName = wn.textinput('','Name of game:')
-    while saveName in gamesList:
-        saveName = wn.textinput('','File exists.\nName of game:')
-    if saveName != None:
-        cwd=os.getcwd()
-        outFile = os.path.join(cwd,'savedGames',saveName + '.reversi')
-        colorDict = {COLOR1:'COLOR1',COLOR2:'COLOR2'}
-        with open(outFile,'w') as gameFile:
-            gameFile.writelines(''.join(str(j) for j in i) +
-                                '\n' for i in gameState)
-            gameFile.write(colorDict[userColor])
+    try:
+        cwd = os.getcwd()
+        savedDir = os.path.join(cwd,'savedGames')
+        for file_ in os.listdir(savedDir):
+            filename, fileext = os.path.splitext(file_)
+            if fileext == '.reversi':
+                gamesList.append(filename)
+        saveName = wn.textinput('','Name of game:')
+        while saveName in gamesList:
+            saveName = wn.textinput('','File exists.\nName of game:')
+        if saveName != None:
+            cwd=os.getcwd()
+            outFile = os.path.join(cwd,'savedGames',saveName + '.reversi')
+            colorDict = {COLOR1:'COLOR1',COLOR2:'COLOR2'}
+            with open(outFile,'w') as gameFile:
+                gameFile.writelines(''.join(str(j) for j in i) +
+                                    '\n' for i in gameState)
+                gameFile.write(colorDict[userColor])
+    except:
+        print("The savedGames directory does not exist. Game not saved.")
 
 def rules():
     '''When the rules 'button' is clicked this will bring up a popup that will
     contain the rules of Reversi for the user to read.'''
     global activePopup
     activePopup = True
-    popup.goto(100,380)
+    popup.goto(SIZE_CONSTANT * 2.5,SIZE_CONSTANT * 9.5)
     popup.seth(270)
-    drawQuad(280,280,'#333',popup)
+    drawQuad(SIZE_CONSTANT * 7, SIZE_CONSTANT * 7,'#333',popup)
     popup.color('white')
-    popup.goto(240,220)
+    popup.goto(SIZE_CONSTANT * 6,SIZE_CONSTANT * 5.5)
     popup.write('Under Construction',align='center',font=('',22,''))
 
 def newGame():
+    ''' Creates a new game. '''
     global gameState, playerTurn
     playerTurn = COLOR1
     piece.clear()
@@ -699,79 +819,15 @@ def newGame():
         time.sleep(1)
         popup.clear()
         computerMove()
-
+        
 def main():
+    ''' Starts the game '''
     setupGameboard()
-    userIn = openingWindow()
-    if userIn == 1:
-        drawInitialPieces()
-        global userColor
-        userColor = chooseRandomColor()
-        newGameAlert()
-    elif userIn == 2:
-        loadGame()
-        loadGameAlert()
-    if userColor != playerTurn:
-        time.sleep(1)
-        popup.clear()
-        computerMove()
+    newGame()
     wn.onclick(userClickInput)
 
-'''Global variables used to initialize the game window.'''
+# call main function to start game
+if __name__ == '__main__':
+    main()
 
-wn = tt.Screen()
-wn.setup(startx=None,starty=None)
-wn.screensize(900,900)
-wn.setworldcoordinates(0,SQUARESIZE*12,SQUARESIZE*12,0)
-bgdir = os.path.join(os.getcwd(),'img')
-bgpic = os.path.join(bgdir,'table.gif')
-wn.bgpic(bgpic)
-wn.title('PYTHON REVERSI')
-wn.tracer(0)
-
-setup = tt.Turtle()
-setup.ht()
-setup.pu()
-
-'''Global variables and constants.'''
-COLOR1 = 'black'
-COLOR2 = 'white'
-
-piece = tt.Turtle()
-piece.ht()
-piece.pu()
-
-color1score = tt.Turtle()
-color1score.ht()
-color1score.pu()
-color1score.color(COLOR1)
-
-color2score = tt.Turtle()
-color2score.ht()
-color2score.pu()
-color2score.color(COLOR2)
-
-popup = tt.Turtle()
-popup.ht()
-popup.pu()
-
-difficultySetting = 2
-userColor = ''
-playerTurn = COLOR1
-origGameState = [['O','O','O','O','O','O','O','O'],
-                 ['O','O','O','O','O','O','O','O'],
-                 ['O','O','O','O','O','O','O','O'],
-                 ['O','O','O','O','O','O','O','O'],
-                 ['O','O','O','O','O','O','O','O'],
-                 ['O','O','O','O','O','O','O','O'],
-                 ['O','O','O','O','O','O','O','O'],
-                 ['O','O','O','O','O','O','O','O']]
-activePopup = False
-gameHasEnded = False
-gameState = copy.deepcopy(origGameState)
-#instructionWindowActive = False
-#endgameWindowActive = False
-dirList = [[0, 1], [0, -1], [1, 0], [-1, 0], [1, 1], [1, -1], [-1, 1], [-1, -1]]
-
-main()
 wn.mainloop()
