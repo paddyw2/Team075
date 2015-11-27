@@ -10,12 +10,13 @@ from sys import exit
 import turtle as tt
 from random import randrange
 #constant
-SQUARESIZE = 80
+SQUARESIZE = 40
 TOPLEFT = (SQUARESIZE*2,SQUARESIZE*2)
 BOARDWIDTH = SQUARESIZE*8
 BUTTONHEIGHT = SQUARESIZE/2
 BUTTONWIDTH = SQUARESIZE*2
 PIECESIZE = SQUARESIZE - 4
+BUTTONNUM = 3
 def setupGameboard():
     '''Sets up the gameboard by drawing the grid and surrounding items'''
     
@@ -110,22 +111,18 @@ def drawButtons(turt):
     Argument:
     turt (Turtle) -- the Turtle used to draw the buttons
     '''
-    turt.goto(80,450)
-    turt.seth(270)
-    drawQuad(BUTTONHEIGHT,BUTTONWIDTH,'white',turt,True)
-    turt.goto(120,447)
+    for i in range (BUTTONNUM):
+        turt.goto(SQUARESIZE*((i+1)*3-1), SQUARESIZE*11.25)
+        turt.seth(270)
+        drawQuad(BUTTONHEIGHT,BUTTONWIDTH,'white',turt,True)
+        
+    #text to each button
+    turt.goto(SQUARESIZE*3,(SQUARESIZE*11.25-SQUARESIZE/13.33))
     turt.write('RULES',align='center',font=('',14))
-    turt.goto(200,450)
-    turt.seth(270)
-    drawQuad(BUTTONHEIGHT,BUTTONWIDTH,'white',turt,True)
-    turt.goto(240,447)
+    turt.goto(SQUARESIZE*6,(SQUARESIZE*11.25-SQUARESIZE/13.33))
     turt.write('SAVE',align='center',font=('',14))
-    turt.goto(320,450)
-    turt.seth(270)
-    drawQuad(BUTTONHEIGHT,BUTTONWIDTH,'white',turt,True)
-    turt.goto(360,447)
-    turt.write('EXIT',align='center',font=('',14))
-
+    turt.goto(SQUARESIZE*9,(SQUARESIZE*11.25-SQUARESIZE/13.33))
+    turt.write('EXIT',align='center',font=('',14))    
 def openingWindow():
     '''Input window where the user chooses an option from a list using
     numeric input. Can start a new game or load a saved game. If the Cancel
@@ -243,10 +240,10 @@ def scorekeeper():
             if gameState[i][j] == 'W':
                 whtPc += 1
     color1score.clear()
-    color1score.goto(40,110)
+    color1score.goto(SQUARESIZE,SQUARESIZE*3-10)
     color1score.write(str(blkPc),align='center',font=('',22,'bold'))
     color2score.clear()
-    color2score.goto(440,110)
+    color2score.goto(SQUARESIZE*11,SQUARESIZE*3-10)
     color2score.write(str(whtPc),align='center',font=('',22,'bold'))
     return blkPc, whtPc
 
@@ -265,15 +262,15 @@ def newGameAlert():
     '''Draws popup to alert users of their color.'''
     global activePopup
     activePopup = True
-    popup.goto(100,300)
+    popup.goto(SQUARESIZE*2.5,SQUARESIZE*7.5)
     popup.seth(270)
-    drawQuad(280,120,'#333',popup)
+    drawQuad(SQUARESIZE*7,SQUARESIZE*3,'#333',popup)
     popup.color('white')
-    popup.goto(240,220)
+    popup.goto(SQUARESIZE*6,SQUARESIZE*5.5)
     text1 = '{0} player goes first, your color is {1}'.format(
             COLOR1.capitalize(),userColor.capitalize())
     popup.write(text1,align='center',font=('',18))
-    popup.goto(240,280)
+    popup.goto(SQUARESIZE*6,SQUARESIZE*7)
     text2 = 'Click to continue...'
     popup.write(text2,align='center',font=('',18))
 
@@ -309,7 +306,7 @@ def userClickInput(x,y):
             newGame()
             gameHasEnded = False
     else:
-        if (80 <= x <= 400) and (80 <= y <= 400):
+        if (SQUARESIZE*2 <= x <= SQUARESIZE**10) and (SQUARESIZE*2 <= y <= SQUARESIZE*10):
             userMove(x,y)
         elif (80 <= x <= 160) and (430 <= y <=450):
             rules()
