@@ -17,12 +17,13 @@ from random import randrange
 
 
 # Global variables used to initialize the game window.
-SIZE_CONSTANT = 35 # change to 40 to view original size
+SIZE_CONSTANT = 40 # change to 40 to view original size
 ROWS = 8
 BOARD_SIZE = SIZE_CONSTANT * ROWS
 BUTTONWIDTH = SIZE_CONSTANT*2
 BUTTONHEIGHT = SIZE_CONSTANT/2
 FONTSIZE = int(SIZE_CONSTANT // 2.2)
+FONTSIZE_SMALL = int(SIZE_CONSTANT // 2.8)
 FONTSIZE_LARGE = int(SIZE_CONSTANT // 1.8)
 
 wn = tt.Screen()
@@ -66,7 +67,7 @@ popup.ht()
 popup.pu()
 
 turnturt = tt.Turtle()
-turnturt.pensize(5)
+turnturt.pensize(SIZE_CONSTANT * 0.1)
 turnturt.ht()
 turnturt.pu()
 
@@ -189,22 +190,22 @@ def drawButtons(turt):
     turt.seth(270)
     drawQuad(BUTTONHEIGHT, BUTTONWIDTH,'white',turt,True)
     turt.goto(SIZE_CONSTANT * 3,SIZE_CONSTANT * 11.18)
-    turt.write('RULES',align='center',font=('',int(SIZE_CONSTANT // 2.8)))
+    turt.write('RULES',align='center',font=('',FONTSIZE_SMALL))
     turt.goto(SIZE_CONSTANT * 5,SIZE_CONSTANT * 11.25)
     turt.seth(270)
     drawQuad(BUTTONHEIGHT, BUTTONWIDTH,'white',turt,True)
     turt.goto(SIZE_CONSTANT * 6, SIZE_CONSTANT * 11.18)
-    turt.write('SAVE',align='center',font=('',int(SIZE_CONSTANT // 2.8)))
+    turt.write('SAVE',align='center',font=('',FONTSIZE_SMALL))
     turt.goto(SIZE_CONSTANT * 8, SIZE_CONSTANT * 11.25)
     turt.seth(270)
     drawQuad(BUTTONHEIGHT, BUTTONWIDTH,'white',turt,True)
     turt.goto(SIZE_CONSTANT * 9,SIZE_CONSTANT * 11.18)
-    turt.write('EXIT',align='center',font=('',int(SIZE_CONSTANT // 2.8)))
+    turt.write('EXIT',align='center',font=('',FONTSIZE_SMALL))
     turt.goto(SIZE_CONSTANT * 5,SIZE_CONSTANT * 11.89)
     turt.seth(270)
     drawQuad(BUTTONHEIGHT, BUTTONWIDTH,'white',turt,True)
     turt.goto(SIZE_CONSTANT * 6,SIZE_CONSTANT * 11.8)
-    turt.write('DIFFICULTY',align='center',font=('',int(SIZE_CONSTANT // 2.8)))
+    turt.write('DIFFICULTY',align='center',font=('',FONTSIZE_SMALL))
 
 def openingWindow():
     '''Input window where the user chooses an option from a list using
@@ -325,14 +326,14 @@ def turnIndicator():
         turnturt.color(COLOR1)
         turnturt.goto(SIZE_CONSTANT * 0.63,SIZE_CONSTANT * 2.75)
         turnturt.pd()
-        turnturt.fd(SIZE_CONSTANT - 10)
+        turnturt.fd(SIZE_CONSTANT * 0.75)
         turnturt.pu()
     else:
         turnturt.clear()
         turnturt.color(COLOR2)
         turnturt.goto(SIZE_CONSTANT * 10.63,SIZE_CONSTANT * 2.75)
         turnturt.pd()
-        turnturt.fd( SIZE_CONSTANT - 10)
+        turnturt.fd( SIZE_CONSTANT * 0.75)
         turnturt.pu()
 
 def scorekeeper():
