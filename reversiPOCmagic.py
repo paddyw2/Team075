@@ -31,14 +31,14 @@ import turtle as tt
 from random import randrange
 
 # global constants
-PIECE_SIZE  = 35
+PIECE_SIZE  = 60
 ROWS = 8
 BOARD_SIZE = PIECE_SIZE * ROWS
 
 BOARD_TOP_LEFT_X = - (BOARD_SIZE / 2)
 BOARD_TOP_LEFT_Y =  BOARD_SIZE / 2
 
-FONTSIZE = 12
+FONTSIZE = int(PIECE_SIZE/4)
 FONTSIZE_SMALL = FONTSIZE - 4
 FONTSIZE_LARGE = FONTSIZE + 4
 FONTSIZE_XLARGE = FONTSIZE * 2
@@ -217,7 +217,7 @@ def drawButtons(turt):
     buttonHeight = PIECE_SIZE / 2
 
     button1StartPosX = BOARD_TOP_LEFT_X
-    button1StartPosY = (- BOARD_SIZE / 2) - PIECE_SIZE
+    button1StartPosY = (- BOARD_SIZE / 2) - (PIECE_SIZE / 2)
 
     button2StartPosX = button1StartPosX + (PIECE_SIZE * 3)
     button2StartPosY = button1StartPosY
@@ -475,7 +475,7 @@ def userClickInput(x,y):
     buttonHeight = PIECE_SIZE / 2
 
     button1StartPosX = BOARD_TOP_LEFT_X
-    button1StartPosY = (- BOARD_SIZE / 2) - PIECE_SIZE
+    button1StartPosY = (- BOARD_SIZE / 2) - (PIECE_SIZE / 2)
 
     button2StartPosX = button1StartPosX + (PIECE_SIZE * 3)
     button2StartPosY = button1StartPosY
