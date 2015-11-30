@@ -1,6 +1,26 @@
 """
-Team 075: Yang Li, Chi Nguyen, Patrick Withams, Greg Young
-This program creates a Reversi game using Turtle Graphics
+CPSC 231, December 2015 - Team 7 Reversi
+Team Members: Yang Li, Chi Nguyen, Patrick Withams, Greg Young
+
+Summary: This program creates a Reversi game using Turtle Graphics
+
+Sources: http://www.samsoft.org.uk/reversi/strategy.htm - The
+position value strategy for AI2() and AI3() were inspired by
+this website.
+
+Description: Reversi is a two player game that is played using an
+8x8 board. Each player starts with two alternating centred peices,
+and the aim of the game is to have the most of pieces on the board.
+Each player takes a turn and can place their piece anywhere on the
+board so that a straight or diagonal line from one of their original
+pieces to their placed piece is created with only the opponent
+pieces in the centre, essentially surrounding the opponent pieces.
+Once the move is made, the surrouded opponent pieces will be changed
+to the player's colour, and the next player will then go. If any
+player has no possible moves at any time, they simply skip their go.
+The game ends when both player's cannot take anyt more turns, and
+the winner is the player with the most pieces.
+
 """
 
 import copy
@@ -9,12 +29,6 @@ import time
 from sys import exit
 import turtle as tt
 from random import randrange
-
-# Game Description
-#
-# sources: http://www.samsoft.org.uk/reversi/strategy.htm
-# used this link for the position value based AI2 and AI3
-
 
 # global constants
 PIECE_SIZE  = 35
@@ -32,10 +46,9 @@ FONTSIZE_XLARGE = FONTSIZE * 2
 COLOR1 = 'black'
 COLOR2 = 'white'
 
-# global variables
+# turtle screen
 wn = tt.Screen()
 wn.setup(startx=None,starty=None)
-
 
 try:
     bgdir = os.path.join(os.getcwd(),'img')
@@ -46,6 +59,7 @@ except:
 wn.title('PYTHON REVERSI')
 wn.tracer(0)
 
+# turtles
 setup = tt.Turtle()
 setup.ht()
 setup.pu()
@@ -73,6 +87,8 @@ turnturt.pensize(5)
 turnturt.ht()
 turnturt.pu()
 
+# global variables
+
 difficultySetting = 0
 userColor = ''
 playerTurn = COLOR1
@@ -89,7 +105,6 @@ gameHasEnded = False
 moveInProgress = False
 gameState = copy.deepcopy(origGameState)
 dirList = [[0, 1], [0, -1], [1, 0], [-1, 0], [1, 1], [1, -1], [-1, 1], [-1, -1]]
-
 
 # game functions
 
@@ -173,7 +188,7 @@ def writeTitle(turt):
     '''Write 'REVERSI' with drop shadow above grid'''
     boardCenter = 0
     boardTitleArea = (BOARD_SIZE / 2) + PIECE_SIZE
-    
+
     turt.goto(boardCenter, boardTitleArea)
     turt.color('#000')
     turt.pd()
@@ -194,7 +209,7 @@ def drawButtons(turt):
     Argument:
     turt (Turtle) -- the Turtle used to draw the buttons
     '''
-    
+
     buttonWidth = PIECE_SIZE * 2
     buttonHeight = PIECE_SIZE / 2
 
@@ -212,7 +227,7 @@ def drawButtons(turt):
 
     button4StartPosX = button1StartPosX + (PIECE_SIZE * 3)
     button4StartPosY = (button1StartPosY - PIECE_SIZE)
-    
+
     turt.goto(button1StartPosX, button1StartPosY)
     turt.seth(270)
     drawQuad(buttonHeight, buttonWidth,'white',turt,True)
@@ -352,7 +367,7 @@ def turnIndicator():
     scoreBoardLeftY = BOARD_TOP_LEFT_Y - (PIECE_SIZE * 2)
     scoreBoardRightX = - BOARD_TOP_LEFT_X + PIECE_SIZE
     scoreBoardRightY = BOARD_TOP_LEFT_Y - (PIECE_SIZE * 2)
-    
+
     if playerTurn == COLOR1:
         turnturt.clear()
         turnturt.color(COLOR1)
@@ -376,6 +391,7 @@ def scorekeeper():
     scoreBoardLeftY = BOARD_TOP_LEFT_Y - (PIECE_SIZE * 2)
     scoreBoardRightX = - BOARD_TOP_LEFT_X + PIECE_SIZE
     scoreBoardRightY = BOARD_TOP_LEFT_Y - (PIECE_SIZE * 2)
+
     blkPc = 0
     whtPc = 0
     turnIndicator()
@@ -406,14 +422,12 @@ def chooseRandomColor():
 
 def newGameAlert():
     '''Draws popup to alert users of their color.'''
-    
-    
     global activePopup
     smallPopupStartX = BOARD_TOP_LEFT_X + (PIECE_SIZE / 2)
     smallPopupStartY = BOARD_TOP_LEFT_Y - (PIECE_SIZE * 2.5)
     smallPopupSizeX = PIECE_SIZE * 7
     smallPopupSizeY = PIECE_SIZE * 3
-    
+
     activePopup = True
     popup.goto(smallPopupStartX, smallPopupStartY)
     popup.seth(270)
@@ -434,6 +448,7 @@ def loadGameAlert():
     smallPopupStartY = BOARD_TOP_LEFT_Y - (PIECE_SIZE * 2.5)
     smallPopupSizeX = PIECE_SIZE * 7
     smallPopupSizeY = PIECE_SIZE * 3
+
     activePopup = True
     popup.goto(smallPopupStartX, smallPopupStartY)
     popup.seth(270)
@@ -454,9 +469,8 @@ def userClickInput(x,y):
     x (float) -- x coordinate of where the user clicked
     y (float) -- y coordinate of where the user clicked
     '''
-
     global activePopup, gameHasEnded, moveInProgress
-    
+
     buttonWidth = PIECE_SIZE * 2
     buttonHeight = PIECE_SIZE / 2
 
@@ -471,11 +485,10 @@ def userClickInput(x,y):
 
     button4StartPosX = button1StartPosX + (PIECE_SIZE * 3)
     button4StartPosY = (button1StartPosY - PIECE_SIZE)
-    
 
     boardCoordLeft = BOARD_TOP_LEFT_X
     boardCoordRight = BOARD_TOP_LEFT_X + BOARD_SIZE
-    
+
     if activePopup == True:
         popup.clear()
         activePopup = False
@@ -819,7 +832,6 @@ def AI3(possibleMoves):
         else:
 	        print("We have a problem")
 
-
 def endGame():
     '''Once no more move can be made the game will end and a popup displaying
     the winning color will be made.'''
@@ -828,6 +840,7 @@ def endGame():
     largePopupStartX = BOARD_TOP_LEFT_X + (PIECE_SIZE / 2)
     largePopupStartY = BOARD_TOP_LEFT_X + (BOARD_SIZE - PIECE_SIZE / 2)
     largePopupSize = (PIECE_SIZE * 7)
+
     gameHasEnded = True
     activePopup = True
     score1, score2 = scorekeeper()
@@ -886,6 +899,7 @@ def rules():
     largePopupStartX = BOARD_TOP_LEFT_X + (PIECE_SIZE / 2)
     largePopupStartY = BOARD_TOP_LEFT_X + (BOARD_SIZE - PIECE_SIZE / 2)
     largePopupSize = (PIECE_SIZE * 7)
+
     activePopup = True
     popup.goto(largePopupStartX, largePopupStartY)
     popup.seth(270)
@@ -908,7 +922,6 @@ markers in the line are captured.
 A player misses their turn if
 there are no valid moves.
     ''',align='center',font=('',FONTSIZE,''))
-        
 
 def newGame():
     ''' Creates a new game. '''
