@@ -16,21 +16,27 @@ from random import randrange
 # used this link for the position value based AI2 and AI3
 
 
-# Global variables used to initialize the game window.
-SIZE_CONSTANT = 40 # change to 40 to view original size
+# global constants
+PIECE_SIZE  = 35
 ROWS = 8
-BOARD_SIZE = SIZE_CONSTANT * ROWS
-BUTTONWIDTH = SIZE_CONSTANT*2
-BUTTONHEIGHT = SIZE_CONSTANT/2
-FONTSIZE = int(SIZE_CONSTANT // 2.2)
-FONTSIZE_SMALL = int(SIZE_CONSTANT // 2.8)
-FONTSIZE_LARGE = int(SIZE_CONSTANT // 1.8)
+BOARD_SIZE = PIECE_SIZE * ROWS
 
+BOARD_TOP_LEFT_X = - (BOARD_SIZE / 2)
+BOARD_TOP_LEFT_Y =  BOARD_SIZE / 2
+
+FONTSIZE = 12
+FONTSIZE_SMALL = FONTSIZE - 4
+FONTSIZE_LARGE = FONTSIZE + 4
+FONTSIZE_XLARGE = FONTSIZE * 2
+
+COLOR1 = 'black'
+COLOR2 = 'white'
+
+# global variables
 wn = tt.Screen()
 wn.setup(startx=None,starty=None)
-wn.screensize(SIZE_CONSTANT * 22.5,SIZE_CONSTANT * 22.5)
-# change to world coords to SIZE_CONSTANT * 12 to avoid screen shrinkage
-wn.setworldcoordinates(0,480,480,0)
+
+
 try:
     bgdir = os.path.join(os.getcwd(),'img')
     bgpic = os.path.join(bgdir,'table.gif')
@@ -43,10 +49,6 @@ wn.tracer(0)
 setup = tt.Turtle()
 setup.ht()
 setup.pu()
-
-# Global variables and constants
-COLOR1 = 'black'
-COLOR2 = 'white'
 
 piece = tt.Turtle()
 piece.ht()
@@ -67,7 +69,7 @@ popup.ht()
 popup.pu()
 
 turnturt = tt.Turtle()
-turnturt.pensize(SIZE_CONSTANT * 0.1)
+turnturt.pensize(5)
 turnturt.ht()
 turnturt.pu()
 
@@ -93,7 +95,8 @@ dirList = [[0, 1], [0, -1], [1, 0], [-1, 0], [1, 1], [1, -1], [-1, 1], [-1, -1]]
 
 def setupGameboard():
     '''Sets up the gameboard by drawing the grid and surrounding items'''
-    setup.goto(BUTTONWIDTH, BUTTONWIDTH)
+    boardBottomLeftY = ( - BOARD_TOP_LEFT_Y)
+    setup.goto(BOARD_TOP_LEFT_X, boardBottomLeftY)
     drawQuad(BOARD_SIZE, BOARD_SIZE,'#228B22',setup)
     drawGrid(setup)
     writeTitle(setup)
@@ -143,9 +146,11 @@ def drawGrid(turt):
     Argument:
     turt (Turtle)-- the Turtle used to draw the grid
     '''
+    boardTopRightX = BOARD_TOP_LEFT_X + BOARD_SIZE
+    boardBottomRightY = (-BOARD_TOP_LEFT_Y)
     turt.color('#AAA')
     drawLines(turt)
-    turt.goto(SIZE_CONSTANT * 10, BUTTONWIDTH)
+    turt.goto(boardTopRightX, boardBottomRightY)
     turt.lt(90)
     drawLines(turt)
 
@@ -161,22 +166,25 @@ def drawLines(turt):
         turt.pu()
         turt.fd(-BOARD_SIZE)
         turt.lt(90)
-        turt.fd(SIZE_CONSTANT)
+        turt.fd(PIECE_SIZE)
         turt.lt(-90)
 
 def writeTitle(turt):
     '''Write 'REVERSI' with drop shadow above grid'''
-    turt.goto(SIZE_CONSTANT * 6.05, SIZE_CONSTANT * 1.55)
+    boardCenter = 0
+    boardTitleArea = (BOARD_SIZE / 2) + PIECE_SIZE
+    
+    turt.goto(boardCenter, boardTitleArea)
     turt.color('#000')
     turt.pd()
     turt.write('*  R  E  V  E  R  S  I *', align='center',
-    font=('',SIZE_CONSTANT,'bold'))
+    font=('',FONTSIZE_XLARGE,'bold'))
     turt.pu()
-    turt.goto(SIZE_CONSTANT * 6, SIZE_CONSTANT * 1.5)
+    turt.goto(boardCenter - 2, boardTitleArea + 2)
     turt.color('#FFF')
     turt.pd()
     turt.write('*  R  E  V  E  R  S  I *', align='center',
-    font=('',SIZE_CONSTANT,'bold'))
+    font=('',FONTSIZE_XLARGE,'bold'))
     turt.pu()
 
 def drawButtons(turt):
@@ -186,25 +194,44 @@ def drawButtons(turt):
     Argument:
     turt (Turtle) -- the Turtle used to draw the buttons
     '''
-    turt.goto(BUTTONWIDTH, SIZE_CONSTANT * 11.25)
+    
+    buttonWidth = PIECE_SIZE * 2
+    buttonHeight = PIECE_SIZE / 2
+
+    buttonWidth = PIECE_SIZE * 2
+    buttonHeight = PIECE_SIZE / 2
+
+    button1StartPosX = BOARD_TOP_LEFT_X
+    button1StartPosY = (- BOARD_SIZE / 2) - PIECE_SIZE
+
+    button2StartPosX = button1StartPosX + (PIECE_SIZE * 3)
+    button2StartPosY = button1StartPosY
+
+    button3StartPosX = button1StartPosX + (PIECE_SIZE * 6)
+    button3StartPosY = button1StartPosY
+
+    button4StartPosX = button1StartPosX + (PIECE_SIZE * 3)
+    button4StartPosY = (button1StartPosY - PIECE_SIZE)
+    
+    turt.goto(button1StartPosX, button1StartPosY)
     turt.seth(270)
-    drawQuad(BUTTONHEIGHT, BUTTONWIDTH,'white',turt,True)
-    turt.goto(SIZE_CONSTANT * 3,SIZE_CONSTANT * 11.18)
+    drawQuad(buttonHeight, buttonWidth,'white',turt,True)
+    turt.goto(button1StartPosX + PIECE_SIZE,button1StartPosY - PIECE_SIZE / 2.3)
     turt.write('RULES',align='center',font=('',FONTSIZE_SMALL))
-    turt.goto(SIZE_CONSTANT * 5,SIZE_CONSTANT * 11.25)
+    turt.goto(button2StartPosX, button2StartPosY)
     turt.seth(270)
-    drawQuad(BUTTONHEIGHT, BUTTONWIDTH,'white',turt,True)
-    turt.goto(SIZE_CONSTANT * 6, SIZE_CONSTANT * 11.18)
+    drawQuad(buttonHeight, buttonWidth,'white',turt,True)
+    turt.goto(button2StartPosX + PIECE_SIZE, button2StartPosY - PIECE_SIZE / 2.3)
     turt.write('SAVE',align='center',font=('',FONTSIZE_SMALL))
-    turt.goto(SIZE_CONSTANT * 8, SIZE_CONSTANT * 11.25)
+    turt.goto(button3StartPosX, button3StartPosY)
     turt.seth(270)
-    drawQuad(BUTTONHEIGHT, BUTTONWIDTH,'white',turt,True)
-    turt.goto(SIZE_CONSTANT * 9,SIZE_CONSTANT * 11.18)
+    drawQuad(buttonHeight, buttonWidth,'white',turt,True)
+    turt.goto(button3StartPosX + PIECE_SIZE,button3StartPosY - PIECE_SIZE / 2.3)
     turt.write('EXIT',align='center',font=('',FONTSIZE_SMALL))
-    turt.goto(SIZE_CONSTANT * 5,SIZE_CONSTANT * 11.89)
+    turt.goto(button4StartPosX,button4StartPosY)
     turt.seth(270)
-    drawQuad(BUTTONHEIGHT, BUTTONWIDTH,'white',turt,True)
-    turt.goto(SIZE_CONSTANT * 6,SIZE_CONSTANT * 11.8)
+    drawQuad(buttonHeight, buttonWidth,'white',turt,True)
+    turt.goto(button4StartPosX + PIECE_SIZE, button4StartPosY - PIECE_SIZE / 2.3)
     turt.write('DIFFICULTY',align='center',font=('',FONTSIZE_SMALL))
 
 def openingWindow():
@@ -214,7 +241,7 @@ def openingWindow():
     the input.
     '''
     userIn = wn.numinput('Welcome','WELCOME TO REVERSI!\n\nChoose an option or'
-                        'Cancel to quit.\n\n1) New Game\n2) Load Game\n',1,1,3)
+                        ' Cancel to quit.\n\n1) New Game\n2) Load Game\n',1,1,3)
     if userIn == None:
         exit()
     else:
@@ -250,15 +277,15 @@ def drawPiece(col,row,color):
     color (string) -- the color of the game piece to be drawn
     '''
     piece.pu()
-    xCoord = col * SIZE_CONSTANT + BUTTONWIDTH
-    yCoord = row * SIZE_CONSTANT + BUTTONWIDTH
+    xCoord = (col * PIECE_SIZE) + BOARD_TOP_LEFT_X
+    yCoord = (row * PIECE_SIZE) + BOARD_TOP_LEFT_X
     piece.goto(xCoord+2,yCoord+2)
     global gameState
     if color == COLOR1:
         gameState[row][col] = 'B'
     else:
         gameState[row][col] = 'W'
-    drawQuad(SIZE_CONSTANT - 4,SIZE_CONSTANT - 4,color,piece)
+    drawQuad(PIECE_SIZE - 4,PIECE_SIZE - 4,color,piece)
     scorekeeper()
 
 def loadGame():
@@ -321,25 +348,34 @@ def drawLoadedPieces():
 
 def turnIndicator():
     '''Draws a line under the score of the current player's turn.'''
+    scoreBoardLeftX = BOARD_TOP_LEFT_X - PIECE_SIZE
+    scoreBoardLeftY = BOARD_TOP_LEFT_Y - (PIECE_SIZE * 2)
+    scoreBoardRightX = - BOARD_TOP_LEFT_X + PIECE_SIZE
+    scoreBoardRightY = BOARD_TOP_LEFT_Y - (PIECE_SIZE * 2)
+    
     if playerTurn == COLOR1:
         turnturt.clear()
         turnturt.color(COLOR1)
-        turnturt.goto(SIZE_CONSTANT * 0.63,SIZE_CONSTANT * 2.75)
+        turnturt.goto(scoreBoardLeftX - (PIECE_SIZE /4),scoreBoardLeftY)
         turnturt.pd()
-        turnturt.fd(SIZE_CONSTANT * 0.75)
+        turnturt.fd(PIECE_SIZE/2)
         turnturt.pu()
     else:
         turnturt.clear()
         turnturt.color(COLOR2)
-        turnturt.goto(SIZE_CONSTANT * 10.63,SIZE_CONSTANT * 2.75)
+        turnturt.goto(scoreBoardRightX - (PIECE_SIZE/4),scoreBoardRightY)
         turnturt.pd()
-        turnturt.fd( SIZE_CONSTANT * 0.75)
+        turnturt.fd(PIECE_SIZE/2)
         turnturt.pu()
 
 def scorekeeper():
     '''Uses gameState to count the number of each player's pieces and displays
     the total beside the gameboard.
     '''
+    scoreBoardLeftX = BOARD_TOP_LEFT_X - PIECE_SIZE
+    scoreBoardLeftY = BOARD_TOP_LEFT_Y - (PIECE_SIZE * 2)
+    scoreBoardRightX = - BOARD_TOP_LEFT_X + PIECE_SIZE
+    scoreBoardRightY = BOARD_TOP_LEFT_Y - (PIECE_SIZE * 2)
     blkPc = 0
     whtPc = 0
     turnIndicator()
@@ -350,10 +386,10 @@ def scorekeeper():
             if gameState[i][j] == 'W':
                 whtPc += 1
     color1score.clear()
-    color1score.goto(SIZE_CONSTANT,SIZE_CONSTANT * 2.75)
+    color1score.goto(scoreBoardLeftX, scoreBoardLeftY)
     color1score.write(str(blkPc),align='center',font=('',FONTSIZE_LARGE,'bold'))
     color2score.clear()
-    color2score.goto(SIZE_CONSTANT * 11, SIZE_CONSTANT * 2.75)
+    color2score.goto(scoreBoardRightX, scoreBoardRightY)
     color2score.write(str(whtPc),align='center',font=('',FONTSIZE_LARGE,'bold'))
     return blkPc, whtPc
 
@@ -370,32 +406,43 @@ def chooseRandomColor():
 
 def newGameAlert():
     '''Draws popup to alert users of their color.'''
+    
+    
     global activePopup
+    smallPopupStartX = BOARD_TOP_LEFT_X + (PIECE_SIZE / 2)
+    smallPopupStartY = BOARD_TOP_LEFT_Y - (PIECE_SIZE * 2.5)
+    smallPopupSizeX = PIECE_SIZE * 7
+    smallPopupSizeY = PIECE_SIZE * 3
+    
     activePopup = True
-    popup.goto(SIZE_CONSTANT * 2.5,SIZE_CONSTANT * 7.5)
+    popup.goto(smallPopupStartX, smallPopupStartY)
     popup.seth(270)
-    drawQuad(SIZE_CONSTANT * 7,SIZE_CONSTANT * 3,'#333',popup)
+    drawQuad(smallPopupSizeX, smallPopupSizeY, '#333',popup)
     popup.color('white')
-    popup.goto(SIZE_CONSTANT * 6, SIZE_CONSTANT * 5.5)
+    popup.goto(smallPopupStartX + (smallPopupSizeX / 2), smallPopupStartY - (smallPopupSizeY / 2))
     text1 = '{0} player goes first, your color is {1}'.format(
             COLOR1.capitalize(),userColor.capitalize())
     popup.write(text1,align='center',font=('',FONTSIZE))
-    popup.goto(SIZE_CONSTANT * 6, SIZE_CONSTANT * 7)
+    popup.goto(smallPopupStartX + (smallPopupSizeX/2), smallPopupStartY - (PIECE_SIZE*2))
     text2 = 'Click to continue...'
     popup.write(text2,align='center',font=('',FONTSIZE))
 
 def loadGameAlert():
     '''Draws popup to alert users of their color after loaded game.'''
     global activePopup
+    smallPopupStartX = BOARD_TOP_LEFT_X + (PIECE_SIZE / 2)
+    smallPopupStartY = BOARD_TOP_LEFT_Y - (PIECE_SIZE * 2.5)
+    smallPopupSizeX = PIECE_SIZE * 7
+    smallPopupSizeY = PIECE_SIZE * 3
     activePopup = True
-    popup.goto(SIZE_CONSTANT * 2.5, SIZE_CONSTANT * 7.5)
+    popup.goto(smallPopupStartX, smallPopupStartY)
     popup.seth(270)
-    drawQuad(SIZE_CONSTANT * 7, SIZE_CONSTANT * 6,'#333',popup)
+    drawQuad(smallPopupSizeX, smallPopupSizeY,'#333',popup)
     popup.color('white')
-    popup.goto(SIZE_CONSTANT * 6, SIZE_CONSTANT * 5.5)
+    popup.goto(smallPopupStartX + (smallPopupSizeX / 2), smallPopupStartY - (smallPopupSizeY / 2))
     text1 = 'Your turn, your color is {0}'.format(userColor.capitalize())
     popup.write(text1,align='center',font=('',FONTSIZE))
-    popup.goto(SIZE_CONSTANT * 6, SIZE_CONSTANT * 7)
+    popup.goto(smallPopupStartX + (smallPopupSizeX/2), smallPopupStartY - (PIECE_SIZE*2))
     text2 = 'Click to continue...'
     popup.write(text2,align='center',font=('',FONTSIZE))
 
@@ -407,7 +454,28 @@ def userClickInput(x,y):
     x (float) -- x coordinate of where the user clicked
     y (float) -- y coordinate of where the user clicked
     '''
+
     global activePopup, gameHasEnded, moveInProgress
+    
+    buttonWidth = PIECE_SIZE * 2
+    buttonHeight = PIECE_SIZE / 2
+
+    button1StartPosX = BOARD_TOP_LEFT_X
+    button1StartPosY = (- BOARD_SIZE / 2) - PIECE_SIZE
+
+    button2StartPosX = button1StartPosX + (PIECE_SIZE * 3)
+    button2StartPosY = button1StartPosY
+
+    button3StartPosX = button1StartPosX + (PIECE_SIZE * 6)
+    button3StartPosY = button1StartPosY
+
+    button4StartPosX = button1StartPosX + (PIECE_SIZE * 3)
+    button4StartPosY = (button1StartPosY - PIECE_SIZE)
+    
+
+    boardCoordLeft = BOARD_TOP_LEFT_X
+    boardCoordRight = BOARD_TOP_LEFT_X + BOARD_SIZE
+    
     if activePopup == True:
         popup.clear()
         activePopup = False
@@ -415,21 +483,21 @@ def userClickInput(x,y):
             gameHasEnded = False
             newGame()
     else:
-        if ((BUTTONWIDTH <= x <= SIZE_CONSTANT * 10) and
-        (SIZE_CONSTANT * 2 <= y <= SIZE_CONSTANT * 10) and
+        if ((boardCoordLeft <= x <= boardCoordRight) and
+        (boardCoordLeft <= y <= boardCoordRight) and
         (not moveInProgress)):
             userMove(x,y)
-        elif ((BUTTONWIDTH <= x <= SIZE_CONSTANT * 4) and
-        (SIZE_CONSTANT * 10.75 <= y <=SIZE_CONSTANT * 11.25)):
+        elif ((button1StartPosX <= x <= button1StartPosX + buttonWidth) and
+        (button1StartPosY - buttonHeight <= y <=  button1StartPosY)):
             rules()
-        elif ((SIZE_CONSTANT * 5 <= x <= SIZE_CONSTANT * 7) and
-        (SIZE_CONSTANT * 10.5 <= y <= SIZE_CONSTANT * 11.25)):
+        elif ((button2StartPosX <= x <= button2StartPosX + buttonWidth) and
+        (button2StartPosY - buttonHeight <= y <=  button2StartPosY)):
             saveGame()
-        elif ((SIZE_CONSTANT * 8 <= x <= SIZE_CONSTANT * 10) and
-        (SIZE_CONSTANT * 10.75 <= y <= SIZE_CONSTANT * 11.25)):
+        elif ((button3StartPosX <= x <= button3StartPosX + buttonWidth) and
+        (button3StartPosY - buttonHeight <= y <=  button3StartPosY)):
             exit()
-        elif ((SIZE_CONSTANT * 5 <= x <= SIZE_CONSTANT * 7) and
-        (SIZE_CONSTANT * 11.38 <= y <= SIZE_CONSTANT * 11.88)):
+        elif ((button4StartPosX <= x <= button4StartPosX + buttonWidth) and
+        (button4StartPosY - buttonHeight <= y <=  button4StartPosY)):
             changeDifficulty()
 
 def userMove(xCoord, yCoord):
@@ -447,8 +515,10 @@ def userMove(xCoord, yCoord):
     global playerTurn, moveInProgress
     moveInProgress = True
     validList = getValidMoves()
-    gridX = int(xCoord // SIZE_CONSTANT - 2)
-    gridY = int(yCoord // SIZE_CONSTANT - 2)
+    gridX = int(xCoord // PIECE_SIZE - 2)
+    gridY= int(yCoord // PIECE_SIZE - 2)
+    gridX = abs(gridX + 6)
+    gridY = abs(gridY + 6)
     if [gridX,gridY] in validList:
         drawPiece(gridX,gridY,playerTurn)
         flipList = []
@@ -755,6 +825,9 @@ def endGame():
     the winning color will be made.'''
     global activePopup
     global gameHasEnded
+    largePopupStartX = BOARD_TOP_LEFT_X + (PIECE_SIZE / 2)
+    largePopupStartY = BOARD_TOP_LEFT_X + (BOARD_SIZE - PIECE_SIZE / 2)
+    largePopupSize = (PIECE_SIZE * 7)
     gameHasEnded = True
     activePopup = True
     score1, score2 = scorekeeper()
@@ -765,19 +838,21 @@ def endGame():
     else:
         winner = 'Draw'
     popup.home()
-    popup.goto(SIZE_CONSTANT * 5,SIZE_CONSTANT * 9.5)
+    popup.goto(largePopupStartX, largePopupStartY)
     popup.seth(270)
-    drawQuad(SIZE_CONSTANT * 7,SIZE_CONSTANT * 7,'#333',popup)
+    drawQuad(largePopupSize, largePopupSize,'#333',popup)
     popup.color('white')
-    popup.goto(SIZE_CONSTANT * 6,SIZE_CONSTANT * 5.5)
+    popup.goto(largePopupStartX + (largePopupSize / 2), largePopupStartY - PIECE_SIZE)
     popup.write('Game Over',align='center',font=('',FONTSIZE_LARGE,''))
     if winner != 'draw':
-        popup.goto(SIZE_CONSTANT * 6,SIZE_CONSTANT * 7.5)
+        popup.goto(largePopupStartX + (largePopupSize / 2), largePopupStartY - (PIECE_SIZE*2))
         popup.write('{0} Wins!!!'.format(winner),align='center',
         font=('',FONTSIZE_LARGE,''))
     else:
-        popup.goto(SIZE_CONSTANT * 6, SIZE_CONSTANT * 7.5)
+        popup.goto(largePopupStartX + (largePopupSize / 2), largePopupStartY - (PIECE_SIZE*2))
         popup.write('It\'s a draw!',align='center',font=('',FONTSIZE_LARGE,''))
+    popup.goto(largePopupStartX + (largePopupSize / 2), largePopupStartY - (PIECE_SIZE*4))
+    popup.write('Click to start a new game.',align='center',font=('',FONTSIZE_LARGE,''))
 
 def saveGame():
     '''When the user clicks the save 'button' they will be given a dialogue in
@@ -808,13 +883,32 @@ def rules():
     '''When the rules 'button' is clicked this will bring up a popup that will
     contain the rules of Reversi for the user to read.'''
     global activePopup
+    largePopupStartX = BOARD_TOP_LEFT_X + (PIECE_SIZE / 2)
+    largePopupStartY = BOARD_TOP_LEFT_X + (BOARD_SIZE - PIECE_SIZE / 2)
+    largePopupSize = (PIECE_SIZE * 7)
     activePopup = True
-    popup.goto(SIZE_CONSTANT * 2.5,SIZE_CONSTANT * 9.5)
+    popup.goto(largePopupStartX, largePopupStartY)
     popup.seth(270)
-    drawQuad(SIZE_CONSTANT * 7, SIZE_CONSTANT * 7,'#333',popup)
+    drawQuad(largePopupSize, largePopupSize,'#333',popup)
     popup.color('white')
-    popup.goto(SIZE_CONSTANT * 6,SIZE_CONSTANT * 5.5)
-    popup.write('Under Construction',align='center',font=('',FONTSIZE_LARGE,''))
+    popup.goto(largePopupStartX + (largePopupSize / 2), largePopupStartY - PIECE_SIZE)
+    popup.write('Reversi Rules',align='center',font=('',FONTSIZE_LARGE,''))
+    popup.goto(largePopupStartX + (largePopupSize / 2), largePopupStartY - (PIECE_SIZE*7))
+    popup.write('''
+How to play: Place your marker
+on the grid so that you make
+least one straight (horizontal,
+vertical, or diagonal) line
+between your new marker and
+another of your existing marker,
+with one or more markers
+belonging to the opponent
+between them. All opponents
+markers in the line are captured.
+A player misses their turn if
+there are no valid moves.
+    ''',align='center',font=('',FONTSIZE,''))
+        
 
 def newGame():
     ''' Creates a new game. '''
