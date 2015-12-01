@@ -31,7 +31,7 @@ import turtle as tt
 from random import randrange
 
 # global constants
-PIECE_SIZE  = 50
+PIECE_SIZE  = 70
 ROWS = 8
 BOARD_SIZE = PIECE_SIZE * ROWS
 
@@ -41,7 +41,7 @@ BOARD_TOP_LEFT_Y =  BOARD_SIZE / 2
 FONTSIZE = int(PIECE_SIZE/4)
 FONTSIZE_SMALL = FONTSIZE - 4
 FONTSIZE_LARGE = FONTSIZE + 4
-FONTSIZE_XLARGE = FONTSIZE * 4
+FONTSIZE_XLARGE = FONTSIZE * 3
 
 COLOR1 = 'black'
 COLOR2 = 'white'
@@ -488,7 +488,7 @@ def userClickInput(x,y):
     buttonHeight = PIECE_SIZE / 2
 
     button1StartPosX = BOARD_TOP_LEFT_X
-    button1StartPosY = (- BOARD_SIZE / 2) - (PIECE_SIZE / 2)
+    button1StartPosY = (- BOARD_SIZE / 2) - (PIECE_SIZE / 3)
 
     button2StartPosX = button1StartPosX + (PIECE_SIZE * 3)
     button2StartPosY = button1StartPosY
@@ -497,7 +497,7 @@ def userClickInput(x,y):
     button3StartPosY = button1StartPosY
 
     button4StartPosX = button1StartPosX + (PIECE_SIZE * 3)
-    button4StartPosY = (button1StartPosY - PIECE_SIZE)
+    button4StartPosY = (button1StartPosY - (PIECE_SIZE / 1.5))
 
     boardCoordLeft = BOARD_TOP_LEFT_X
     boardCoordRight = BOARD_TOP_LEFT_X + BOARD_SIZE
