@@ -31,7 +31,7 @@ import turtle as tt
 from random import randrange
 
 # global constants
-PIECE_SIZE  = 60
+PIECE_SIZE  = 50
 ROWS = 8
 BOARD_SIZE = PIECE_SIZE * ROWS
 
@@ -41,7 +41,7 @@ BOARD_TOP_LEFT_Y =  BOARD_SIZE / 2
 FONTSIZE = int(PIECE_SIZE/4)
 FONTSIZE_SMALL = FONTSIZE - 4
 FONTSIZE_LARGE = FONTSIZE + 4
-FONTSIZE_XLARGE = FONTSIZE * 2
+FONTSIZE_XLARGE = FONTSIZE * 4
 
 COLOR1 = 'black'
 COLOR2 = 'white'
@@ -49,6 +49,19 @@ COLOR2 = 'white'
 # turtle screen
 wn = tt.Screen()
 wn.setup(startx=None,starty=None)
+
+# world coordinates stop shrinkage, but not for fonts
+# this is the way to set standard aspects but its
+# probably not desired, unless maybe running with
+# an argument
+
+#llx = BOARD_TOP_LEFT_X - (PIECE_SIZE * 2)
+#lly = llx
+#urx = -llx
+#ury = -lly
+# wn.setworldcoordinates(llx,lly,urx,ury)
+
+
 
 try:
     bgdir = os.path.join(os.getcwd(),'img')
@@ -83,7 +96,7 @@ popup.ht()
 popup.pu()
 
 turnturt = tt.Turtle()
-turnturt.pensize(5)
+turnturt.pensize(3)
 turnturt.ht()
 turnturt.pu()
 
@@ -187,7 +200,7 @@ def drawLines(turt):
 def writeTitle(turt):
     '''Write 'REVERSI' with drop shadow above grid'''
     boardCenter = 0
-    boardTitleArea = (BOARD_SIZE / 2) + PIECE_SIZE
+    boardTitleArea = (BOARD_SIZE / 2) + (PIECE_SIZE / 2)
 
     turt.goto(boardCenter, boardTitleArea)
     turt.color('#000')
@@ -217,7 +230,7 @@ def drawButtons(turt):
     buttonHeight = PIECE_SIZE / 2
 
     button1StartPosX = BOARD_TOP_LEFT_X
-    button1StartPosY = (- BOARD_SIZE / 2) - (PIECE_SIZE / 2)
+    button1StartPosY = (- BOARD_SIZE / 2) - (PIECE_SIZE / 3)
 
     button2StartPosX = button1StartPosX + (PIECE_SIZE * 3)
     button2StartPosY = button1StartPosY
@@ -226,27 +239,27 @@ def drawButtons(turt):
     button3StartPosY = button1StartPosY
 
     button4StartPosX = button1StartPosX + (PIECE_SIZE * 3)
-    button4StartPosY = (button1StartPosY - PIECE_SIZE)
+    button4StartPosY = (button1StartPosY - (PIECE_SIZE / 1.5))
 
     turt.goto(button1StartPosX, button1StartPosY)
     turt.seth(270)
     drawQuad(buttonHeight, buttonWidth,'white',turt,True)
-    turt.goto(button1StartPosX + PIECE_SIZE,button1StartPosY - PIECE_SIZE / 2.3)
+    turt.goto(button1StartPosX + PIECE_SIZE,button1StartPosY - PIECE_SIZE / 2.5)
     turt.write('RULES',align='center',font=('',FONTSIZE_SMALL))
     turt.goto(button2StartPosX, button2StartPosY)
     turt.seth(270)
     drawQuad(buttonHeight, buttonWidth,'white',turt,True)
-    turt.goto(button2StartPosX + PIECE_SIZE, button2StartPosY - PIECE_SIZE / 2.3)
+    turt.goto(button2StartPosX + PIECE_SIZE, button2StartPosY - PIECE_SIZE / 2.5)
     turt.write('SAVE',align='center',font=('',FONTSIZE_SMALL))
     turt.goto(button3StartPosX, button3StartPosY)
     turt.seth(270)
     drawQuad(buttonHeight, buttonWidth,'white',turt,True)
-    turt.goto(button3StartPosX + PIECE_SIZE,button3StartPosY - PIECE_SIZE / 2.3)
+    turt.goto(button3StartPosX + PIECE_SIZE,button3StartPosY - PIECE_SIZE / 2.5)
     turt.write('EXIT',align='center',font=('',FONTSIZE_SMALL))
     turt.goto(button4StartPosX,button4StartPosY)
     turt.seth(270)
     drawQuad(buttonHeight, buttonWidth,'white',turt,True)
-    turt.goto(button4StartPosX + PIECE_SIZE, button4StartPosY - PIECE_SIZE / 2.3)
+    turt.goto(button4StartPosX + PIECE_SIZE, button4StartPosY - PIECE_SIZE / 2.5)
     turt.write('DIFFICULTY',align='center',font=('',FONTSIZE_SMALL))
 
 def openingWindow():
