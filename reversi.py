@@ -4,30 +4,31 @@ Team Members: Yang Li, Chi Nguyen, Patrick Withams, Greg Young
 
 Summary: This program creates a Reversi game using Turtle Graphics
 
-Sources: http://www.samsoft.org.uk/reversi/strategy.htm - The
-position value strategy for AI2() and AI3() were inspired by
-this website.
+Sources: http://www.samsoft.org.uk/reversi/strategy.htm - The position value
+strategy for AI2() and AI3() were inspired by this website.
 
-Description: Reversi is a two player game that is played using an
-8x8 board. Each player starts with two alternating centred peices,
-and the aim of the game is to have the most of pieces on the board.
-Each player takes a turn and can place their piece anywhere on the
-board so that a straight or diagonal line from one of their original
-pieces to their placed piece is created with only the opponent
-pieces in the centre, essentially surrounding the opponent pieces.
-Once the move is made, the surrouded opponent pieces will be changed
-to the player's colour, and the next player will then go. If any
-player has no possible moves at any time, they simply skip their go.
-The game ends when both player's cannot take anyt more turns, and
-the winner is the player with the most pieces.
+pcb.gif - http://images8.alphacoders.com/403/403441.gif
+mudcracks.gif - http://math.marywood.edu/~tfkent/research/fractal_soil/crack_2_19%20-%20photo.gif
+dirt.gif - https://bethmorleyblog.files.wordpress.com/2014/11/dirt-tiled-2.gif
+fractal - http://farm3.static.flickr.com/2757/4521273677_b9a7df50c7_o.gif
 
+Description: Reversi is a two player game that is played using an 8x8 board.
+Each player starts with two alternating centred pieces and the aim of the game
+is to have the most of pieces on the board. Each player takes a turn and can
+place their piece anywhere on the board so that a straight or diagonal line from
+one of their original pieces to their placed piece is created with only the
+opponent pieces in the centre, essentially surrounding the opponent pieces. Once
+the move is made, the surrouded opponent pieces will be changed to the player's
+colour, and the next player will then go. If any player has no possible moves at
+any time, they simply skip their go. The game ends when both player's cannot
+take any more turns, and the winner is the player with the most pieces.
 """
 
 import copy
 import os
 import time
-from sys import exit
 import turtle as tt
+from sys import exit
 from random import randrange
 
 # global constants
@@ -65,7 +66,9 @@ wn.setup(startx=None,starty=None)
 
 try:
     bgdir = os.path.join(os.getcwd(),'img')
-    bgpic = os.path.join(bgdir,'table.gif')
+    bglst = os.listdir(bgdir)
+    randnum = randrange(0,len(bglst))
+    bgpic = os.path.join(bgdir,bglst[randnum])
     wn.bgpic(bgpic)
 except:
     wn.bgcolor("green")
@@ -240,44 +243,44 @@ def drawButtons(turt):
 
     button4StartPosX = button1StartPosX + (PIECE_SIZE * 3)
     button4StartPosY = (button1StartPosY - (PIECE_SIZE / 1.5))
-    
+
     button5StartPosX = BOARD_TOP_LEFT_X
     button5StartPosY = (button1StartPosY - (PIECE_SIZE / 1.5))
-    
+
     button6StartPosX = button1StartPosX + (PIECE_SIZE * 6)
     button6StartPosY = (button1StartPosY - (PIECE_SIZE / 1.5))
-    
+
 
     turt.goto(button1StartPosX, button1StartPosY)
     turt.seth(270)
     drawQuad(buttonHeight, buttonWidth,'white',turt,True)
     turt.goto(button1StartPosX + PIECE_SIZE,button1StartPosY - PIECE_SIZE / 2.5)
     turt.write('RULES',align='center',font=('',FONTSIZE_SMALL))
-    
+
     turt.goto(button2StartPosX, button2StartPosY)
     turt.seth(270)
     drawQuad(buttonHeight, buttonWidth,'white',turt,True)
     turt.goto(button2StartPosX + PIECE_SIZE, button2StartPosY - PIECE_SIZE / 2.5)
     turt.write('SAVE',align='center',font=('',FONTSIZE_SMALL))
-    
+
     turt.goto(button3StartPosX, button3StartPosY)
     turt.seth(270)
     drawQuad(buttonHeight, buttonWidth,'white',turt,True)
     turt.goto(button3StartPosX + PIECE_SIZE,button3StartPosY - PIECE_SIZE / 2.5)
     turt.write('EXIT',align='center',font=('',FONTSIZE_SMALL))
-    
+
     turt.goto(button4StartPosX,button4StartPosY)
     turt.seth(270)
     drawQuad(buttonHeight, buttonWidth,'white',turt,True)
     turt.goto(button4StartPosX + PIECE_SIZE, button4StartPosY - PIECE_SIZE / 2.5)
     turt.write('DIFFICULTY',align='center',font=('',FONTSIZE_SMALL))
-    
+
     turt.goto(button5StartPosX, button5StartPosY)
     turt.seth(270)
     drawQuad(buttonHeight, buttonWidth,'white',turt,True)
     turt.goto(button5StartPosX + PIECE_SIZE, button5StartPosY - PIECE_SIZE / 2.5)
     turt.write('NEW GAME',align='center',font=('',FONTSIZE_SMALL))
-    
+
     turt.goto(button6StartPosX, button6StartPosY)
     turt.seth(270)
     drawQuad(buttonHeight, buttonWidth,'white',turt,True)
@@ -381,6 +384,8 @@ def loadGame():
         playerTurn = colorDict[lastLine]
         userColor = colorDict[lastLine]
         drawLoadedPieces()
+        # Delete the saved game file after loading
+        os.remove(inFile)
     except:
         print("The savedGames directory does not exist.")
         newGame()
