@@ -31,7 +31,7 @@ import turtle as tt
 from random import randrange
 
 # global constants
-PIECE_SIZE  = 70
+PIECE_SIZE  = 50
 ROWS = 8
 BOARD_SIZE = PIECE_SIZE * ROWS
 
