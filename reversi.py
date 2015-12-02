@@ -62,8 +62,6 @@ wn.setup(startx=None,starty=None)
 #ury = -lly
 # wn.setworldcoordinates(llx,lly,urx,ury)
 
-
-
 try:
     bgdir = os.path.join(os.getcwd(),'img')
     bglst = os.listdir(bgdir)
@@ -138,8 +136,8 @@ def setupGameboard():
     drawButtons(setup)
 
 def drawScoreBg(turt):
-    ''' Draws backround and border for score trackers. 
-    
+    ''' Draws backround and border for score trackers.
+
     Arguments:
     turt (turtle object) -- allows for a choice of turtle
     '''
@@ -147,7 +145,7 @@ def drawScoreBg(turt):
     scoreBoardLeftY = BOARD_TOP_LEFT_Y - (PIECE_SIZE * 2)
     scoreBoardRightX = - BOARD_TOP_LEFT_X + PIECE_SIZE
     scoreBoardRightY = BOARD_TOP_LEFT_Y - (PIECE_SIZE * 2)
-    
+
     # background
     turt.goto(scoreBoardLeftX - (PIECE_SIZE/2), scoreBoardLeftY - (PIECE_SIZE/4))
     drawQuad(PIECE_SIZE, PIECE_SIZE,'#228B22',turt)
@@ -168,7 +166,7 @@ def drawScoreBg(turt):
         turt.fd(PIECE_SIZE)
         turt.lt(90)
     turt.pu()
- 
+
 
 def drawQuad(width,height,color,turt,depth=False):
     '''Draws filled quadrilaterals with given Turtle.
@@ -284,42 +282,30 @@ def drawButtons(turt):
     button6StartPosX = button1StartPosX + (PIECE_SIZE * 6)
     button6StartPosY = (button1StartPosY - (PIECE_SIZE / 1.5))
 
+    drawIndividualButtons(button1StartPosX, button1StartPosY, turt, 'RULES')
+    drawIndividualButtons(button2StartPosX, button2StartPosY, turt, 'SAVE')
+    drawIndividualButtons(button3StartPosX, button3StartPosY, turt, 'EXIT')
+    drawIndividualButtons(button4StartPosX, button4StartPosY, turt, 'DIFFICULTY')
+    drawIndividualButtons(button5StartPosX, button5StartPosY, turt, 'NEW GAME')
+    drawIndividualButtons(button6StartPosX, button6StartPosY, turt, 'LOAD GAME')
 
-    turt.goto(button1StartPosX, button1StartPosY)
+def drawIndividualButtons(startX, startY, turt, message):
+    ''' Draws individual buttons below game board.
+
+    Arguments:
+    startX (int) -- starting x coordinate for drawing
+    startY (int) -- starting y coordinate for drawing
+    turt (turtle object) -- the choice of turtle
+    message (str) -- the text for the button
+    '''
+    buttonWidth = PIECE_SIZE * 2
+    buttonHeight = PIECE_SIZE / 2
+    turt.goto(startX, startY)
     turt.seth(270)
     drawQuad(buttonHeight, buttonWidth,'white',turt,True)
-    turt.goto(button1StartPosX + PIECE_SIZE,button1StartPosY - PIECE_SIZE / 2.5)
-    turt.write('RULES',align='center',font=('',FONTSIZE_SMALL))
+    turt.goto(startX + PIECE_SIZE, startY - PIECE_SIZE / 2.5)
+    turt.write(message,align='center',font=('',FONTSIZE_SMALL))
 
-    turt.goto(button2StartPosX, button2StartPosY)
-    turt.seth(270)
-    drawQuad(buttonHeight, buttonWidth,'white',turt,True)
-    turt.goto(button2StartPosX + PIECE_SIZE, button2StartPosY - PIECE_SIZE / 2.5)
-    turt.write('SAVE',align='center',font=('',FONTSIZE_SMALL))
-
-    turt.goto(button3StartPosX, button3StartPosY)
-    turt.seth(270)
-    drawQuad(buttonHeight, buttonWidth,'white',turt,True)
-    turt.goto(button3StartPosX + PIECE_SIZE,button3StartPosY - PIECE_SIZE / 2.5)
-    turt.write('EXIT',align='center',font=('',FONTSIZE_SMALL))
-
-    turt.goto(button4StartPosX,button4StartPosY)
-    turt.seth(270)
-    drawQuad(buttonHeight, buttonWidth,'white',turt,True)
-    turt.goto(button4StartPosX + PIECE_SIZE, button4StartPosY - PIECE_SIZE / 2.5)
-    turt.write('DIFFICULTY',align='center',font=('',FONTSIZE_SMALL))
-
-    turt.goto(button5StartPosX, button5StartPosY)
-    turt.seth(270)
-    drawQuad(buttonHeight, buttonWidth,'white',turt,True)
-    turt.goto(button5StartPosX + PIECE_SIZE, button5StartPosY - PIECE_SIZE / 2.5)
-    turt.write('NEW GAME',align='center',font=('',FONTSIZE_SMALL))
-
-    turt.goto(button6StartPosX, button6StartPosY)
-    turt.seth(270)
-    drawQuad(buttonHeight, buttonWidth,'white',turt,True)
-    turt.goto(button6StartPosX + PIECE_SIZE, button6StartPosY - PIECE_SIZE / 2.5)
-    turt.write('LOAD GAME',align='center',font=('',FONTSIZE_SMALL))
 
 def openingWindow():
     '''Input window where the user chooses an option from a list using
@@ -473,7 +459,7 @@ def scorekeeper():
 
     color1score.clear()
     color2score.clear()
-   
+
     blkPc = 0
     whtPc = 0
     turnIndicator()
