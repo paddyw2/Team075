@@ -229,9 +229,6 @@ def drawButtons(turt):
     buttonWidth = PIECE_SIZE * 2
     buttonHeight = PIECE_SIZE / 2
 
-    buttonWidth = PIECE_SIZE * 2
-    buttonHeight = PIECE_SIZE / 2
-
     button1StartPosX = BOARD_TOP_LEFT_X
     button1StartPosY = (- BOARD_SIZE / 2) - (PIECE_SIZE / 3)
 
@@ -286,6 +283,7 @@ def drawButtons(turt):
     drawQuad(buttonHeight, buttonWidth,'white',turt,True)
     turt.goto(button6StartPosX + PIECE_SIZE, button6StartPosY - PIECE_SIZE / 2.5)
     turt.write('LOAD GAME',align='center',font=('',FONTSIZE_SMALL))
+
 def openingWindow():
     '''Input window where the user chooses an option from a list using
     numeric input. Can start a new game or load a saved game. If the Cancel
@@ -302,15 +300,20 @@ def openingWindow():
 def changeDifficulty():
     '''Change difficultySetting.'''
     global difficultySetting
+    global wn
     difflist = ["Easy", "Medium", "Difficult"]
     userIn = wn.numinput('Change Difficulty','Current difficulty setting: '+
                          difflist[difficultySetting]+'\n\nChoose an option:'
                          '\n\n1) Easy\n2) Medium\n3) Difficult',1,1,3)
-    if userIn == None:
-        return
-    else:
+    if userIn != None:
         difficultySetting = int(userIn) - 1
-        return difficultySetting
+        if difficultySetting == 2:
+            wn.bgpic('diff_img/skullz.gif')
+        elif difficultySetting == 1:
+            wn.bgpic('diff_img/apocalypse.gif')
+        else:
+            wn.bgpic('diff_img/easy.gif')
+
 
 def drawInitialPieces():
     '''Commands to draw the initial 4 pieces of a new game'''
@@ -345,6 +348,7 @@ def loadGame():
     uses numerical input to select the game to load. The savedGames directory
     must be in the same directory as this .py file.
     '''
+    global loadedGame
     gamesList = []
     #Getting the path to the savedGames directory and appending saved games to
     # gamesList.
@@ -360,11 +364,11 @@ def loadGame():
         for i in range(len(gamesList)):
             txt += ('\n' + str(i + 1) + ') ' +
             str(os.path.splitext(gamesList[i])[0]))
-        userIn = (wn.numinput('Load Game','Enter number of a saved game:' +
-                 txt,None,1,len(gamesList)))
+        userIn = (wn.numinput('Load Game','Enter the number of a saved game:' +
+                 txt,1,1,len(gamesList)))
         while userIn == None:
-            userIn = (wn.numinput('Load Game','Enter number of a saved game:' +
-                      txt,None,1,len(gamesList)))
+            userIn = (wn.numinput('Load Game','You must enter the number of a saved game:' +
+                      txt,1,1,len(gamesList)))
         userIn = int(userIn)
         # Opens the file selected by the user and reads the contents
         inFile = os.path.join(savedDir,gamesList[userIn-1])
@@ -384,14 +388,13 @@ def loadGame():
         playerTurn = colorDict[lastLine]
         userColor = colorDict[lastLine]
         drawLoadedPieces()
-        # Delete the saved game file after loading
-        os.remove(inFile)
     except:
+        # for debugging
         print("The savedGames directory does not exist.")
-        newGame()
 
 def drawLoadedPieces():
     '''Uses gameState to draw all the pieces from the saved game.'''
+    piece.clear()
     for row in range(len(gameState)):
         for col in range(len(gameState[row])):
             if gameState[row][col] == 'B':
@@ -525,6 +528,12 @@ def userClickInput(x,y):
     button4StartPosX = button1StartPosX + (PIECE_SIZE * 3)
     button4StartPosY = (button1StartPosY - (PIECE_SIZE / 1.5))
 
+    button5StartPosX = BOARD_TOP_LEFT_X
+    button5StartPosY = (button1StartPosY - (PIECE_SIZE / 1.5))
+
+    button6StartPosX = button1StartPosX + (PIECE_SIZE * 6)
+    button6StartPosY = (button1StartPosY - (PIECE_SIZE / 1.5))
+
     boardCoordLeft = BOARD_TOP_LEFT_X
     boardCoordRight = BOARD_TOP_LEFT_X + BOARD_SIZE
 
@@ -551,6 +560,12 @@ def userClickInput(x,y):
         elif ((button4StartPosX <= x <= button4StartPosX + buttonWidth) and
         (button4StartPosY - buttonHeight <= y <=  button4StartPosY)):
             changeDifficulty()
+        elif ((button5StartPosX <= x <= button5StartPosX + buttonWidth) and
+        (button5StartPosY - buttonHeight <= y <=  button5StartPosY)):
+            newGame("new")
+        elif ((button6StartPosX <= x <= button6StartPosX + buttonWidth) and
+        (button6StartPosY - buttonHeight <= y <=  button6StartPosY)):
+            newGame("load")
 
 def userMove(xCoord, yCoord):
     '''Performs the actions a user needs in order to make their move. First by
@@ -811,8 +826,10 @@ def AI2(possibleMoves):
     for coord in possibleMoves:
         if coord in tenth_24:
 	        return (coord[0], coord[1])
-        else:
-	        print("We have a problem")
+
+        # for debugging
+        # else:
+	    #     print("We have a problem")
 
 def AI3(possibleMoves):
     '''Follows same principles as AI2 function, except that
@@ -868,8 +885,10 @@ def AI3(possibleMoves):
     for coord in possibleMoves:
         if coord in tenth_24:
 	        return (coord[0], coord[1])
-        else:
-	        print("We have a problem")
+
+        # for debugging
+        # else:
+	    #     print("We have a problem")
 
 def endGame():
     '''Once no more move can be made the game will end and a popup displaying
@@ -918,9 +937,10 @@ def saveGame():
             if fileext == '.reversi':
                 gamesList.append(filename)
         saveName = wn.textinput('','Name of game:')
-        while saveName in gamesList:
-            saveName = wn.textinput('','File exists.\nName of game:')
-        if saveName != None:
+        if saveName in gamesList:
+            saveName = wn.textinput('','Game already exists.\n' +
+            'To overwrite the game, please re-enter the name.\nName of game:')
+        if saveName != None and saveName != "":
             cwd=os.getcwd()
             outFile = os.path.join(cwd,'savedGames',saveName + '.reversi')
             colorDict = {COLOR1:'COLOR1',COLOR2:'COLOR2'}
@@ -928,7 +948,13 @@ def saveGame():
                 gameFile.writelines(''.join(str(j) for j in i) +
                                     '\n' for i in gameState)
                 gameFile.write(colorDict[userColor])
+        elif saveName == "":
+            blankNameChoice = wn.numinput('Welcome','Nothing entered\n\n' +
+                        'Choose an option\n\n1) Try again\n2) Cancel\n',1,1,3)
+            if blankNameChoice == 1:
+                saveGame()
     except:
+        # for debugging
         print("The savedGames directory does not exist. Game not saved.")
 
 def rules():
@@ -946,7 +972,7 @@ def rules():
     popup.color('white')
     popup.goto(largePopupStartX + (largePopupSize / 2), largePopupStartY - PIECE_SIZE)
     popup.write('Reversi Rules',align='center',font=('',FONTSIZE_LARGE,''))
-    popup.goto(largePopupStartX + (largePopupSize / 2), largePopupStartY - (PIECE_SIZE*7))
+    popup.goto(largePopupStartX + (largePopupSize / 2), largePopupStartY - (PIECE_SIZE*6))
     popup.write('''
 How to play: Place your marker
 on the grid so that you make
@@ -962,14 +988,19 @@ A player misses their turn if
 there are no valid moves.
     ''',align='center',font=('',FONTSIZE,''))
 
-def newGame():
+def newGame(option="choice"):
     ''' Creates a new game. '''
     global gameState, playerTurn
     playerTurn = COLOR1
-    piece.clear()
     gameState = copy.deepcopy(origGameState)
-    userIn = openingWindow()
+    if option == "new":
+        userIn = 1
+    elif option == "load":
+        userIn = 2
+    else:
+        userIn = openingWindow()
     if userIn == 1:
+        piece.clear()
         drawInitialPieces()
         global userColor
         userColor = chooseRandomColor()
