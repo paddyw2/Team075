@@ -84,6 +84,10 @@ piece = tt.Turtle()
 piece.ht()
 piece.pu()
 
+scoreBg = tt.Turtle()
+scoreBg.ht()
+scoreBg.pu()
+
 color1score = tt.Turtle()
 color1score.ht()
 color1score.pu()
@@ -93,7 +97,6 @@ color2score = tt.Turtle()
 color2score.ht()
 color2score.pu()
 color2score.color(COLOR2)
-
 popup = tt.Turtle()
 popup.ht()
 popup.pu()
@@ -129,9 +132,43 @@ def setupGameboard():
     boardBottomLeftY = ( - BOARD_TOP_LEFT_Y)
     setup.goto(BOARD_TOP_LEFT_X, boardBottomLeftY)
     drawQuad(BOARD_SIZE, BOARD_SIZE,'#228B22',setup)
+    drawScoreBg(scoreBg)
     drawGrid(setup)
     writeTitle(setup)
     drawButtons(setup)
+
+def drawScoreBg(turt):
+    ''' Draws backround and border for score trackers. 
+    
+    Arguments:
+    turt (turtle object) -- allows for a choice of turtle
+    '''
+    scoreBoardLeftX = BOARD_TOP_LEFT_X - PIECE_SIZE
+    scoreBoardLeftY = BOARD_TOP_LEFT_Y - (PIECE_SIZE * 2)
+    scoreBoardRightX = - BOARD_TOP_LEFT_X + PIECE_SIZE
+    scoreBoardRightY = BOARD_TOP_LEFT_Y - (PIECE_SIZE * 2)
+    
+    # background
+    turt.goto(scoreBoardLeftX - (PIECE_SIZE/2), scoreBoardLeftY - (PIECE_SIZE/4))
+    drawQuad(PIECE_SIZE, PIECE_SIZE,'#228B22',turt)
+    turt.color("#AAA")
+    turt.pd()
+    # grey border
+    for i in range(4):
+        turt.fd(PIECE_SIZE)
+        turt.lt(90)
+    turt.pu()
+    # background
+    turt.goto(scoreBoardRightX - (PIECE_SIZE/2), scoreBoardRightY - (PIECE_SIZE/4))
+    drawQuad(PIECE_SIZE, PIECE_SIZE,'#228B22',turt)
+    # grey border
+    turt.color("#AAA")
+    turt.pd()
+    for i in range(4):
+        turt.fd(PIECE_SIZE)
+        turt.lt(90)
+    turt.pu()
+ 
 
 def drawQuad(width,height,color,turt,depth=False):
     '''Draws filled quadrilaterals with given Turtle.
@@ -434,6 +471,9 @@ def scorekeeper():
     scoreBoardRightX = - BOARD_TOP_LEFT_X + PIECE_SIZE
     scoreBoardRightY = BOARD_TOP_LEFT_Y - (PIECE_SIZE * 2)
 
+    color1score.clear()
+    color2score.clear()
+   
     blkPc = 0
     whtPc = 0
     turnIndicator()
@@ -443,12 +483,11 @@ def scorekeeper():
                 blkPc += 1
             if gameState[i][j] == 'W':
                 whtPc += 1
-    color1score.clear()
     color1score.goto(scoreBoardLeftX, scoreBoardLeftY)
     color1score.write(str(blkPc),align='center',font=('',FONTSIZE_LARGE,'bold'))
-    color2score.clear()
     color2score.goto(scoreBoardRightX, scoreBoardRightY)
     color2score.write(str(whtPc),align='center',font=('',FONTSIZE_LARGE,'bold'))
+
     return blkPc, whtPc
 
 def chooseRandomColor():
@@ -972,7 +1011,7 @@ def rules():
     popup.color('white')
     popup.goto(largePopupStartX + (largePopupSize / 2), largePopupStartY - PIECE_SIZE)
     popup.write('Reversi Rules',align='center',font=('',FONTSIZE_LARGE,''))
-    popup.goto(largePopupStartX + (largePopupSize / 2), largePopupStartY - (PIECE_SIZE*6))
+    popup.goto(largePopupStartX + (largePopupSize / 2), largePopupStartY - (PIECE_SIZE*6.5))
     popup.write('''
 How to play: Place your marker
 on the grid so that you make
