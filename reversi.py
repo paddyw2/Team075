@@ -314,7 +314,7 @@ def openingWindow():
     the input.
     '''
     userIn = wn.numinput('Welcome','WELCOME TO REVERSI!\n\nChoose an option or'
-                        ' Cancel to quit.\n\n1) New Game\n2) Load Game\n',1,1,3)
+                        ' Cancel to quit.\n\n1) New Game\n2) Load Game\n',1,1,2)
     if userIn == None:
         exit()
     else:
@@ -975,7 +975,7 @@ def saveGame():
                 gameFile.write(colorDict[userColor])
         elif saveName == "":
             blankNameChoice = wn.numinput('Welcome','Nothing entered\n\n' +
-                        'Choose an option\n\n1) Try again\n2) Cancel\n',1,1,3)
+                        'Choose an option\n\n1) Try again\n2) Cancel\n',1,1,2)
             if blankNameChoice == 1:
                 saveGame()
     except:
