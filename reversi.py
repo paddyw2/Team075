@@ -739,7 +739,7 @@ def computerMove():
     if difficultySetting == 0:
         gridX,gridY = AI1(validList)
     elif difficultySetting == 1:
-        gridX,gridY = AI3(validList)
+        gridX,gridY = AI2(validList)
     elif difficultySetting == 2:
         gridX,gridY = AI3(validList)
     drawPiece(gridX,gridY,'orange')
