@@ -5,9 +5,6 @@ AI2 and AI3 three have been swapped. They were also cleaned up to reduce the len
 
 Also, the user is now prompted for difficulty at each game load/new game/program start. I showed the game to some people and they recommended this - the default difficulty is not very obvious otherwise.
 
-### Dec 2 Updates
-The extra buttons Yang added now trigger actions. When re-saving a game, the user is asked to confirm they want to overwrite. If the user tries to cancel a file load, the numinput text tells them they must choose a game. Finally, inspired by Greg's bg images, changing the difficulty now has an added twist.
-
 ### To Do:
  * Main project description/documentation
  * Test the code as much as possible, look for any bugs
