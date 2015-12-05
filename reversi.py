@@ -325,7 +325,7 @@ def changeDifficulty():
     global difficultySetting
     global wn
     difflist = ["Easy", "Medium", "Difficult"]
-    userIn = wn.numinput('Change Difficulty','Current difficulty setting: '+
+    userIn = wn.numinput('Choose Difficulty','Current difficulty setting: '+
                          difflist[difficultySetting]+'\n\nChoose an option:'
                          '\n\n1) Easy\n2) Medium\n3) Difficult',1,1,3)
     if userIn != None:
@@ -793,7 +793,36 @@ def AI1(inList):
     bestMove = bestList[randIndex]
     return bestMove[0],bestMove[1]
 
-def AI2(possibleMoves):
+def isMoveInListAI3(possibleMoves, listToCheck):
+    '''Checks if any of the possible moves are in
+    the list provided. If they are, they are added
+    to the refined list, and if there is at least
+    one move, the list is passed to the AI1 function
+    to determine which of these refined moves takes
+    the most pieces. If no moves are found, (-1,-1)
+    is returned to indicate this.
+
+    Arguments:
+    possibleMoves (list) -- list of the computer's possible moves
+    listToCheck (list) -- the list based on position value for
+    possibleMoves to be checked against.
+    '''
+    refinedCoords = []
+    # check to see if any of possible moves are
+    # in list of desirable moves, if so, add them
+    # to refinedMoves
+    for coord in possibleMoves:
+        if coord in listToCheck:
+            refinedCoords.append([coord[0],coord[1]])
+    # if desirable moves are found, pick a random one
+    if len(refinedCoords) > 0:
+        return(AI1(refinedCoords))
+    else:
+        # if none are found, return impossible
+        # move to indicate this
+        return (-1,-1)
+
+def AI3(possibleMoves):
     '''Chooses best move by their position worth. If there is
     a corner move, choose that. If not, continue to next best
     category, etc.
@@ -812,51 +841,60 @@ def AI2(possibleMoves):
     ninth_8 = [[0,1],[1,0],[0,6],[6,0],[7,1],[1,7],[7,6],[6,7]]
     tenth_24 = [[1,1],[6,6],[6,1],[1,6]]
 
+    if isMoveInListAI3(possibleMoves, best99) != (-1,-1):
+        return isMoveInListAI3(possibleMoves, best99)
+    elif isMoveInListAI3(possibleMoves, second8) != (-1,-1):
+        return isMoveInListAI3(possibleMoves, second8)
+    elif isMoveInListAI3(possibleMoves, third7) != (-1,-1):
+        return isMoveInListAI3(possibleMoves, third7)
+    elif isMoveInListAI3(possibleMoves, fourth6) != (-1,-1):
+        return isMoveInListAI3(possibleMoves, fourth6)
+    elif isMoveInListAI3(possibleMoves, fifth4) != (-1,-1):
+        return isMoveInListAI3(possibleMoves, fifth4)
+    elif isMoveInListAI3(possibleMoves, sixth0) != (-1,-1):
+        return isMoveInListAI3(possibleMoves, sixth0)
+    elif isMoveInListAI3(possibleMoves, seventh_3) != (-1,-1):
+        return isMoveInListAI3(possibleMoves, seventh_3)
+    elif isMoveInListAI3(possibleMoves, eigth_4) != (-1,-1):
+        return isMoveInListAI3(possibleMoves, eigth_4)
+    elif isMoveInListAI3(possibleMoves, ninth_8) != (-1,-1):
+        return isMoveInListAI3(possibleMoves, ninth_8)
+    else:
+        return isMoveInListAI3(possibleMoves, tenth_24)
+
+
+def isMoveInListAI2(possibleMoves, listToCheck):
+    '''Checks to see if any of the possible moves are
+    in the list provided. If any, they are added to a new
+    refined list and this is then passed to the AI1 function
+    to determine which of these refined moves takes the most
+    pieces. If none are found, (-1,-1) coordinates are
+    returned to indicate this.
+
+    Arguments:
+    possibleMoves (list) -- list of the computer's possible moves
+    listToCheck (list) -- the list based on position value for
+    possibleMoves to be checked against.
+    '''
+    refinedMoves = []
+    # check to see if any of possible moves are
+    # in list of desirable moves, if so, add them
+    # to refinedMoves
     for coord in possibleMoves:
-        if coord in best99:
-             return (coord[0], coord[1])
+        if coord in listToCheck:
+	        refinedMoves.append([coord[0], coord[1]])
+    # if there is more than one move to choose from, select by
+    # passing to AI1, aka greedy
+    if len(refinedMoves) > 1:
+        return(AI1(refinedMoves))
+    elif len(refinedMoves) == 1:
+        return refinedMoves[0][0], refinedMoves[0][1]
+    else:
+        # if no desirable moves are found, return
+        # impossible move to indicate this
+        return (-1,-1)
 
-    for coord in possibleMoves:
-        if coord in second8:
-	        return (coord[0], coord[1])
-
-    for coord in possibleMoves:
-        if coord in third7:
-	        return (coord[0], coord[1])
-
-    for coord in possibleMoves:
-        if coord in fourth6:
-	        return (coord[0], coord[1])
-
-    for coord in possibleMoves:
-        if coord in fifth4:
-	        return (coord[0], coord[1])
-
-    for coord in possibleMoves:
-        if coord in sixth0:
-	        return (coord[0], coord[1])
-
-    for coord in possibleMoves:
-        if coord in seventh_3:
-	        return (coord[0], coord[1])
-
-    for coord in possibleMoves:
-        if coord in eigth_4:
-	        return (coord[0], coord[1])
-
-    for coord in possibleMoves:
-        if coord in ninth_8:
-	        return (coord[0], coord[1])
-
-    for coord in possibleMoves:
-        if coord in tenth_24:
-	        return (coord[0], coord[1])
-
-        # for debugging
-        # else:
-	    #     print("We have a problem")
-
-def AI3(possibleMoves):
+def AI2(possibleMoves):
     '''Follows same principles as AI2 function, except that
     if there are moves that rank second to fifth, the move
     that takes the most pieces is chosen.
@@ -875,45 +913,19 @@ def AI3(possibleMoves):
     ninth_8 = [[0,1],[1,0],[0,6],[6,0],[7,1],[1,7],[7,6],[6,7]]
     tenth_24 = [[1,1],[6,6],[6,1],[1,6]]
 
-    for coord in possibleMoves:
-        if coord in best99:
-             return (coord[0], coord[1])
+    # define lists to check
+    bestMoves = best99
+    secondBestMoves = second8 + third7 + fourth6 + fifth4
+    thirdBestMoves = sixth0 + seventh_3 + eigth_4 + ninth_8
+    middleMoves = secondBestMoves + thirdBestMoves
+    worstMoves = tenth_24
 
-    # takes 2nd, 3rd, 4th and 5th best moves, and picks the one
-    # that takes most pieces
-    refinedMoves = []
-    for coord in possibleMoves:
-        if coord in (second8 + third7 + fourth6 + fifth4):
-	        refinedMoves.append([coord[0], coord[1]])
-
-    if len(refinedMoves) > 1:
-        return(AI1(refinedMoves))
-    elif len(refinedMoves) == 1:
-        return refinedMoves[0][0], refinedMoves[0][1]
-
-    for coord in possibleMoves:
-        if coord in sixth0:
-	        return (coord[0], coord[1])
-
-    for coord in possibleMoves:
-        if coord in seventh_3:
-	        return (coord[0], coord[1])
-
-    for coord in possibleMoves:
-        if coord in eigth_4:
-	        return (coord[0], coord[1])
-
-    for coord in possibleMoves:
-        if coord in ninth_8:
-	        return (coord[0], coord[1])
-
-    for coord in possibleMoves:
-        if coord in tenth_24:
-	        return (coord[0], coord[1])
-
-        # for debugging
-        # else:
-	    #     print("We have a problem")
+    if isMoveInListAI2(possibleMoves, bestMoves) != (-1,-1):
+        return isMoveInListAI2(possibleMoves, best99)
+    elif isMoveInListAI2(possibleMoves, middleMoves) != (-1,-1):
+        return isMoveInListAI2(possibleMoves, middleMoves)
+    else:
+        return isMoveInListAI2(possibleMoves, worstMoves)
 
 def endGame():
     '''Once no more move can be made the game will end and a popup displaying
@@ -1029,9 +1041,11 @@ def newGame(option="choice"):
         drawInitialPieces()
         global userColor
         userColor = chooseRandomColor()
+        changeDifficulty()
         newGameAlert()
     elif userIn == 2:
         loadGame()
+        changeDifficulty()
         loadGameAlert()
     if userColor != playerTurn:
         time.sleep(1)
