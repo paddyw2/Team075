@@ -1013,16 +1013,17 @@ def rules():
     popup.write('''
 How to play: Place your marker
 on the grid so that you make
-least one straight (horizontal,
-vertical, or diagonal) line
+at least one straight line
+(horizontal, vertical, or diagonal)
 between your new marker and
-another of your existing marker,
-with one or more markers
-belonging to the opponent
+another one of your existing
+markers. One or more markers
+belonging to the opponent must be
 between them. All opponents
-markers in the line are captured.
-A player misses their turn if
-there are no valid moves.
+markers in the line are then
+captured and changed to your
+colour. A player misses their
+turn if there are no valid moves.
     ''',align='center',font=('',FONTSIZE,''))
 
 def newGame(option="choice"):
