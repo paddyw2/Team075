@@ -582,6 +582,7 @@ def userClickInput(x,y):
         if gameHasEnded:
             gameHasEnded = False
             newGame()
+            hint.clearstamps()
     else:
         if ((boardCoordLeft <= x <= boardCoordRight) and
         (boardCoordLeft <= y <= boardCoordRight) and
@@ -602,9 +603,11 @@ def userClickInput(x,y):
         elif ((button5StartPosX <= x <= button5StartPosX + buttonWidth) and
         (button5StartPosY - buttonHeight <= y <=  button5StartPosY)):
             newGame("new")
+            hint.clearstamps()
         elif ((button6StartPosX <= x <= button6StartPosX + buttonWidth) and
         (button6StartPosY - buttonHeight <= y <=  button6StartPosY)):
             newGame("load")
+            hint.clearstamps()
 
 def userMove(xCoord, yCoord):
     '''Performs the actions a user needs in order to make their move. First by
