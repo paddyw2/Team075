@@ -82,6 +82,10 @@ piece = tt.Turtle()
 piece.ht()
 piece.pu()
 
+hint = tt.Turtle()
+hint.ht()
+hint.pu()
+
 scoreBg = tt.Turtle()
 scoreBg.ht()
 scoreBg.pu()
@@ -134,7 +138,7 @@ def setupGameboard():
     drawGrid(setup)
     writeTitle(setup)
     drawButtons(setup)
-
+    
 def drawScoreBg(turt):
     ''' Draws backround and border for score trackers.
 
@@ -306,7 +310,17 @@ def drawIndividualButtons(startX, startY, turt, message):
     turt.goto(startX + PIECE_SIZE, startY - PIECE_SIZE / 2.5)
     turt.write(message,align='center',font=('',FONTSIZE_SMALL))
 
-
+def drawhint(col, row, color):
+    ''' Draws possible moves for the player, make possible moves easier to 
+        observe
+    '''
+    xCoord = (col * PIECE_SIZE) + BOARD_TOP_LEFT_X
+    yCoord = (row * PIECE_SIZE) + BOARD_TOP_LEFT_X
+    hint.goto(xCoord+(PIECE_SIZE/2),yCoord+(PIECE_SIZE*1.5))
+    hint.color(color)
+    hint.shape("circle")
+    hint.stamp()
+    
 def openingWindow():
     '''Input window where the user chooses an option from a list using
     numeric input. Can start a new game or load a saved game. If the Cancel
@@ -613,6 +627,7 @@ def userMove(xCoord, yCoord):
     gridY = abs(gridY + 6)
     if [gridX,gridY] in validList:
         drawPiece(gridX,gridY,playerTurn)
+        hint.clearstamps()
         flipList = []
         for dirX,dirY in dirList:
             flipList = toFlip(gridX,gridY,dirX,dirY,flipList)
@@ -646,6 +661,7 @@ def getValidMoves():
         for row in range(8):
             if isValidMove(playerValue,col,row) == True:
                 validMoves.append([col,row])
+                drawhint(col,row-1,"orange")
     return validMoves
 
 def isValidMove(playerValue,col,row):
@@ -750,6 +766,7 @@ def computerMove():
         flipList = toFlip(gridX,gridY,dirX,dirY,flipList)
         for col,row in flipList:
             drawPiece(col,row,playerTurn)
+            hint.clearstamps()
     playerTurn = playerSwap()
     validList = getValidMoves()
     if len(validList) == 0:
