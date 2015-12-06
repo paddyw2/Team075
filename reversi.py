@@ -44,6 +44,11 @@ FONTSIZE_SMALL = FONTSIZE - 4
 FONTSIZE_LARGE = FONTSIZE + 4
 FONTSIZE_XLARGE = FONTSIZE * 3
 
+BOARD_COLOUR = '#228B22'
+BORDER_COLOUR = '#AAA'
+HINTS_COLOUR = 'orange'
+COMP_FIRST_FLIP = 'orange'
+
 COLOR1 = 'black'
 COLOR2 = 'white'
 
@@ -70,7 +75,8 @@ try:
     wn.bgpic(bgpic)
 except:
     wn.bgcolor("green")
-wn.title('PYTHON REVERSI')
+
+wn.title('R E V E R S I')
 wn.tracer(0)
 
 # turtles
@@ -134,7 +140,7 @@ def setupGameboard():
     '''Sets up the gameboard by drawing the grid and surrounding items'''
     boardBottomLeftY = ( - BOARD_TOP_LEFT_Y)
     setup.goto(BOARD_TOP_LEFT_X, boardBottomLeftY)
-    drawQuad(BOARD_SIZE, BOARD_SIZE,'#228B22',setup)
+    drawQuad(BOARD_SIZE, BOARD_SIZE,BOARD_COLOUR,setup)
     drawScoreBg(scoreBg)
     drawGrid(setup)
     writeTitle(setup)
@@ -153,8 +159,8 @@ def drawScoreBg(turt):
 
     # background
     turt.goto(scoreBoardLeftX - (PIECE_SIZE/2), scoreBoardLeftY - (PIECE_SIZE/4))
-    drawQuad(PIECE_SIZE, PIECE_SIZE,'#228B22',turt)
-    turt.color("#AAA")
+    drawQuad(PIECE_SIZE, PIECE_SIZE,BOARD_COLOUR,turt)
+    turt.color(BORDER_COLOUR)
     turt.pd()
     # grey border
     for i in range(4):
@@ -163,9 +169,9 @@ def drawScoreBg(turt):
     turt.pu()
     # background
     turt.goto(scoreBoardRightX - (PIECE_SIZE/2), scoreBoardRightY - (PIECE_SIZE/4))
-    drawQuad(PIECE_SIZE, PIECE_SIZE,'#228B22',turt)
+    drawQuad(PIECE_SIZE, PIECE_SIZE,BOARD_COLOUR,turt)
     # grey border
-    turt.color("#AAA")
+    turt.color(BOARD_COLOUR)
     turt.pd()
     for i in range(4):
         turt.fd(PIECE_SIZE)
@@ -219,7 +225,7 @@ def drawGrid(turt):
     '''
     boardTopRightX = BOARD_TOP_LEFT_X + BOARD_SIZE
     boardBottomRightY = (-BOARD_TOP_LEFT_Y)
-    turt.color('#AAA')
+    turt.color(BORDER_COLOUR)
     drawLines(turt)
     turt.goto(boardTopRightX, boardBottomRightY)
     turt.lt(90)
@@ -246,13 +252,13 @@ def writeTitle(turt):
     boardTitleArea = (BOARD_SIZE / 2) + (PIECE_SIZE / 2)
 
     turt.goto(boardCenter, boardTitleArea)
-    turt.color('#000')
+    turt.color('black')
     turt.pd()
     turt.write('*  R  E  V  E  R  S  I *', align='center',
     font=('',FONTSIZE_XLARGE,'bold'))
     turt.pu()
     turt.goto(boardCenter - 2, boardTitleArea + 2)
-    turt.color('#FFF')
+    turt.color('white')
     turt.pd()
     turt.write('*  R  E  V  E  R  S  I *', align='center',
     font=('',FONTSIZE_XLARGE,'bold'))
@@ -671,7 +677,7 @@ def showHints(possibleMoves):
     '''
     if hintsEnabled:
         for move in possibleMoves:
-            drawHint(move[0],move[1],"orange")
+            drawHint(move[0],move[1],HINTS_COLOUR)
 
 def toggleHints():
     '''Changes the global hintsEnabled to boolean value
@@ -799,7 +805,7 @@ def computerMove():
         gridX,gridY = AI2(validList)
     elif difficultySetting == 2:
         gridX,gridY = AI3(validList)
-    drawPiece(gridX,gridY,'orange')
+    drawPiece(gridX,gridY,COMP_FIRST_FLIP)
     time.sleep(1)
     drawPiece(gridX,gridY,playerTurn)
     flipList = []
