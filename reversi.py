@@ -111,6 +111,7 @@ turnturt.pu()
 # global variables
 
 difficultySetting = 0
+hintsEnabled = True
 userColor = ''
 playerTurn = COLOR1
 origGameState = [['O','O','O','O','O','O','O','O'],
@@ -138,7 +139,7 @@ def setupGameboard():
     drawGrid(setup)
     writeTitle(setup)
     drawButtons(setup)
-    
+
 def drawScoreBg(turt):
     ''' Draws backround and border for score trackers.
 
@@ -289,7 +290,7 @@ def drawButtons(turt):
     drawIndividualButtons(button1StartPosX, button1StartPosY, turt, 'RULES')
     drawIndividualButtons(button2StartPosX, button2StartPosY, turt, 'SAVE')
     drawIndividualButtons(button3StartPosX, button3StartPosY, turt, 'EXIT')
-    drawIndividualButtons(button4StartPosX, button4StartPosY, turt, 'DIFFICULTY')
+    drawIndividualButtons(button4StartPosX, button4StartPosY, turt, 'HINTS ON/OFF')
     drawIndividualButtons(button5StartPosX, button5StartPosY, turt, 'NEW GAME')
     drawIndividualButtons(button6StartPosX, button6StartPosY, turt, 'LOAD GAME')
 
@@ -310,17 +311,27 @@ def drawIndividualButtons(startX, startY, turt, message):
     turt.goto(startX + PIECE_SIZE, startY - PIECE_SIZE / 2.5)
     turt.write(message,align='center',font=('',FONTSIZE_SMALL))
 
-def drawhint(col, row, color):
-    ''' Draws possible moves for the player, make possible moves easier to 
-        observe
+def drawHint(col, row, color):
+    ''' Draws possible moves for the player, make possible moves easier to
+    observe. The hint turtle starts in the centre of the position and stamps
+    a circle.
+
+    Arguments:
+    col (int) -- column coordinate
+    row (int) -- row coordinate
+    colour (str) -- the colour to draw the circle with
     '''
     xCoord = (col * PIECE_SIZE) + BOARD_TOP_LEFT_X
     yCoord = (row * PIECE_SIZE) + BOARD_TOP_LEFT_X
-    hint.goto(xCoord+(PIECE_SIZE/2),yCoord+(PIECE_SIZE*1.5))
+    # as stamps centre around a coordinate, rather starting from
+    # the corner like filling squares, the centre of each position
+    # is calculated below. This is slightly different to the
+    # drawPiece function.
+    hint.goto(xCoord+(PIECE_SIZE/2),yCoord+(PIECE_SIZE/2))
     hint.color(color)
     hint.shape("circle")
     hint.stamp()
-    
+
 def openingWindow():
     '''Input window where the user chooses an option from a list using
     numeric input. Can start a new game or load a saved game. If the Cancel
@@ -432,6 +443,7 @@ def loadGame():
 def drawLoadedPieces():
     '''Uses gameState to draw all the pieces from the saved game.'''
     piece.clear()
+    hint.clearstamps()
     for row in range(len(gameState)):
         for col in range(len(gameState[row])):
             if gameState[row][col] == 'B':
@@ -599,15 +611,14 @@ def userClickInput(x,y):
             exit()
         elif ((button4StartPosX <= x <= button4StartPosX + buttonWidth) and
         (button4StartPosY - buttonHeight <= y <=  button4StartPosY)):
-            changeDifficulty()
+            toggleHints()
         elif ((button5StartPosX <= x <= button5StartPosX + buttonWidth) and
         (button5StartPosY - buttonHeight <= y <=  button5StartPosY)):
-            newGame("new")
             hint.clearstamps()
+            newGame("new")
         elif ((button6StartPosX <= x <= button6StartPosX + buttonWidth) and
         (button6StartPosY - buttonHeight <= y <=  button6StartPosY)):
             newGame("load")
-            hint.clearstamps()
 
 def userMove(xCoord, yCoord):
     '''Performs the actions a user needs in order to make their move. First by
@@ -650,6 +661,34 @@ def userMove(xCoord, yCoord):
     # to take into account invalid board clicks
     moveInProgress = False
 
+def showHints(possibleMoves):
+    '''If global hintsEnabled is set to True,
+    all possible moves for the player are
+    stamped on the game board.
+
+    Arguments:
+    possibleMoves (list) -- a list of the players possible moves
+    '''
+    if hintsEnabled:
+        for move in possibleMoves:
+            drawHint(move[0],move[1],"orange")
+
+def toggleHints():
+    '''Changes the global hintsEnabled to boolean value
+    opposite to its current value. If it is changed to
+    True, the users moves will be drawn with showHints.
+    If changed to False, the hint turtle is cleared.
+    '''
+    global hintsEnabled
+    if hintsEnabled:
+        hintsEnabled = False
+        hint.clearstamps()
+    else:
+        hintsEnabled = True
+        validMoves = getValidMoves()
+        showHints(validMoves)
+
+
 def getValidMoves():
     '''Finds the pieces for the current player and uses their coordinates and
     the find_moves function to search for legal moves. Returns a 2D list of
@@ -664,7 +703,6 @@ def getValidMoves():
         for row in range(8):
             if isValidMove(playerValue,col,row) == True:
                 validMoves.append([col,row])
-                drawhint(col,row-1,"orange")
     return validMoves
 
 def isValidMove(playerValue,col,row):
@@ -783,6 +821,7 @@ def computerMove():
     else:
         turnIndicator()
         moveInProgress = False
+        showHints(validList)
 
 def AI1(inList):
     '''Calculates the optimal move for the AI in which its score increases the
@@ -1063,10 +1102,16 @@ def newGame(option="choice"):
         global userColor
         userColor = chooseRandomColor()
         changeDifficulty()
+        if userColor == playerTurn:
+            validList = getValidMoves()
+            showHints(validList)
         newGameAlert()
     elif userIn == 2:
         loadGame()
         changeDifficulty()
+        if userColor == playerTurn:
+            validList = getValidMoves()
+            showHints(validList)
         loadGameAlert()
     if userColor != playerTurn:
         time.sleep(1)
