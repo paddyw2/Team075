@@ -393,25 +393,30 @@ def openingWindow():
     else:
         return int(userIn)
 
-def changeDifficulty():
-    '''Change difficultySetting.'''
+def changeDifficulty(popup=True):
+    '''Change difficultySetting.
+
+    Arguments:
+    popup (bool) -- optional parameter that indicates whether or not a popup
+    input box is triggered. If True, or not provided, the user can change the
+    difficulty. If not, the title is updated to reflect the current level only.
+    '''
     global difficultySetting
     global wn
-    difflist = ["Easy", "Medium", "Difficult"]
-    userIn = wn.numinput('Choose Difficulty','Current difficulty setting: '+
-                         difflist[difficultySetting]+'\n\nChoose an option:'
-                         '\n\n1) Easy\n2) Medium\n3) Difficult',1,1,3)
-    if userIn != None:
-        difficultySetting = int(userIn) - 1
-        if difficultySetting == 2:
-            wn.title('R E V E R S I - Difficulty Level: Hard')
-            wn.bgpic('diff_img/skullz.gif')
-        elif difficultySetting == 1:
-            wn.title('R E V E R S I - Difficulty Level: Medium')
-            wn.bgpic('diff_img/apocalypse.gif')
-        else:
-            wn.title('R E V E R S I - Difficulty Level: Easy')
-            wn.bgpic('diff_img/easy.gif')
+    if popup:
+        difflist = ["Easy", "Medium", "Difficult"]
+        userIn = wn.numinput('Choose Difficulty','Current difficulty setting: '+
+                             difflist[difficultySetting]+'\n\nChoose an option:'
+                             '\n\n1) Easy\n2) Medium\n3) Difficult',1,1,3)
+        if userIn != None:
+            difficultySetting = int(userIn) - 1
+
+    if difficultySetting == 2:
+        wn.title('R E V E R S I - Difficulty Level: Hard')
+    elif difficultySetting == 1:
+        wn.title('R E V E R S I - Difficulty Level: Medium')
+    else:
+        wn.title('R E V E R S I - Difficulty Level: Easy')
 
 
 def drawInitialPieces():
@@ -493,15 +498,16 @@ def loadGame():
         # check that saved game has diff and hints info
         if len(lines) > ROWS + 1:
             difficultySetting = int(diffLine)
+            # update window title with diff setting
+            changeDifficulty(False)
             if hintsLine == "True":
                 hintsEnabled = True
             else:
                 hintsEnabled = False
-            print(difficultySetting, hintsEnabled)
         drawLoadedPieces()
     except:
         # for debugging
-        print("The savedGames directory does not exist.")
+        print("Error. The savedGames directory may not exist.")
 
 def drawLoadedPieces():
     '''Uses gameState to draw all the pieces from the saved game.'''
@@ -1116,7 +1122,7 @@ def saveGame():
                 saveGame()
     except:
         # for debugging
-        print("The savedGames directory does not exist. Game not saved.")
+        print("Error. The savedGames directory may not exist.")
 
 def rules():
     '''When the rules 'button' is clicked this will bring up a popup that will
