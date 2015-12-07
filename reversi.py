@@ -404,10 +404,13 @@ def changeDifficulty():
     if userIn != None:
         difficultySetting = int(userIn) - 1
         if difficultySetting == 2:
+            wn.title('R E V E R S I - Difficulty Level: Hard')
             wn.bgpic('diff_img/skullz.gif')
         elif difficultySetting == 1:
+            wn.title('R E V E R S I - Difficulty Level: Medium')
             wn.bgpic('diff_img/apocalypse.gif')
         else:
+            wn.title('R E V E R S I - Difficulty Level: Easy')
             wn.bgpic('diff_img/easy.gif')
 
 
