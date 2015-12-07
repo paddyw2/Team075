@@ -22,6 +22,59 @@ the move is made, the surrouded opponent pieces will be changed to the player's
 colour, and the next player will then go. If any player has no possible moves at
 any time, they simply skip their go. The game ends when both player's cannot
 take any more turns, and the winner is the player with the most pieces.
+
+The program starts by welcoming the user, and asking them to choose to either
+start a new game, or load a previous game. They are then asked to choose the
+difficulty level for the game. The starting pieces are loaded, and a popup
+window indicates which colour the human player has been assigned, and which
+player goes first. Throughout the game each player's turn is indicated by a
+line drawn under each scoreboard on either side of the screen. These also keep
+track on the number of pieces each player has.
+
+There are six buttons below the game board - their purpose is as follows:
+
+Rules: This triggers a popup window that describes the rules of the game to the
+user.
+New Game: This clears the current game, and sets up a new one, choosing the
+player colour at random again, and prompting the user for difficulty.
+Save: This allows the user to save their current game state by entering a name.
+If the name is used by another game, the user is asked to confirm before they
+overwrite the old game.
+Hints On/Off: This toggles the hints markers which show the possible moves for
+the human player.
+Load Game: This allows the player to load a previous game at any point.
+Exit: This terminates the program.
+
+Difficulty Settings:
+
+There are three different settings that the computer uses: AI1, AI2, and AI3.
+
+AI1 is commonly known as the 'greedy' method and simply chooses the move that
+captures the most pieces. If there are two or more pieces that capture the same
+number of pieces, a random choice is made between them.
+
+AI2 uses a mixture of the 'greedy' method and a positional value method. It
+notes that the corner moves are always the most favourable (see samsoft source)
+and that the second from corner moves (i.e. 1,1 or 6,6) are the least favourable.
+It then looks through the possible moves, and if there are any corner moves it
+chooses them. If there are more than one, it passes the list to AI1 to find out
+which takes the most pieces. If there are no corner moves, it then looks through
+the possible moves again to see if there are any other moves, other than the second
+from corner moves (i.e. 6,6). If there are, it creates a list and if there is
+more than one it passes this list to AI1 to decide which move takes the most
+pieces. If there is just one move, it simply chooses that move. Lastly, if there
+are no other options, it chooses one of the second from corner moves.
+
+AI3 also uses a mixture of 'greedy' and positional value methods, but only uses
+the AI1 function if there are more than one moves of same positional value. It
+is far more strict on its adherenece to the positional value method. It
+notes that each move on the board has a positional value, and always tries to
+play a move with the highest value possible. Corner moves are the most valuable,
+and so it searches the possible moves for one of those. If none are found, it
+moves onto the next value of moves, and searches for one of those instead. If
+there are more than one move of the same value, it sends a list of these values
+to AI1 to determine which move takes the most pieces.
+
 """
 
 import copy
@@ -55,17 +108,6 @@ COLOR2 = 'white'
 # turtle screen
 wn = tt.Screen()
 wn.setup(startx=None,starty=None)
-
-# world coordinates stop shrinkage, but not for fonts
-# this is the way to set standard aspects but its
-# probably not desired, unless maybe running with
-# an argument
-
-#llx = BOARD_TOP_LEFT_X - (PIECE_SIZE * 2)
-#lly = llx
-#urx = -llx
-#ury = -lly
-# wn.setworldcoordinates(llx,lly,urx,ury)
 
 try:
     bgdir = os.path.join(os.getcwd(),'img')
@@ -402,7 +444,7 @@ def loadGame():
     uses numerical input to select the game to load. The savedGames directory
     must be in the same directory as this .py file.
     '''
-    global loadedGame
+    global loadedGame, difficultySetting, hintsEnabled
     gamesList = []
     #Getting the path to the savedGames directory and appending saved games to
     # gamesList.
@@ -435,12 +477,24 @@ def loadGame():
                     newGameState.append(row)
                 elif i == ROWS:
                     lastLine = lines[i].strip()
+                elif i == ROWS + 1:
+                    diffLine = lines[i].strip()
+                elif i == ROWS + 2:
+                    hintsLine = lines[i].strip()
         # Change global variables to reflect where the game was when user saved.
         colorDict = {'COLOR1' : COLOR1, 'COLOR2' : COLOR2}
         global gameState, playerTurn, userColor
         gameState = newGameState
         playerTurn = colorDict[lastLine]
         userColor = colorDict[lastLine]
+        # check that saved game has diff and hints info
+        if len(lines) > ROWS + 1:
+            difficultySetting = int(diffLine)
+            if hintsLine == "True":
+                hintsEnabled = True
+            else:
+                hintsEnabled = False
+            print(difficultySetting, hintsEnabled)
         drawLoadedPieces()
     except:
         # for debugging
@@ -1050,6 +1104,8 @@ def saveGame():
                 gameFile.writelines(''.join(str(j) for j in i) +
                                     '\n' for i in gameState)
                 gameFile.write(colorDict[userColor])
+                gameFile.write('\n' + str(difficultySetting))
+                gameFile.write('\n' + str(hintsEnabled))
         elif saveName == "":
             blankNameChoice = wn.numinput('Welcome','Nothing entered\n\n' +
                         'Choose an option\n\n1) Try again\n2) Cancel\n',1,1,2)
@@ -1114,7 +1170,6 @@ def newGame(option="choice"):
         newGameAlert()
     elif userIn == 2:
         loadGame()
-        changeDifficulty()
         if userColor == playerTurn:
             validList = getValidMoves()
             showHints(validList)
