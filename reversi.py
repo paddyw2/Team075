@@ -542,9 +542,9 @@ def drawLoadedPieces():
     for row in range(len(gameState)):
         for col in range(len(gameState[row])):
             if gameState[row][col] == 'B':
-                drawPiece(row, col, COLOR1)
+                drawPiece(col, row, COLOR1)
             elif gameState[row][col] == 'W':
-                drawPiece(row, col, COLOR2)
+                drawPiece(col, row, COLOR2)
     scorekeeper()
 
 def turnIndicator():
