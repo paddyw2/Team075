@@ -105,10 +105,12 @@ COMP_FIRST_FLIP = 'orange'
 COLOR1 = 'black'
 COLOR2 = 'white'
 
-# turtle screen
+# Turtle screen
 wn = tt.Screen()
 wn.setup(startx=None,starty=None)
 
+# setting random background picture of Turtle screen or green if images aren't
+# available
 try:
     bgdir = os.path.join(os.getcwd(),'img')
     bglst = os.listdir(bgdir)
@@ -121,7 +123,7 @@ except:
 wn.title('R E V E R S I')
 wn.tracer(0)
 
-# turtles
+# Turtles
 setup = tt.Turtle()
 setup.ht()
 setup.pu()
@@ -159,7 +161,7 @@ turnturt.pu()
 # global variables
 
 difficultySetting = 0
-hintsEnabled = True
+hintsEnabled = False
 userColor = ''
 playerTurn = COLOR1
 origGameState = [['O','O','O','O','O','O','O','O'],
@@ -243,18 +245,21 @@ def drawQuad(width,height,color,turt,depth=False):
         turt.end_fill()
         turt.pu()
     else:
+        # used for 'buttons'
         turt.pd()
         turt.color('black', color)
         turt.begin_fill()
         turt.pensize(1)
-        turt.fd(width)
-        turt.lt(90)
         turt.fd(height)
         turt.lt(90)
         turt.pensize(3)
         turt.fd(width)
         turt.lt(90)
+        turt.pensize(3)
         turt.fd(height)
+        turt.lt(90)
+        turt.pensize(1)
+        turt.fd(width)
         turt.lt(90)
         turt.end_fill()
         turt.pu()
@@ -342,7 +347,7 @@ def drawButtons(turt):
     drawIndividualButtons(button5StartPosX, button5StartPosY, turt, 'NEW GAME')
     drawIndividualButtons(button6StartPosX, button6StartPosY, turt, 'LOAD GAME')
 
-def drawIndividualButtons(startX, startY, turt, message):
+def drawIndividualButtons(startX, startY, turt, text):
     ''' Draws individual buttons below game board.
 
     Arguments:
@@ -355,9 +360,9 @@ def drawIndividualButtons(startX, startY, turt, message):
     buttonHeight = PIECE_SIZE / 2
     turt.goto(startX, startY)
     turt.seth(270)
-    drawQuad(buttonHeight, buttonWidth,'white',turt,True)
+    drawQuad(buttonWidth, buttonHeight,'white',turt,True)
     turt.goto(startX + PIECE_SIZE, startY - PIECE_SIZE / 2.5)
-    turt.write(message,align='center',font=('',FONTSIZE_SMALL))
+    turt.write(text,align='center',font=('',FONTSIZE_SMALL))
 
 def drawHint(col, row, color):
     ''' Draws possible moves for the player, make possible moves easier to
