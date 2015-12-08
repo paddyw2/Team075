@@ -213,7 +213,7 @@ def drawScoreBg(turt):
     turt.goto(scoreBoardRightX - (PIECE_SIZE/2), scoreBoardRightY - (PIECE_SIZE/4))
     drawQuad(PIECE_SIZE, PIECE_SIZE,BOARD_COLOUR,turt)
     # grey border
-    turt.color(BOARD_COLOUR)
+    turt.color(BORDER_COLOUR)
     turt.pd()
     for i in range(4):
         turt.fd(PIECE_SIZE)
@@ -404,10 +404,10 @@ def changeDifficulty(popup=True):
     global difficultySetting
     global wn
     if popup:
-        difflist = ["Easy", "Medium", "Difficult"]
+        difflist = ["Easy", "Medium", "Hard"]
         userIn = wn.numinput('Choose Difficulty','Current difficulty setting: '+
                              difflist[difficultySetting]+'\n\nChoose an option:'
-                             '\n\n1) Easy\n2) Medium\n3) Difficult',1,1,3)
+                             '\n\n1) Easy\n2) Medium\n3) Hard',1,1,3)
         if userIn != None:
             difficultySetting = int(userIn) - 1
 
@@ -452,7 +452,6 @@ def loadGame():
     uses numerical input to select the game to load. The savedGames directory
     must be in the same directory as this .py file.
     '''
-    global loadedGame, difficultySetting, hintsEnabled
     gamesList = []
     #Getting the path to the savedGames directory and appending saved games to
     # gamesList.
@@ -484,30 +483,50 @@ def loadGame():
                     row = list(lines[i].strip('\n'))
                     newGameState.append(row)
                 elif i == ROWS:
-                    lastLine = lines[i].strip()
+                    colorLine = lines[i].strip()
                 elif i == ROWS + 1:
                     diffLine = lines[i].strip()
                 elif i == ROWS + 2:
                     hintsLine = lines[i].strip()
-        # Change global variables to reflect where the game was when user saved.
-        colorDict = {'COLOR1' : COLOR1, 'COLOR2' : COLOR2}
-        global gameState, playerTurn, userColor
-        gameState = newGameState
-        playerTurn = colorDict[lastLine]
-        userColor = colorDict[lastLine]
-        # check that saved game has diff and hints info
-        if len(lines) > ROWS + 1:
-            difficultySetting = int(diffLine)
-            # update window title with diff setting
-            changeDifficulty(False)
-            if hintsLine == "True":
-                hintsEnabled = True
-            else:
-                hintsEnabled = False
+        # change global variables to reflect where the game was when user saved.
+        loadGameDetails(colorLine, diffLine, hintsLine, lines, newGameState)
+        # visually draw gamestate on board
         drawLoadedPieces()
     except:
         # for debugging
-        print("Error. The savedGames directory may not exist.")
+        print("Error. The savedGames directory may not exist, or there may be" +
+        " no saved games to load, for example.")
+        exit()
+
+def loadGameDetails(colorLine, diffLine, hintsLine, lines, newGameState):
+    '''Takes the details of a saved game, and updates the global game
+    variables to load this previous game state.
+
+    Arguments:
+    colorLine (str) -- the line of the saved text file that represents the player
+    colour.
+    diffLine (str) -- the line of the text file that represents the difficulty
+    setting
+    hintsLine (str) -- the line of the text file that represents whether hints
+    were enabled or not.
+    lines (list) -- the contents of the text file, changed into a list of line
+    strings.
+    newGameState (list) -- the updated gamestate list
+    '''
+    global gameState, playerTurn, userColor, difficultySetting, hintsEnabled
+    colorDict = {'COLOR1' : COLOR1, 'COLOR2' : COLOR2}
+    playerTurn = colorDict[colorLine]
+    userColor = colorDict[colorLine]
+    gameState = newGameState
+    # check that saved game has diff and hints info
+    if len(lines) > ROWS + 1:
+        difficultySetting = int(diffLine)
+        # update window title with diff setting
+        changeDifficulty(False)
+        if hintsLine == "True":
+            hintsEnabled = True
+        else:
+            hintsEnabled = False
 
 def drawLoadedPieces():
     '''Uses gameState to draw all the pieces from the saved game.'''
@@ -1122,7 +1141,8 @@ def saveGame():
                 saveGame()
     except:
         # for debugging
-        print("Error. The savedGames directory may not exist.")
+        print("Error. The savedGames directory may not exist, for example.")
+        exit()
 
 def rules():
     '''When the rules 'button' is clicked this will bring up a popup that will
