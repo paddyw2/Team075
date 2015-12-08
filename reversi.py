@@ -149,6 +149,7 @@ color2score = tt.Turtle()
 color2score.ht()
 color2score.pu()
 color2score.color(COLOR2)
+
 popup = tt.Turtle()
 popup.ht()
 popup.pu()
@@ -178,6 +179,7 @@ gameHasEnded = False
 moveInProgress = False
 # gameboard used for game being played, a copy of a blank state for new games
 gameState = copy.deepcopy(origGameState)
+# list of directions for traversing the gameboard
 dirList = [[0, 1], [0, -1], [1, 0], [-1, 0], [1, 1], [1, -1], [-1, 1], [-1, -1]]
 
 # game functions
