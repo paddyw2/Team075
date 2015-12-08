@@ -1164,25 +1164,25 @@ def rules():
     popup.color('white')
     popup.goto(largePopupStartX + (largePopupSize / 2), largePopupStartY - PIECE_SIZE)
     popup.write('Reversi Rules',align='center',font=('',FONTSIZE_LARGE,''))
-    popup.goto(largePopupStartX + (largePopupSize / 2), largePopupStartY - (PIECE_SIZE*6.5))
+    popup.goto(largePopupStartX + (largePopupSize / 2), largePopupStartY - (PIECE_SIZE*5.5))
     popup.write('''
-How to play: Place your marker
-on the grid so that you make
-at least one straight line
+How to play:
+Place your marker on the grid so that
+you make at least one straight line
 (horizontal, vertical, or diagonal)
-between your new marker and
-another one of your existing
-markers. One or more markers
-belonging to the opponent must be
-between them. All opponents
-markers in the line are then
-captured and changed to your
-colour. A player misses their
-turn if there are no valid moves.
+between your new marker and another one
+of your existing markers. One or more
+markers belonging to the opponent must
+be between them. All opponents markers
+in the line are then captured and changed
+to your colour. A player misses their turn
+if there are no valid moves. The game ends
+when there are no valid moves. The player
+with the most tiles wins.
     ''',align='center',font=('',FONTSIZE,''))
 
 def newGame(option="choice"):
-    ''' Creates a new game. '''
+    ''' Creates and starts a new game or loads saved game. '''
     global gameState, playerTurn
     playerTurn = COLOR1
     gameState = copy.deepcopy(origGameState)
@@ -1214,7 +1214,7 @@ def newGame(option="choice"):
         computerMove()
 
 def main():
-    ''' Starts the game '''
+    ''' Starts the game upon executing file '''
     setupGameboard()
     newGame()
     wn.onclick(userClickInput)
