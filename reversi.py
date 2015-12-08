@@ -164,6 +164,7 @@ difficultySetting = 0
 hintsEnabled = False
 userColor = ''
 playerTurn = COLOR1
+# a blank gameboard
 origGameState = [['O','O','O','O','O','O','O','O'],
                  ['O','O','O','O','O','O','O','O'],
                  ['O','O','O','O','O','O','O','O'],
@@ -175,6 +176,7 @@ origGameState = [['O','O','O','O','O','O','O','O'],
 activePopup = False
 gameHasEnded = False
 moveInProgress = False
+# gameboard used for game being played, a copy of a blank state for new games
 gameState = copy.deepcopy(origGameState)
 dirList = [[0, 1], [0, -1], [1, 0], [-1, 0], [1, 1], [1, -1], [-1, 1], [-1, -1]]
 
